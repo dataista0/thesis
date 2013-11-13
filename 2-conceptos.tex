@@ -1,0 +1,190 @@
+\chapter{Marco teórico}
+
+\section{Terminología}
+
+\subsection{Tokens}
+
+Un token es una palabra o un signo de puntuaci\'on en el contexto de un
+texto.
+
+Por ejemplo, el texto {\textquotedblleft}El sol
+brilla.{\textquotedblright} tiene cuatro tokens:
+\{{\textquoteleft}El{\textquoteright}, {\textquoteleft}sol{\textquoteright}, {\textquoteleft}brilla{\textquoteright}, {\textquoteleft}.{\textquoteright} \}. 
+Las herramientas que generan una lista de tokens a partir de un texto se llaman
+\textit{tokenizers} y suelen permitir distintos tratamiento de ciertas
+palabras o signos de puntuaci\'on. Las bibliotecas que proveen
+tokenizers proveen tambi\'en herramientas para dividir un texto en
+oraciones. Estos dos procesos son el primer paso de todos los
+an\'alisis de procesamiento de lenguaje natural siguientes.
+
+
+\subsection{N-Gramas}
+
+Un n-grama es una subsecuencia continua de \textit{n} tokens de un string.
+
+Por ejemplo, la oraci\'on: {\textquotedblleft}Hoy est\'a nublado{\textquotedblright}, tiene los siguientes n-gramas:
+\medskip
+
+\begin{tabular}{lll}
+Tres unigramas & : & \{ {\textquotedblleft}Hoy{\textquotedblright}, {\textquotedblleft}est\'a{\textquotedblright}, {\textquotedblleft}nublado{\textquotedblright} \} \\
+Dos bigramas & : & \{ {\textquotedblleft}Hoy est\'a{\textquotedblright}, {\textquotedblleft}est\'a nublado{\textquotedblright} \} \\
+Un s\'olo trigrama & : & \{ {\textquotedblleft}Hoy est\'a nublado{\textquotedblright} \}\\
+\end{tabular}
+\medskip
+
+Los n-gramas son \'utiles para recorrer un
+texto con distintos tama\~nos de ventana en busca de alg\'un patr\'on
+conocido, por ejemplo: buscando entidades nombradas que no fueron reconocidas por otras herramientas.
+
+\subsection{Ontolog\'ia}
+
+El t\'ermino `ontolog\'ia' es un t\'ermino originalmente filos\'ofico, que refiere al estudio de lo que hay, de lo que es, o, dicho de otro modo, a la definici\'on y al estudio de los entes que existen en la realidad \'ultima y de sus cualidades esenciales y sus relaciones intrinsecas. Aplicado a ciencias inform\'aticas, principalmente dentro \'areas como inteligencia artificial y representaci\'on del conocimiento, esta noci\'on original se sostiene, acotando la noci\'on de realidad \'ultima a uno o varios dominios de problemas. M\'as concretamente, la noci\'on de ontolog\'ia en inform\'atica refiere a la definici\'on formal y exhaustiva de un conjunto de conceptos que representan entidades, tipos o clases de entidades, propiedades y relaciones entre estas entidades relevantes para el modelado de un dominio de problemas dado. Esta ontolog\'ia formal define un vocabulario inicial fijo que determina el tipo de problemas que se pueden plantear (y resolver) para el dominio.
+
+\section{Herramientas}
+
+\subsection{Indice invertido}
+Un \'indice invertido es la estructura de datos t\'ipica utilizada en problemas de information retrieval. Consiste en un mapeo de t\'erminos en documentos que los contienen. Es decir, para un t\'ermino dado, un \'indice invertido devuelve una lista de los documentos cargados que lo contienen. Este tipo de estructuras invierte la relaci\'on normal en la cual a partir de un documento se accede a la lista de t\'erminos que este documento contiene (de all\'i el nombre \textit{invertido}).
+Por ejemplo, para los textos:
+\medskip
+
+\begin{tabular}{lll}
+T[0] & = & ``qu\'e es esto" \\
+T[1] & = & ``esto es un ejemplo" \\
+T[2] & = & ``qu\'e gran ejemplo" \\
+\end{tabular}
+\medskip
+
+Un \'indice invertido contendr\'ia las siguientes entradas (d\'onde el n\'umero \textit{n} es un puntero al texto T[n]):
+\medskip %this skips a bit of vertical space
+
+\begin{tabular}{lll}
+	``qu\'e" & : & \{0, 2\}\\
+	``es" &:& \{0, 1\}\\
+	``esto" & :& \{0, 1\} \\
+	``un" & :&   \{1\} \\
+	``ejemplo" & :& \{1, 2\} \\
+	``gran" & :& \{2\} \\
+\end{tabular}
+\medskip
+
+
+
+\subsection{Part-of-speech (POS) tagging}
+
+El POS-tagging o \textit{etiquetado gramatical} consiste en asignar a los diferentes 
+tokens una etiqueta con el rol o categor\'ia gramatical que cumplen en su contexto de uso (por lo general, una oraci\'on o un p\'arrafo). 
+\newline
+
+Por ejemplo, para la oraci\'on:
+
+\medskip
+
+\begin{center}
+{\textquotedblleft}El hombre baj\'o la escalera.{\textquotedblright} 
+\end{center}
+\medskip
+
+El resultado de un POS-tagger podr\'ia ser el siguiente:
+\newline
+
+\begin{tabular}{| l | l |}
+ \hline
+Token & Etiqueta Gramatical (POS-tag) \\ \hline
+El  & Determinante, art\'iculo definido, masculino, singular\\ \hline
+hombre &  Nombre com\'un masculino singular (sustantivo) \\ \hline
+baj\'o  & Verbo principal indicativo pasado tercera persona del singular (genero indefinido)\\ \hline
+la  & Determinante, art\'iculo femenino singular \\ \hline
+escalera & Nombre com\'un femenino singular (sustantivo) \\ \hline
+.  & Punto final\\ \hline
+\end{tabular}
+
+
+%\begin{itemize}
+%\item El DA0MS0: Determinante, art\'iculo definido, masculino, singular.
+%\item hombre NCMS000: \ Nombre com\'un masculino singular (sustantivo)
+%\item baj\'o VMIS3S0: verbo principal indicativo pasado tercera persona
+%del singular (genero indefinido)
+%\item la DA0FS0: Determinante, art\'iculo femenino singular.
+%\item escalera NCFS000: Nombre com\'un femenino singular (sustantivo). 
+%\item . Fp (Punto final)
+%\end{itemize}
+%Un ejemplo de Stanford.
+
+%El pos-tag de una palabra contiene su rol gramatical y otros datos como
+%g\'enero, n\'umero, persona, modo, etc. 
+
+
+\bigskip
+
+En el scope de este proyecto, utilizamos dos tipos de pos-tags: los
+verbos y las qwords. Las qwords son los pronombres interrogativos:
+qu\'e, qui\'en, c\'omo, etc. y en ingl\'es, who, when, where...\newline
+
+[[Expandir]]
+
+\subsection{Named Entity Recognition and Classification (NER, NEC, NERC)}
+
+El reconocimiento de entidades nombradas (NER, de Named Entity
+Recognition) es una subtarea de Information Extraction. Information
+Extraction es, brevemente, todo el dominio de problemas vinculado con
+la extracci\'on de informaci\'on estructurada a partir de datos no
+estructurados o semi estructurados. NER es, dentro de este dominio, el
+proceso de reconocer unidades de informaci\'on (las entidades
+nombradas) tales como nombres de personas, organizaciones, lugares,
+expresiones num\'ericas como tiempo, fechas, dinero, porcentajes, etc.
+A veces se habla de NERC (Named Entity Recognition and Classification)
+para poner \'enfasis en la asignaci\'on de un tipo (por ejemplo: nombre
+de empresa) a la entidad nombrada reconocida.
+
+Los primeros sistemas de NER eran algoritmos basados en reglas
+hardcodeadas, mientras que los m\'as modernos incorporan t\'ecnicas de
+machine learning y son, en general, algoritmos basados en features
+(ciertos aspectos de los tokens).
+
+El primer sistema data de 1991 y constaba de reglas escritas a mano y
+heur\'isticas simples. Reci\'en en 1996, con el est\'imulo de la MUC-6
+(una conferencia reconocida en el \'area que dedic\'o una edici\'on a
+NER), el \'area comenz\'o a acelerar su crecimiento.
+
+[[En construcci\'on en documento NER de GDrive]]
+
+\subsection{Relation Extraction}
+
+La detecci\'on y extracci\'on de relaciones es una tarea de procesamiento
+de lenguaje natural que consiste en extraer entidades y relaciones sem\'anticas
+entre entidades a partir de un texto no estructurado. 
+
+[[Escribir sobre distintos algoritmos conocidos basado en el paper RE1]]
+
+\subsection{Question Classification}
+
+Un clasificador es una herramienta que asigna a un elemento una de
+\textit{k }clases. La clasificaci\'on, en general, es un \'area
+bastante fecunda de NLP y, m\'as en general, de machine learning. Los
+clasificadores de preguntas son herramientas que clasifican preguntas,
+en general, seg\'un su tipo de respuesta esperada. Por ejemplo:
+{\textquotedblleft}?`Qui\'en descubri\'o Am\'erica?{\textquotedblright}
+espera, m\'as all\'a del nombre concreto, \textit{un nombre} \textit{de
+persona}; {\textquotedblleft}?`Cu\'ando se descubri\'o
+Am\'erica?{\textquotedblright} espera \textit{una fecha} (o, m\'as en
+general, \textit{un tiempo}), {\textquotedblleft}?`D\'onde se
+descubri\'o Am\'erica?{\textquotedblright} espera, como respuesta,
+\textit{un lugar}, etc. Este es un eje de clasificaci\'on conocido como
+tipo de respuesta esperado, aunque existen otros.
+
+Por otro lado, el tipo de clasificador puede ser estricto, i.e., asignar
+s\'olo una clase a cada objeto o bien probabil\'istico, i.e.: asignar
+un cierto grado de pertenencia a cada una de las clases posibles a
+cada objeto. 
+[[Expandir]]
+
+
+\subsection{Detección de idiomas}
+La detecci\'on o identificaci\'on de idioma es la tarea de reconocer el
+idioma de un cierto contenido. Esta tarea puede pensarse como una
+tarea de clasificaci\'on donde las clases son los distintos
+idiomas que el detector puede reconocer. 
+
+[[Expandir con detalles t\'ecnicos de wikipedia]]
+
+\subsection{Traducci\'on}
