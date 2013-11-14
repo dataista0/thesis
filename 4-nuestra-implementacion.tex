@@ -251,98 +251,180 @@ y tejen un grafo de distancias más o menos "especulativas" entre todas las enti
 Los atributos de cada entidad se pueden ver en el Anexo: [[HACER Y LINKEAR]].
 
 \subsubsection{Wikipedia}
-Por su lado, el subset de ejercicios de CLEF'07 que elegimos resolver
-utiliza como corpus diferentes snapshots de wikipedia anteriores al año 2007.
+El subset de ejercicios de CLEF'07 que elegimos resolver
+utiliza como corpus un snapshot de wikipedia en inglés y otro en español,
+ambos anteriores al año 2007.
+El set de preguntas completo involucra una serie de documentos para los cuales hay que 
+registrarse en la asociación: algunas preguntas se responden en base a wikipedia y otras en base a estos documentos.
+Identificamos las preguntas que se responden desde wikpedia chequeando los documentos fuente de las respuestas esperadas.
 
-Los ejercicios son preguntas por temas en diferentes idiomas
 Wikipedia ofrece diferentes formas para obtener una propia imagen de la enciclopedia.
 Es posible incorporar la base de datos de wikipedia a una instalación wikimedia
-propia, es posible descargar una imagen estática de archivos html y también ofrecen
-la posibilidad de descargar un archivo xml gigante con toda la información importante.
+propia, es posible descargar una imagen estática del sitio en archivos html y también se puede
+descargar un archivo xml gigante con todos los artículos. 
+
+En la guía para los participantes de la competencia \cite{Clef07} hay un link para descargar 
+wikipedia en inglés preprocesada de Noviembre de 2006 \footnote{\url{http://ilps.science.uva.nl/WikiXML/}} y dos opciones para descargar wikipedia en español: una imagen estática en html de Noviembre de 2006 \footnote{\url{http://static.wikipedia.org/downloads/November_2006/es/}} y un dump xml de Diciembre de 2006 
+\footnote{\url{http://download.wikimedia.org/images/archive/eswiki/20061202/pages-articles.xml.bz2}}
+
+\footnote{[[PEDIR WIKIPEDIA Y OTRA DB]]}
+
+La guía aclara que, bajo responsabilidad de los participantes, se puede usar
+cualquier otra versión de Wikipedia, siempre y cuando sea anterior a noviembre / diciembre de 2006.
+Además, se pide que las respuestas sean tomadas de ``entradas reales" o artículos de wikipedia y
+no de otros documentos (por ejemplo: ``image", ``discussion", ``category", etc).
+
+Los links a páginas de wikipedia en español no estaban más disponibles (ambos respondieron 404), mientras que el formato
+preprocesado pedido para el inglés resultaba realmente complejo de instalar y parecía una linea muerta. Por estos motivos,
+seguimos la sugerencia sobre el uso responsable de otras wikipedias y utilizamos las siguientes:
+
+\medskip
+
+\begin{center}
+\begin{tabular}{ | l | l | l |}
+    \hline
+    Idioma & Fecha & Tamaño\\ \hline
+    Inglés \footnote{\url{http://dump-ingles-1}} & 4 de noviembre de 2006 & 7,6G \\ \hline
+    Español \footnote{\url{http://dump-español-1}} & 7 de julio de 2006 & 558M \\ \hline
+\end{tabular}  
+\end{center}
+
+El mantenimiento de un mismo formato para ambos idiomas nos permitió crear un indexador único para cualquier
+dump en xml de una wikipedia. Durante el desarrollo y las pruebas, para evitar tiempos de carga innecesarios y también
+para probar, utilizamos otras imagenes disponibles de wikipedia:
+
+\medskip
+
+\begin{center}
+\begin{tabular}{ | l | l | l |}
+    \hline
+    Idioma & Fecha & Tamaño\\ \hline
+    Español & 26 de enero de 2007 & 902M \\ \hline
+    Español & 14 de junio de 2013 & 7,3G \\ \hline
+    Inglés simple & 4 de julio de 2006 & 26M \\ \hline
+    Inglés simple & 24 de julio de 2013 & 406M \\ \hline
+ \end{tabular}
+\end{center}
 
 
-In addition, the Wikipedia pages in the target languages, as found in the version
-of the Wikipedia of November, 2006 can be used. For all languages but English and
-Dutch, you can choose between the XML and the HTML versions, downloadable at
-the following URLS:
+\subsection{Creación de Indices}
 
-\subsection{Base de conocimiento final}
+\begin{figure}[H]
+  \centering
+    \includegraphics[scale=0.86]{graficos/LuceneWritersJuntos}
+  \caption{Creación de Indices}
+  \label{fig:LuceneIndexWriterBoth}
+\end{figure}
 
-A partir de esta base de datos y de los archivos xml fueron construidos cinco \'indices
+A partir de esta base de datos de mongo y de los archivos xml fueron construidos cinco \'indices
 de b\'usqueda lucene y un \'indice de b\'usqueda m\'as, general, con la
 informaci\'on normalizada de los otros cinco. 
+Cada uno de los cinco índices por entidad mantiene la estructura del tipo como campos de los documentos.
+Esto quiere decir que el índice invertido para \emph{Investigadores} tiene los mismos campos
+del modelo de datos de nosql. Además, se agregó el campo ``all" que resulta de la concatenación de
+todos los campos. Este campo resulta útil a la hora de filtrar resultados. 
+El índice general posee un documento por cada entidad de las cinco colecciones, 
+manteniendo también un puntero a la entidad original y su tipo.
+%El proceso de creación de índices se ilustra en la Figura \ref{fig:LuceneIndexWriterEstructurado}%~\nameref{fig:LuceneIndexWriterEstructurado}.
+
+% \begin{figure}[H]
+%   \centering
+%     \includegraphics{graficos/LuceneIndexWriterEstructurado}
+%   \caption{Lucene Index Writer para datos del proyecto Mitic}
+%   \label{fig:LuceneIndexWriterEstructurado}
+% \end{figure}
+
+Para la construcción de indices lucene con los dumps de wikipedia usamos la librería gwtwiki (Ver Apéndice~\ref{sec:gwtwiki}).
+Los artículos se indexan como documentos con los siguiente campos: \emph{id, title, body y all}. En este proceso se descartan artículos mal formados y 
+entradas representado imágenes o discusiones, tal como se sugiere en la guía. 
+Por mera curiosidad, tomamos tiempos en la contrucción de estos índices locales sobre versiones de wikipedia.
+Estos son algunos tiempos de indexación para distintos dumps sobre una [[detalles de la compu]]:
+\begin{center}
+\begin{tabular}{| l | l | l | l |}
+\hline
+Idioma & Tamaño & \# Entradas & Tiempo \\ \hline
+es & 50M & \# 16 millones & 2.5min \\ \hline
+es & 50M & \# 16 millones & 2.5min \\ \hline
+es & 50M & \# 16 millones & 2.5min \\ \hline
+es & 50M & \# 16 millones & 2.5min \\ \hline
+\end{tabular}
+\end{center}
+
+El proceso de creación de índices está ilustrado en la figura \ref{fig:LuceneIndexWriterBoth}
 
 
-\begin{itemize}
-\item Un \'indice lucene para cada una de estas entidades, agregando el
-atributo ALL (la concatenaci\'on de todos los campos).
-\item Adem\'as, cada entidad dispone de una clase que encapsula el
-acceso a su colecci\'on mongo y su \'indice lucene, llamada
-\textit{InformationKnowledgeBase} \textit{(IKB)}, por ejemplo
-UniversidadesIKB. Se puede ver la \ interfaz de estas clases en los
-javadoc de la clase abstracta uba.ikb.BaseIKB, pero en principio, sus
-responsabilidades son identificar si un string es una entidad exacta o
-matchea con el atributo de una entidad (o de varias, por ejemplo:
-{\textquotedblleft}Ciudad de buenos aires{\textquotedblright} matchea
-con el atributo {\textquotedblleft}ciudad{\textquotedblright} en
-general).
-\item Un \'indice lucene general con los documentos de todas las
-colecciones aplanados. Los documentos tienen estos campos: (ID, ALL,
-ENTITY\_TYPE)
-\item \textit{KnowledgeManager (KM)},\textit{ }una clase que encapsula
-el acceso a:
 
-\begin{itemize}
-\item Los IKB espec\'ificos de cada entidad
-\item H\'espero, el \'indice general
-\end{itemize}
-\end{itemize}
+% \begin{figure}[H]
+%   \centering
+%     \includegraphics{graficos/LuceneIndexWriterWiki}
+%   \caption{Lucene Index Writer para dumps de Wikipedia}
+%   \label{fig:LuceneIndexWriterWiki}
+% \end{figure}
+
+
+
+\subsection{Interfaz de servicios}
+
+La creación offline de índices lucene tiene como finalidad optimizar
+la base de conocimiento para responder con mayor eficiencia 
+a búsquedas de resultados en un momento posterior. 
+En esta sección vamos a ver la interfaz que presenta la base de conocimientos indexada 
+al resto de los módulos del sistema y qué dependencias existen con los módulos de
+análisis lingüístico.
+
+Para la base de conocimiento estructurada, reutilizamos un modelo de datos
+escrito en java  del grafo de entidades que obtuvimos de los investigadores del proyecto mitic (Ver \ref{sec:modelos-morphia}).
+A estos modelos se les agregó soporte para su representación como documento dentro de un índice.
+Por ejemplo, el modelo para la entidad "Universidad de Buenos Aires", un objeto de clase "UniversidadNodo", además de
+persistirse en la colección UniversidadesGrafo de la base de datos de mongo también dispone de una representación como documento en 
+un índice lucene particular UniversidadesIndex y otra en el índice general (GeneralIndex).
+A nivel colecciones, cada entidad dispone de un representante que maneja el acceso a su colección en la base de datos y también a su índice. A partir de estos representantes por entidad que ofrecen acceso a una base de datos y a un índice creamos la interfaz \emph{KnowlegdeBase}. Las responsabilidades de esta interfaz se corresponden como un handler de conocimiento acerca de una cierta clase de entidades. 
+En este punto del código reificamos entidades implicitas en el modelo. Estas entidades son, por ejemplo: Ciudad, Provincia, Centro de Investigación, etc.
+Entre otras funcionalidades, cada $KnowledgeBase$ dispone de varios motores de generación de queries acordes al tipo de datos del índice.
+Otra de sus responsabilidades es verificar por la identidad de una entidad. Es decir, cada KnowledgeBase sabe responde, dado un string, si ese string \textit{es} una entidad o no lo es, con un cierto grado de confianza. 
 
 \bigskip
+[[Reificacion de entidades como algo]]
+\bigskip
+[[Tablita con totales por entidad]]
+\bigskip
+[[Relaciones solo presentes en mongo]]
+\bigskip
 
-El KnowledgeManager, b\'asicamente, tiene las siguientes
-responsabilidades:
+Las \emph{KnowledgeBase} de las cinco entidad y el índice general están, a su vez, controlados por la interfaz \emph{KnowlegdeManager} (KM). 
+Las principales tareas de las que se hace cargo el KnowledgeManager en el proceso de generación de respuesta son:
 
 \begin{itemize}
-\item Verificar si un string se corresponde con una entidad (y de qu\'e
-tipo)
-\item Verificar si un string {\textquotedblleft}est\'a relacionado
-con{\textquotedblright} el valor de alg\'un atributo de alguna
-entidades (por ejemplo: si est\'a presente en el campo especialidades
-de varias empresas)
-\item Verificar si un string es un nombre de campo
-({\textquotedblleft}areas\_inv{\textquotedblright},
-{\textquotedblleft}carreras{\textquotedblright},
-{\textquotedblleft}disciplina{\textquotedblright}) o es un nombre de
-colecci\'on ({\textquotedblleft}universidades{\textquotedblright},
-{\textquotedblleft}empresas{\textquotedblright}).
-\item Devolver una lista de documentos rankeados para una query (usando
-H\'espero)
+\item Verificar si un string se corresponde con una entidad (y de qu\'e tipo)
+\item Verificar si un string est\'a relacionado con el valor de alg\'un atributo de alguna
+entidades (por ejemplo: si est\'a presente en el campo especialidades de varias empresas)
+\item Verificar si un string es un nombre de campo (areas\_inv,carreras, disciplina) o es un nombre de colecci\'on (universidades,empresas).
+\item Devolver una lista de documentos rankeados para una query (usando el índice general)
 \end{itemize}
 
-%
-%
-%
-%
-%
-%
-%
-%
-%
-
 \begin{figure}
   \centering
-    \includegraphics{graficos/LuceneIndexWriterEstructurado}
-  \caption{Lucene Index Writer para datos del proyecto Mitic}
-  \label{fig:LuceneIndexWriterEstructurado}
+    \includegraphics[scale=0.5]{graficos/KnowledgeManager}
+  \caption{Base de Conocimiento de grafo de tics}
+  \label{fig:KnowledgeManager}
 \end{figure}
 
-\begin{figure}
-  \centering
-    \includegraphics{graficos/LuceneIndexWriterWiki}
-  \caption{Lucene Index Writer para dumps de Wikipedia}
-  \label{fig:LuceneIndexWriterWiki}
-\end{figure}
+La base de conocimiento de los ejercicios de wikipedia es mucho más sencilla 
+porque no existe ningún modelo \emph{a priori} más allá del documento de lucene.
+El formato de la entidad ``artículo", como señalamos antes, es: $(id, titulo, cuerpo)$. 
+En este caso, el trabajo más fino no está en el modelado inicial del dominio 
+sino la capacidad lingüística de extraer pasajes a partir de un artículo y recomponer información
+estructurada a partir de estos pasajes. Mientras que para un modelo estructurado la base de conocimiento
+debería permitirnos, para un cierto input, identificar univocamente una entidad y darnos pistas sobre un pedido de
+información acerca de esa entidad, el objetivo sobre un corpus de documentos en 
+traer todos los documentos en los que sea posible que exista un pasaje respondiendo a la pregunta o
+evidencia relevante para apoyar una respuesta. Es decir, mientras una respuesta acotada es una virtud para
+el manejador de una base de conocimientos estructurada, el manejador de una lista de documentos de texto debería devolver
+una lista lo suficientemente grande para contener la respuesta dentro de los pasajes. La razón de esta política es que si
+por ser demasiado estrictos a la hora de retornar documentos llegasemos a descartar un pasaje candidato válido esto
+redundaría en una baja generar de efectividad, mientras que en pasos subsiguiente será trivial descartar toda información irrelevante
+sin tanto costo. Por eso, el acceso a los indices de wikpedia consta simplemente de un generador de queries similar al recién comentado
+accediendo y acumulando resultados (rankeados) a partir de un $LuceneIndexReader$ común (Ver \ref{sec:lucene} para más información).
 
 
 \bigskip
@@ -624,13 +706,6 @@ informaci\'on que se haya identificado. Esta informaci\'on, en este
 punto, tiene tres tipos: QType, NERs y verbos. 
 
 
-
-\begin{figure}
-  \centering
-    \includegraphics[scale=0.86]{graficos/LuceneWritersJuntos}
-  \caption{Lucene Index Writer para dumps de Wikipedia}
-  \label{fig:LuceneIndexWriterWiki}
-\end{figure}
 
 
 \begin{figure}
