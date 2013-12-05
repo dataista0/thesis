@@ -348,7 +348,7 @@ genera distintas particiones y resuelve todas en paralelo, sintetizando
 las respuesta de cada partici\'on generada mediante algoritmos ad-hoc
 de ponderaci\'on de confiabilidad y otras caracter\'isticas.
 
-\subsubsection{Generaci\'on de Hip\'otesis}
+\subsubsection{Generaci\'on de hipótesis}
 
 El tercer paso (segundo en run-time) es la generaci\'on de hip\'otesis:
 tomando como input el resultado del paso anterior se generan respuestas
@@ -380,7 +380,7 @@ genera varios cientos de hip\'otesis candidatas en este paso.
 
 \bigskip
 
-\subsubsection{(Soft filtering)}
+\subsubsection*{(Soft filtering)}
 
 Para optimizar recursos, se realiza un filtrado liviano de respuestas
 antes de pasar a la recopilaci\'on de evidencia y al scoring de
@@ -392,7 +392,7 @@ un an\'alisis m\'as exhaustivo.
 
 \bigskip
 
-\subsubsection{Recuperaci\'on de evidencias y Scoring de hip\'otesis}
+\subsubsection{Recuperaci\'on de evidencias y scoring de pasajes}
 
 Para recuperar evidencias se utilizan varios algoritmos. Uno
 particularmente \'util es buscar la hip\'otesis candidata junto con las
@@ -468,7 +468,7 @@ System level approach.
 
 \bigskip
 
-\section{QANUS}
+\section{La arquitectura de Qanus}
 
 QANUS (Question-Answering @ National University of Singapore) es un
 sistema de question answering basado en information retrieval. El
@@ -505,7 +505,7 @@ separado (off-line):
 
 \bigskip
 
-\subsection{Information Source Preparation}
+\subsection{Preparación de la fuente de información}
 Este paso est\'a pensado para preprocesar cualquier base de conocimiento
 y dejarla preparada para el paso 3 (retorno de la pregunta). El
 framework se propone tan amplio que no hay m\'as especificaciones al
@@ -518,7 +518,7 @@ se modelan en el paso 3.
 
 \bigskip
 
-\subsection{Question Processing}
+\subsection{Análisis de la pregunta}
 Este paso, igualmente gen\'erico, permite la incorporaci\'on de
 distintos componentes para anotar los tokens de la pregunta con datos
 \'utiles para ser consumidos por el paso 3. Otro procesamiento a
@@ -531,7 +531,7 @@ Hablaremos m\'as de estos componentes m\'as adelante.
 
 \bigskip
 
-\subsection{Answer Retrieval}
+\subsection{Generación de respuestas}
 En este paso se utiliza la informaci\'on generada en la preparaci\'on
 de la base de informaci\'on y en el procesamiento de la pregunta para
 generar una respuesta. Tambi\'en puede incorporarse accesos a la web y
@@ -547,7 +547,7 @@ completo con los tres pasos anteriores), para la fase de desarrollo y
 de evaluaci\'on de la performance del sistema:\newline
 
 
-\subsection{Evaluation}
+\subsection{Evaluación}
 
 Este paso est\'a pensado para evaluar las respuestas generadas y
 presentarlas de un modo conciso en la fase de desarrollo.

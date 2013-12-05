@@ -30,24 +30,25 @@ Processing and Very Large Corpora. 2000. 63-70.
 
 
 \section{Stanford NER Tagger}
+\label{sec:stanford-ner}
 
 Named Entity Recognition Stanford Named Entity Recognizer (Finkel, 
-Grenager and Manning 2005)
+Grenager and Manning 2005) 
 
 Finkel, Jenny Rose, Trond Grenager, and Christopher Manning. "Incorporating 
 Non-local Information into Information Extraction Systems by Gibbs Sampling." 
 roceedings of the 43nd Annual Meeting of the Association for Computational 
-Linguistics. 2005.
+Linguistics. 2005. \cite{NER2}
 
 
 \section{Freeling}
-
-Freeling es una librer\'ia de c\'odigo abierto que provee distintas herramientas de 
+\label{sec:freeling}
+Freeling es una librería de c\'odigo abierto que provee distintas herramientas de 
 procesamiento de lenguaje natural, desarrollada y mantenida por el Centre de Tecnologies 
-i Aplicacions del Llenguatge i la Parla (TALP) de la Universidad Polit\'ecnica de Catalu\~na (UPC). 
-Freeling est\'a dise\~nado para ser usada como una librer\'ia externa y ofrece un API en distintos lenguajes
+i Aplicacions del Llenguatge i la Parla (TALP) de la Universidad Politécnica de Catalu\~na (UPC). 
+Freeling está dise\~nado para ser usada como una librería externa y ofrece un API en distintos lenguajes
 de programaci\'on. Su principal virtud es ser multilingüe, esto es, los diferentes analizadores que provee funcionan 
-para un conjunto bastante amplio de idiomas. La \'ultima versi\'on a la fecha (3.1) soporta los siguientes idiomas:
+para un conjunto bastante amplio de idiomas. La última versi\'on a la fecha (3.1) soporta los siguientes idiomas:
 
 \begin{itemize}
 \item Asturian (as)
@@ -63,19 +64,19 @@ para un conjunto bastante amplio de idiomas. La \'ultima versi\'on a la fecha (3
 \item Welsh (cy)
 \end{itemize}
 
-Cabe destacar que no todos los m\'odulos soportan todos los idiomas. Sin embargo, dado que el proyecto est\'a radicado en Espa\~na,
-los idiomas necesarios para los fines de nuestro trabajo (espa\~nol e ingl\'es), soportan todos los m\'odulos disponibles
-en la librer\'ia.
+Cabe destacar que no todos los m\'odulos soportan todos los idiomas. Sin embargo, dado que el proyecto está radicado en Espa\~na,
+los idiomas necesarios para los fines de nuestro trabajo (espa\~nol e inglés), soportan todos los m\'odulos disponibles
+en la librería.
 Freeling 3.1 ofrece los siguientes analizadores lingüisticos:
 
 \begin{itemize}
 \item Detecci\'on de idioma
 \item Tokenizer
 \item Sentence splitting,
-\item An\'alisis morfol\'ogico
+\item Análisis morfol\'ogico
 \item NER y NEC (Detecci\'on y Clasificaci\'on de Entidades Nombradas)
-\item Reconocimiento de fechas, n\'umeros, magnitudes f\'isicas, monedas
-\item Codificaci\'on fon\'etica
+\item Reconocimiento de fechas, números, magnitudes físicas, monedas
+\item Codificaci\'on fonética
 \item POS tagging, 
 \item Shallow parsing
 \item Dependency parsing
@@ -87,11 +88,10 @@ Freeling 3.1 ofrece los siguientes analizadores lingüisticos:
 
 
 \section{Lang Detect de Cybozu Labs}
+\label{sec:cybozu}
 
-Para la detecci\'on de idiomas utilizamos tanto el m\'odulo que brinda Freeling como una librer\'ia de Cybozu Labs - una reconocida compañ\'ia japonesa,
-implementado en Java y liberado bajo Apache License 2.0. En la pr\'actica, este paquete dio excelentes resultados. Soporta 53 idiomas con \%99 de precisi\'on
-para todos ellos (seg\'un sus tests). El detector se basa en perfiles de idiomas generados a partir de las distintas wikipedias y detecta el idioma de los texots
-usando un filtro bayesiano ingenuo (\textit{naive bayesian}).
+Librería de Cybozu Labs - una compañía japonesa -, implementado en Java y liberado bajo Apache License 2.0. En la práctica, este paquete dio excelentes resultados. Soporta 53 idiomas con \%99 de precisión para todos ellos (según sus tests). El detector se basa en perfiles de idiomas generados a partir de las distintas wikipedias y detecta el idioma de los textos usando un filtro bayesiano ingenuo (\textit{naive bayesian}).
+El código está disponible, actualmente, en google-code (El link está en la sección de bibliografía \cite{nakatani2010langdetect})
 
 \section{MyMemory}
 MyMemory es la Memoria de Traducción más grande del mundo: 300 millones de segmentos a finales de 2009
@@ -102,6 +102,23 @@ MyMemory gives you quick access to a large number of translations originating fr
 Las memorias de traducción son almacenes compuestos de textos originales en una lengua alineados con su traducción en otras. Esta definición de memorias de traducción coincide literalmente con una de las definiciones más aceptadas de corpus lingüístico de tipo paralelo (Baker, 1995). Por esto se puede decir que las memorias de traducción son corpus paralelos.
 
 
+Por el momento, no estamos utilizando ningún módulo de traducciones:
+todo el enfoque multilingüe está dado por la detección del idioma
+de la pregunta y la determinación de distintas herramientas de
+análisis según qué idioma sea. Sin embargo, en un momento se
+evaluó un enfoque distinto, basado en la traducción. Por ejemplo:
+utilizar módulos de procesamiento sólo en inglés y
+{\textquotedblleft}normalizar{\textquotedblright} los inputs en otros
+idiomas (en principio, en espa\~nol), a este idioma interno, y luego lo
+mismo con la generación de respuestas. A pesar de que no es el
+enfoque actual, hubo una fase de investigación dentro del dominio de
+la traducción, que resultó en un módulo de traducción basado en
+MyMemoryAPI.
+
+Intento con google translator y la privatización. ?`La falta de
+software de traducción offline? El módulo de mymemory, robado de
+algún lugar. El sistema de cobro. 
+
 \section{Reverb}
 
 ReVerb is a program that automatically identifies and extracts binary relationships from English sentences. ReVerb is designed for Web-scale information extraction, where the target relations cannot be specified in advance and speed is important.
@@ -110,33 +127,33 @@ ReVerb takes raw text as input, and outputs (argument1, relation phrase, argumen
 
 \section{Apache Lucene}
 \label{sec:lucene}
-Lucene es una librer\'ia de information retrieval, de c\'odigo abierto, escrita en Java y distribuida 
-bajo la licencia Apache Software License por la Apache Software Foundation. No est\'a pensada para
-usuarios finales sino para ser integrada dentro de proyectos inform\'aticos, resolviendo
-la parte de bajo nivel y brindando servicios a trav\'es de un API en diferentes lenguajes de programaci\'on.
-Su core es un \'indice invertido como el que describimos anteriormente. La implementaci\'on de un sistema
+Lucene es una librería de information retrieval, de c\'odigo abierto, escrita en Java y distribuida 
+bajo la licencia Apache Software License por la Apache Software Foundation. No está pensada para
+usuarios finales sino para ser integrada dentro de proyectos informáticos, resolviendo
+la parte de bajo nivel y brindando servicios a través de un API en diferentes lenguajes de programaci\'on.
+Su core es un índice invertido como el que describimos anteriormente. La implementaci\'on de un sistema
 que utiliza Lucene consta de dos pasos separados:
 \begin{itemize}
-\item La \textbf{creaci\'on} del \'indice, es por lo general un proceso offline en el cual 
-se incorporan distintas fuentes de informaci\'on al \'indice 
-\item La \textbf{b\'usqueda} de documentos en el \'indice creado en el paso anterior, a partir de una query 
+\item La \textbf{creaci\'on} del índice, es por lo general un proceso offline en el cual 
+se incorporan distintas fuentes de informaci\'on al índice 
+\item La \textbf{búsqueda} de documentos en el índice creado en el paso anterior, a partir de una query 
 ingresada por el usuario final. Este proceso se incorpora dentro del flujo `online' del sistema.
-El resultado de esta b\'usqueda es una lista de documentos rankeados con un cierto puntaje. 
+El resultado de esta búsqueda es una lista de documentos rankeados con un cierto puntaje. 
 \end{itemize}
 
-Es importante señalar que si bien el proceso de creaci\'on del \'indice suele estar desacoplado del resto 
+Es importante señalar que si bien el proceso de creaci\'on del índice suele estar desacoplado del resto 
 del sistema, las fuentes de informaci\'on no tiene por que ser `offline' en el sentido de ser documentos
 en un disco local. De hecho, Nutch, otro proyecto de c\'odigo abierto de la Apache Software Foundation es 
-un motor de b\'usqueda web basado en Lucene que incorpora un crawler para indexar sitios web. Lucene soporta 
+un motor de búsqueda web basado en Lucene que incorpora un crawler para indexar sitios web. Lucene soporta 
 cualquier fuente de informaci\'on que pueda convertirse en texto mediante algoritmia.
 \newline
-Los conceptos fundamentales de Lucene son: \'indice, documento, campo, t\'ermino y query.
+Los conceptos fundamentales de Lucene son: índice, documento, campo, término y query.
 \begin{itemize}
-\item Un \'indice contiene un conjunto de documentos
+\item Un índice contiene un conjunto de documentos
 \item Un documento es un conjunto de campos
-\item Un campo es el nombre de una secuencia de t\'erminos
-\item Un t\'ermino es un token (una palabra)
-\item Una query es una lista de t\'erminos conectados con distintos operados l\'ogicos
+\item Un campo es el nombre de una secuencia de términos
+\item Un término es un token (una palabra)
+\item Una query es una lista de términos conectados con distintos operados l\'ogicos
 \end{itemize}
 
 \bigskip
@@ -147,11 +164,114 @@ Los conceptos fundamentales de Lucene son: \'indice, documento, campo, t\'ermino
 
 Java Wikipedia API (Bliki engine)
 http://code.google.com/p/gwtwiki/
-Esta librer\'ia tiene m\'etodos \'utiles para trabajar con dumps de wikipedia. La usamos para testear los m\'etodos no estructurados de la tesis.
+Esta librería tiene métodos útiles para trabajar con dumps de wikipedia. La usamos para testear los métodos no estructurados de la tesis.
 
 
 \section{Modelos de Morphia}\label{sec:modelos-morphia}
 
 Java Wikipedia API (Bliki engine)
 http://code.google.com/p/gwtwiki/
-Esta librer\'ia tiene m\'etodos \'utiles para trabajar con dumps de wikipedia. La usamos para testear los m\'etodos no estructurados de la tesis.
+Esta librería tiene métodos útiles para trabajar con dumps de wikipedia. La usamos para testear los métodos no estructurados de la tesis.
+
+
+\chapter{Comparadores}
+\label{sec:comparadores}
+Dada la frecuencia en la que resultaba necesario comparar dos string,
+decidimos reificar la operación de comparación como una familia de
+clases que implementan Comparadores. 
+
+Gracias a esto se hace posible cambiar las nociones de igualdad o
+similaridad en un módulo completo del sistema o en alguna clase
+simplemente configurando otro comparador como parámetro. \ La
+interfaz permite a los distintos comparadores tomar valores binarios
+así como también valores entre 0 y 1. A su vez, esta considerada la
+posibilidad de configurar un umbral (threshold) a partir del cual
+redondear un valor entre 0 y 1 a un valor binario. Otro factor que tuvo
+mucha utilidad fue la capacidad de anidar comparadores. A nivel
+superclase también está permitida la posiblidad de ignorar o no
+ignorar la diferencia de mayúsculas, aunque este funcionamiento puede
+granularizarse en las instancias particulares. Los comparadores sirven,
+en general, para comparar tanto strings representando palabras como
+string representado listas de palabras (oraciones o textos). Algunos,
+en particular, sólo sirven para este segundo caso. Los comparadores
+disponibles actualmente son los siguientes, en un pseudo-orden
+decreciente de exactitud:
+
+
+\begin{itemize}
+\item Equal: compara por igualdad estricta
+\item EqualNoPunct: compara por igualdad, eliminando signos de
+puntuación y normalizando acentos y otras posibles diferencias que no
+deberían tenerse en cuenta.
+\item Contains: verifica si un string contiene a otro
+\item EditDistance: no implementado
+\end{itemize}
+Los siguiente comparadores son algoritmos fueron adaptados a partir de
+los Scorers del \ proyecto Qanus. Todos devuelven valores reales entre
+0 y 1 y sirven para comparar textos (y no palabras). Estos
+comparadores, al igual que Contains, no son simétricos. Para
+distinguir, llamaremos primer string al buscado y segundo string a
+aquel en el cual se busca el primero. 
+
+
+\begin{itemize}
+\item Frequency: cuenta la cantidad de veces que los tokens del primer
+string ocurren en el segundo string. Esta suma se divide por la
+longitud del segundo string, dando un valor entre 0 y 1.
+\item Coverage: cuenta cuantos tokens del primer string aparecen al
+menos una vez en el segundo, y divide esta suma por el total de tokens
+del \textit{primer} string.
+\item Proximity: computa la distancia de 
+\end{itemize}
+This feature computes the distance between the occurences of two search
+strings within a passage.
+
+Typically the search string may span multiple word tokens in the
+passage. 
+
+To compute the distance, we will compute the midpoint of the span of the
+two
+
+search strings, and find the difference between the two midpoints. 
+
+\ * \ ... X .. X... X .... Y ... Y
+
+\ * \ \ \ \ \ \ \ \ \ \ {\textbar} \ \ \ \ \ \ \ \ \ \ \ \ \ {\textbar}
+
+\ *
+\ \ \ \ \ \ \ \ \ \ \ {\textless}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{\textgreater}
+
+\ * \ where X are matches to search string 1 and Y are matches to the
+other search string.
+
+
+\begin{itemize}
+\item TermSpan
+\end{itemize}
+\ * This feature makes use of the span of matching search terms within a
+passage.
+
+\ * For example, suppose the passage has the following search term
+matches (denoted by X)
+
+\ * ..... X ..... X ..... X ......
+
+\ * ......a ..... b ...... c .....
+
+\ * 
+
+\ * a, b, c are position of the matching term within the passage (in
+terms of words).
+
+\ * The span is thus {\textbar}c-a{\textbar}.
+
+\ * 
+
+\ * The score of this feature is given as 
+
+\ * \ \ \# matching terms / span
+
+\ * 
+
+\ * This score is guaranteed to be between 0 and 1 inclusive.
+

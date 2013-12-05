@@ -4,6 +4,9 @@
 
 \usepackage[toc,page]{appendix}
 
+\usepackage{color}
+
+
 \usepackage{graphicx}
 \usepackage{float} % para settear posicion a imagenes
 \usepackage[utf8]{inputenc}
@@ -31,7 +34,10 @@
 \setcounter{tocdepth}{4} % Si se muestra subsubsection o no en el toc
 \setcounter{secnumdepth}{4}
 
+\newcommand\dblquote[1]{\textquotedblleft #1\textquotedblright}
+\newcommand\sglquote[1]{\textquoteleft #1\textquoteright}
 
+\newcommand*{\allref}[1]{\ref{#1} \nameref{#1}}
 
 \renewcommand{\appendixname}{Apéndices}
 \renewcommand{\appendixtocname}{Apéndices}
@@ -76,6 +82,7 @@
 \input{2-conceptos.tex}
 \input{3-estado-de-arte.tex}
 \input{4-nuestra-implementacion.tex}
+\input{5-conclusion.tex}
 %% ...
 
 % \appendix
