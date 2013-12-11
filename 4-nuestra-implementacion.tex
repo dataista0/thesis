@@ -362,7 +362,7 @@ El proceso de creación de índices está ilustrado en la figura \ref{fig:Lucene
 
 
 \subsection{Interfaz de servicios}
-
+\label{subsec:modelos-db}
 La creación offline de índices lucene tiene como finalidad optimizar
 la base de conocimiento para responder con mayor eficiencia 
 a búsquedas de resultados en un momento posterior. 
@@ -372,7 +372,7 @@ al resto de los módulos del sistema y qué dependencias existen con los módulo
 análisis lingüístico.
 
 Para la base de conocimiento estructurada, reutilizamos un modelo de datos
-escrito en java  del grafo de entidades que obtuvimos de los investigadores del proyecto mitic (Ver \ref{sec:modelos-morphia}).
+escrito en java  del grafo de entidades que obtuvimos de los investigadores del proyecto mitic (Ver \allref{sec:modelos-morphia}).
 A estos modelos se les agregó soporte para su representación como documento dentro de un índice.
 Por ejemplo, el modelo para la entidad ``Universidad de Buenos Aires", además de
 persistirse en la colección de universidades de la base de datos de mongo, también dispone de una representación como documento en 
@@ -437,7 +437,7 @@ accediendo y acumulando resultados (rankeados) a partir de un $LuceneIndexReader
 \bigskip
 
 \section{Análisis de la pregunta}
-
+\label{sec:qprocess}
 En este paso se realizan diferentes análisis lingüísticos de la pregunta.
 El resultado son distintas características asociadas a la pregunta (anotaciones)
 y distintas entidades semánticas reconocidas útiles para el proceso de generación de respuestas. 
@@ -464,7 +464,7 @@ cada uno de estos pasos utiliza estas herramientas de diferentes maneras. Por ej
 
 \begin{figure}
   \centering
-    \includegraphics[scale=0.86]{graficos/LangDetect}
+    \includegraphics[scale=0.5]{graficos/LangDetect}
   \caption{Módulo de Detección de Idiomas}
   \label{fig:LangDetect}
 \end{figure}
@@ -513,12 +513,12 @@ Los ejercicios de Clef '07 no evaluan detección de idiomas. Los archivos de pre
 
 Para la detección de entidades utilizamos la clase simple de detección (NER) y clasificación (NEC) de entidades de Freeling y el NERC de Stanford (ver \allref{sec:freeling} y \allref{sec:stanford-ner}). Las herramientas de Stanford en general superan a las de Freeling -al igual que el detector de idiomas de Cybozu-, pero solo sirven para inglés. La clasificación utilizada por ambos es la más general de las comentadas en \allref{subsec:nerc}: persona, lugar, organización y otros. 
 
-Veamos algunos ejemplos de funcionamiento de los módulos de detección de idiomas. 
+Veamos algunos ejemplos de funcionamiento de los módulos de detección de entidades. 
 
 \begin{center}
 \begin{tabular}{| p {8cm} | l | l | l |}
 \hline
-Texto & Freeling & Cybozu & Resultado \\ \hline
+Texto & Freeling & Stanford & Resultado \\ \hline
 ¿Dónde queda la Universidad de Buenos Aires? & es & es & es \\ \hline
 Where is located the University of Buenos Aires? & en & en & en \\ \hline
 Where is located the Univesidad de Buenos Aires? & en & en & en \\ \hline
@@ -573,51 +573,228 @@ Los usos más intensivos de estas etiquetas son el filtrado de n-gramas que desc
 
 \subsection{Clasificación}
 \label{subsec:qtype}
+Para clasificar la pregunta según su tipo de respuesta esperada utilizamos el Question Classiffier de Stanford, tomando la configuración de Qanus. Este clasificador arroja una clase y una subclase (ver \allref{sec:stanford-qc} para una lista detallada de las posibles clases) y un grado de confianza para esta asignación. A continuación presentamos algunos ejemplos que ilustran estos resultados.
 
+\begin{center}
+\begin{tabular}{| l | l | l |}
+\hline
+Pregunta & Clase y Subclase & Confianza\\ \hline 
+What's his name? & HUM:ind & 0.74 \\ \hline 
+Where do you come from? & DESC:desc & 0.62 \\ \hline 
+What's your phone number? & NUM:code & 0.63 \\ \hline 
+How old are you? & NUM:period & 0.78 \\ \hline 
+When were you born? & NUM:date & 0.99 \\ \hline 
+What does he look like? & DESC:desc & 0.82 \\ \hline 
+\end{tabular}
+\end{center}
+
+Sin embargo, como ya señalamos oportunamente (ver \allref{subsec:qc}), no existen herramientas de clasificación de preguntas para el idioma español. Esto nos llevó a tomar diferentes medidas para aproximar un tipo de pregunta y no tener distintos casos de código para el inglés y el español. Para las preguntas de Clef formuladas en español, utilizamos su versión en inglés para obtener el tipo.
+Así, el tipo de respuesta esperada de \dblquote{¿En qué colegio estudia Harry Potter?} es el mismo que el tipo de respuesta esperada de ``In what school does Harry Potter study?" (ENTY:cremat con 0.22 de confianza). Además, utilizamos reglas escritas a mano sobre QWords. Las qwords son palabras clave de las preguntas que señalan el tipo de respuesta. Por ejemplo: una pregunta que comienza con `Cuándo' tendrá como tipo de respuesta una fecha, un tiempo, etc. En el modelo estructurado, definimos una serie acotada de categorías de tipo de respuesta esperadas y unificamos los resultados del clasificador de Stanford y nuestras reglas sobre qwords para español para unificar el código. Estas categorías son:  Who, Whom, Where, Which,  When,  What y Other. Es decir: Quién, Quiénes, Dónde, Cuál, Cuándo, Qué y otros. Las clases y subclases del clasificador de Stanford se mapearon a estas categorías que coinciden con los resultados de las reglas escritas a mano para el español. 
+
+
+\subsection{Entidad de Grupo}
+\label{subsec:entidad-de-grupo}
+
+El formato de las preguntas para los ejercicios Clef que elegimos es un xml para cada idioma. En particular, nosotros resolvimos los ejercicios en español y inglés que podían responderse en base a wikipedia. Contar del tema de los grupos. Poner algún ejemplo.
 
 \section{Generación de Respuestas}
 
+El proceso de generación de respuestas difiere sustancialmente entre ambos modelos de dominio. Para el sistema basado en datos estructurados, el approach es determinan en casos de código las distintas posibilidades, acotadas, de las cosas que se pueden responder. Nuestro dominio es tal que solo se pueden responder entidades, atributos de entidades o relaciones entre entidades. De ese modo, si no es posible redirigir el flujo de la pregunta hacia alguna respuesta conocida, no hay posibilidad de articular una respuesta significativa. Para el caso de los ejericicios de Clef sobre wikipedia, el enfoque es muy distinto. En primer lugar, no hay un modelo de los datos del dominio, hay textos con pasajes (u oraciones). Si bien es posible una cierta jerarquización de los datos (por ejemplo, utilizando los nombres de los articulos como verificación de la existencia de una entidad), un enfoque estructurado resulta imposible. En este contexto se utiliza la técnica de rankeo semántico de pasajes en base a features (características). Estas dimensiones de valoración de los pasajes son llamados Scorers (ver \allref{subsec:scorers}). Los Scorers, como veremos, pueden ser tan sencillos como preferir minimamente una cierta longitud sobre otra y también pueden incorporar dimensiones de análisis lingüístico (por ejemplo, la presencia de cierta entidad en un cierto rol semántico). El algoritmo de generación de respuestas consiste, en el caso no estructurado, en encontrar features útiles, significativos y en establecer mecanismo inteligentes de priorización de estos features. 
+
 \subsection{Estructurado}
-Si en el paso 8 se procesaron menos del 80\% de los tokens de la
-palabra, el sistema se da 
 
-por vencido y devuelve una lista de score docs.
+Una vez etiquetados todos los tokens de la pregunta, se procede a marcar como procesadas las ``palabras triviales". Estas son palabras que si no formaron parte de alguna otra construcción, entonces no haberlas procesado no debería considerarse un problema. Ejemplos de ellas son las proposiciones, los pronombres y algunos conectores. Si al etiquetar la pregunta no se logró identificar ninguna entidad del modelo, entonces será dificil avanzar. Como vimos recién, la fase de procesamiento de la pregunta para el caso estructurado excede por mucho la mera anotación lingüística: al finalizar el etiquetado deberíamos disponer de alguna entidad reconocida por el modelo. Por otro lado, durante la fase de etiquetado cada palabra se marca como procesada. Como acabamos de señalar, al finalizar este proceso se marcan también como procesados ciertos tokens triviales. En este punto, el sistema debe tomar una decisión. Si no ha logrado etiquetar una cierta cantidad de tokens (más del 80\%), entonces se considera que no tiene sentido dar por ``comprendida" la pregunta y se procede a un segundo análisis, computacionalmente más costoso y además más inexacto, en el que se intenta encontrar alguna entidad con otros métodos que enunciaremos en breve. En caso de encontrarse una entidad, entonces el flujo del programa retorna al curso de análisis estructurado. Si esto no ocurre, se devuelve la lista de entidades (documentos) que el índice lucene general devuelve para la pregunta original interpretada como una query normal de information retrieval. Este caso, si bien retorna información, es un caso de falla de procesamiento. Esta lista de documentos viene acompañada de un mensaje del tipo: \dblquote{No se logró interpretar su pregunta} y, en un trabajo futuro, podría incorporar un sistema de recomendaciones e idas y vueltas con el usuario (¿Quizo decir...?).
 
-Si no, realiza un análisis estructurado basándose en la
-información obtenida.
+Si, en cambio, el threshold de tokens es alcanzado, entonces se pasa a otro switch. En este caso el código se bifurca de acuerdo a la cantidad de entidades del modelo reconocidas. Por entidades del modelo entenderemos, aquí, entidades internas, objetos, no nombres de clase o de atributos. Distinguimos estos tres casos: `ninguna entidad reconocida', `una entidad reconocida', `más de una entidad reconocida'.
 
 
-Una vez completada la generación de
-metadatos lingüísticos, se procede al tercer paso, que toma
-diferentes formas dependiendo de la información encontrada en el
-análisis de la pregunta.
+\begin{figure}[H]
+  \centering
+    \includegraphics[scale=0.5]{graficos/AnswerRetrievalFlowEstructurado}
+  \caption{Flow para la Generación de Respuestas - Estructurado}
+  \label{fig:AnswerRetrievalFlowEstructurado}
+\end{figure}
+
+\subsubsection*{Ninguna o más de una entidad}
+En el caso en el que no se haya identificado ninguna entidad del modelo quedan diferentes posibilidades, que se verifican en orden secuencial en base a nombres de colección, nombres de atributos, tipo de respuesta esperada y verbos. Los casos contemplados son: la pregunta por un campo de una colección (por ejemplo: direcciones de empresas en buenos aires) o por listas de entidades de una colección (investigadores de capital federal). Los diferentes casos son reglas de código escritas a mano. En todos los casos, si no se dan las condiciones para seguir especificando la dirección de la respuesta, se genera un respuesta ad-hoc con datos rankeados según el índice invertido, especificando de modo estructurado el camino recorrido hasta el momento. Por ejemplo, si se identifica que se pregunta por `investigadores' pero no es posible decidir ninguna especificación más (de capital federal, que hayan publicado en 2008, etc) entonces se retorna una lista de investigadores rankeada según el índice invertido `investigadores' con el resto de los datos de la pregunta. 
+
+Por otro lado, si hay más de una entidad reconocida entonces hay sólo algunos casos posibles de relaciones entre ellas que pueden ser respuestas, que también se reflejan como caso de código. Finalmente, si no es posible identificar ninguno de estos caso, se toma un camino similar al mecanismo ad-hoc basado en information retrieval.
 
 
-Dependiendo de cuánto se haya procesado de la pregunta original,
-existen dos tipos de flujos distintos de generación de respuestas: el
-estructurado y el no estructurado.
+\subsubsection*{Una entidad}
+El mejor caso es aquél en el que se reconocío una entidad y otros datos lingüisticos que permitan especificar qué se está preguntando. Al especificar acerca de qué/quién resulta mucho más sencillo canalizar qué se está preguntando. Los modelos que representan objetos (ver \allref{subsec:modelos-db}) son subclases de $NodoBase$, el cual representa una entidad en abstracto. Una entidad sabe responder preguntas acerca de ella. Para esto, utiliza las anotaciones de verbos, atributos nombrados y qwords para identificar qué se está preguntando. La pregunta puede responderse con un atributo o con una relación. Los distintos atributos de las distintas entidades se corresponden con verbos y con tipos de respuesta esperada. 
 
-La generación de respuestas estructurada se construye cuando la
-información obtenida en el análisis lingüístico es suficiente
-para generar un mapeo coherente a la ontología definida
-implícitamente por la base de conocimientos. El análisis no
-estructurado se ejecuta cuando la información generada no fue
-suficiente y consiste en intentar ubicar marcas que puedan reconducir
-al análisis al flujo estructurado (es decir, se intentan diferentes
-transformaciones a fin de identificar información que permita el
-análisis estructurado). Esto se realiza con métodos menos
-confiables y menos rápidos que en el análisis lingüístico
-inicial. Si el análisis falla en esta segunda barrera, se procede a
-dar una respuesta ad-hoc con la información disponible. 
-
-En flujo de respuesta estructurado depende de la cantidad de
-información que se haya identificado. Esta información, en este
-punto, tiene tres tipos: QType, NERs y verbos. 
+[[Detalle de casos y combinaciones de verbos + tipo de respuesta esperada + atributo]]
+[[Ejemplos]]
 
 \subsection{No Estructurado}
 
-\subsubsection{Scorers}
-\label{subsec:scorers}
+El proceso de generación de respuestas para los ejercicios de la Clef es muy distinto del anterior y puede dividirse en tres pasos principales: obtención de documentos y pasajes, ranking de pasajes y generación de respuesta. En el primer paso se accede a los índices invertido (al corpus) buscando documentos relevantes. Este paso pertenece netamente al área information retrieval. Como mencionamos al comentar Watson (en particular, ver \allref{subsec:deep-qa}), es fundamental que el resultado de este paso sea lo suficientemente amplio como para contener la respuesta pero lo suficientemente acotado como para no sobrecargar el proceso posterior de análisis lingüístico sobre los pasajes. Los documentos rankeados se dividen en pasajes. En el segundo paso, tanto los documentos como los pasajes son contrastados con distintas métricas contra los datos de la pregunta generando distintos valores para estos features. Finalmente, con esta información se procede al tercer paso, que consiste en realizar diferentes filtrados sobre los pasajes en función del tipo de respuesta esperado y en distintas formas de recopilar evidencia a favor de un pasaje o una entidad (depende el caso) para finalmente seleccionar una respuesta (o decidir que no se encontró ninguna).
+
+\begin{figure}[H]
+  \centering
+    \includegraphics[scale=0.75]{graficos/AnswerRetrievalFlowWiki}
+  \caption{Flow para la Generación de Respuestas - No Estructurado}
+  \label{fig:AnswerRetrievalFlowWiki}
+\end{figure}
+
+\subsubsection{Documentos}
+\label{subsec:docs}
+En este punto, para una pregunta dada se dispone de la entidad del grupo de preguntas y de las distintas anotaciones hechas a la pregunta en el paso anterior (\allref{sec:qprocess}). Por su parte, los documentos en los índices invertidos poseen los campos $Id$, $Title$, y $Text$. El mecanismo de generación de queries tiene como objetivo priorizar en el ranking los documentos relacionados con el tema asociado al grupo de preguntas. Este paso es un problema de information retrieval puro: esto es, dado un pedido de información, retornar \textit{documentos relevantes}. El análisis semántico tiene peso en el paso posterior, a la hora de rankear pasajes. Por ejemplo, para el primer grupo de preguntas acerca de Harry Potter, solo se espera de este una lista de de documentos relacionados con ese mundo, en primer lugar. Por otro lado, es necesario que los principios de generación de queries no sean demasiado estrictos. Si en este punto quedan afuera muchas ocurrencias de una respuesta, entonces todo el resto del programa se ve afectado de manera irreparable. Es preferible generar documentos de más y luego filtrarlos mediante análisis lingüístico que ser demasiado estrictos y perder respuestas. 
+Para lograr esto, ponderamos los documentos en los que las entidades nombradas reconocidas lingüísticamente aparecen en el título, si se dispone de más de una entidad buscamos documentos que mencionen ambos, luego priorizamos los documentos que poseen estas entidades dentro del cuerpo y también consideramos la presencia de verbos en diferentes conjugaciones y de sustantivos que ocurren en la pregunta. Finalmente, agregamos una lista de documentos enviando la pregunta misma como una query.  
+
+Dado que finalmente se realizan queries simples (masivas), cabe preguntarse cual es la razón de la generación de queries y la ponderación de documentos. Esta razón es que en el proceso de ranking de pasajes y evaluación de respuesta se utilizan features basados en el score dado por lucene a los diferentes documentos. Si una mejor posición del documento contenedor del pasaje no implica que el pasaje sea correcto, si en cambio es un indicador de que dicho pasaje se encontró más cerca o más lejos del nucleo temático en el que se esperaba encontrarlo. 
+
+Una vez generada la lista de documentos rankeados según lucene, se procede a analizar algunos features en base a distintos scorers propios. A su vez, estos distintos valores se combinan en una evaluación general del documento, que será utilizada luego a la hora de generar una respuesta. Estas dimensiones buscan en el título y en el artículo diferente medidas sobre las entidades nombradas y sobre la pregunta completa. En concreto, se miden distancias a la entidad nombrada que identifica al grupo de preguntas (ver \allref{subsec:entidad-de-grupo}), las entidades nombradad en la pregunta misma, a la pregunta completa y la respuesta esperada data. Las medidas contra la respuesta esperada -dada por Clef- no pueden usarse para generar la respuesta, pero sí para evaluar la performance del sistema. En el siguiente cuadro se muestran las dimensiones que se consideran sobre los documentos. 
+
+\begin{center}
+\begin{tabular}{| l | l | l |}
+\hline
+Entidad & Campo & Comparador \\ \hline
+\multirow{6}{*}{Entidad de Grupo} & \multirow{3}{*}{Título} & Span \\ 
+& & Covr \\
+& & Freq \\ \cline{2-3}
+& \multirow{3}{*}{Texto} & Span \\ 
+& & Covr \\
+& & Freq \\ \hline
+\multirow{6}{*}{Entidades de Pregunta} & \multirow{3}{*}{Título} & Span \\ 
+& & Covr \\
+& & Freq \\ \cline{2-3}
+& \multirow{3}{*}{Texto} & Span \\ 
+& & Covr \\
+& & Freq \\ \hline
+\multirow{6}{*}{Todas las entidades} & \multirow{3}{*}{Título} & Span \\ 
+& & Covr \\
+& & Freq \\ \cline{2-3}
+& \multirow{3}{*}{Texto} & Span \\ 
+& & Covr \\
+& & Freq \\ \hline
+\multirow{6}{*}{Pregunta} & \multirow{3}{*}{Título} & Span \\ 
+& & Covr \\
+& & Freq \\ \cline{2-3}
+& \multirow{3}{*}{Texto} & Span \\ 
+& & Covr \\
+& & Freq \\ \hline
+\multirow{6}{*}{Respuesta} & \multirow{3}{*}{Título} & Span \\ 
+& & Covr \\
+& & Freq \\ \cline{2-3}
+& \multirow{3}{*}{Texto} & Span \\ 
+& & Covr \\
+& & Freq \\ \hline
+Score según índice & -- & -- \\ \hline
+\end{tabular}
+\end{center}
+
+Los comparadores señalados ($Freq$, $Covr$, y $Span$) se utilizan en distintos lugares de esta tesis y su funcionamiento es explicado en el apéndice \allref{sec:comparadores}. Notar que `Entidades de la pregunta' refiere tanto a aquellas reconocidas por el NER-tagger como a construcciones sustantivadas y que `Pregunta' no es la pregunta bruta sino la priorización de verbos conjugados, sustantivos, adjetivos y entidades. 
+
+El score general del documento es un cálculo ponderado de estas diferentes dimensiones. 
+
+Lucene permite especificar cuántos documentos queremos recuperar. Para evaluar la performance de este paso, utilizamos medida distintos scores en base a la respuesta dada por dada por la conferencia para el ejercicio. Es importante notar que dado que no utilizamos las imagenes de wikipedia de la primera sugerencia, es esperable que las respuesta no estén `tal cual'. 
+Evaluamos distintos mecanismos de generación de documentos, con distinta cantidad total, bajo distintas métricas. Para generar documentos, probamos la query trivial $ALL: pregunta$ (1), una un poco mejorada $ALL: entidad_de_grupo pregunta$ (2), secuencias concatenadas de queries tal como las describimos más arriba (3) y varios pedidos separados aplanados en un paso posterior (4). Para los cuatro métodos eliminamos los signos de puntuación. Para medir los resultados, utilizamos los comparadores de presencia exacta y diferentes grados de cobertura de términos (.8, .9 y 1). A su vez, evaluamos distintas imagenes de wikipedia para el español. Es total de preguntas del ejercicio, recordamos, es 200. Los resultados son los siguientes.
+
+\begin{center}
+\begin{tabular}{|l|l|l|l|l|l|l|}
+\hline
+Método & \# Docs & Wikipedia & Exacto & Covr 1 & Covr .9 & Covr . 8 \\ \hline
+
+\multirow{6}{*}{1 - Trivial} & 
+\multirow{3}{*}{100} & es - 2006 & 132 & 151 & 152 & 159 \\ 
+ &  & es - 2007 & 144 & 159 & 160 & 164 \\
+ &  & en - 2006 & x & x & x & x \\ \cline{2-7}
+ & \multirow{3}{*}{1000} & es - 2006 & 144 & 167 & 167 & 173 \\ 
+ &  & es - 2007 & x & x & x & x \\
+ &  & en - 2006 & x & x & x & x \\ \hline
+
+\multirow{6}{*}{2 - Trivial'} & 
+\multirow{3}{*}{100} & es - 2006 & 138 & 156 & 157 & 164 \\ 
+ &  & es - 2007 & 151 & 167 & 168 & 171 \\
+ &  & en - 2006 & x & x & x & x \\ \cline{2-7}
+ & \multirow{3}{*}{1000} & es - 2006 & 147 & 168 & 168 & 174 \\ 
+ &  & es - 2007 & x & x & x & x \\
+ &  & en - 2006 & x & x & x & x \\ \hline
+
+\multirow{6}{*}{3 - Inteligente} & 
+\multirow{3}{*}{100} & es - 2006 & 127 & 144 & 144 & 150 \\ 
+ &  & es - 2007 & 141 & 150 & 151 & 156 \\
+ &  & en - 2006 & x & x & x & x \\ \cline{2-7}
+ & \multirow{3}{*}{1000} & es - 2006 & x & x & x & x \\ 
+ &  & es - 2007 & x & x & x & x \\
+ &  & en - 2006 & x & x & x & x \\ \hline
+
+\multirow{6}{*}{4 - Inteligente'} & 
+\multirow{3}{*}{100} & es - 2006 & 142 & 160 & 161 & 168 \\ 
+ &  & es - 2007 & 157 & 170 & 171 & 174  \\
+ &  & en - 2006 & x & x & x & x \\ \cline{2-7}
+ & \multirow{3}{*}{1000} & es - 2006 & x & 147 & x & x \\ 
+ &  & es - 2007 & x & 158 & x & x \\
+ &  & en - 2006 & x & x & x & x \\ \hline
+ 
+\end{tabular}
+\end{center}
+
+Conclusión de esto.
+
+\subsubsection{Pasajes}
+Este paso es análogo al anterior, pero con mayor detalle y granularidad. Cada documento generado en el paso anterior, con sus diferentes puntajes para 
+las dimensiones señaladas, se parten en pasajes u oraciones. Nuevamente, sobre estas oraciones realizamos diferentes mediciones y las combinamos generando
+un score final. En esta sección discutiremos las mediciones consideradas y los diferentes métodos de combinación de las mismas. Estos métodos de combinación generan distintos rankings de pasajes. Para evaluar estos rankings, nuevamente, utilizaremos la información disponible sobre las respuestas esperadas, buscando que la respuesta esperada se encuentre entre los $n$ pasajes mejor rankeados.
+En primer lugar, las distintos scorers implementados son los siguientes:
+
+\begin{center}
+\begin{tabular}{| l | l | l |}
+\hline
+Comparador & Qué & Dónde \\ \hline
+\multicolumn{3}{|c|}{Estadísticos} \\ \hline
+Freq & Pregunta & Pasaje \\ \hline
+Span & Pregunta & Pasaje \\ \hline
+Covr & Pregunta & Pasaje \\ \hline
+\#Tokens & -- & Pasaje \\ \hline
+\multicolumn{3}{|c|}{Basados en NLP} \\ \hline
+Presencia & Entidad de Grupo & Pasaje \\ \hline
+Presencia & Entidades de pregunta & Pasaje \\ \hline
+Presencia & Verbos de pregunta & Pasaje \\ \hline
+Presencia & Sustantivos de pregunta & Pasaje \\ \hline
+\multicolumn{3}{|c|}{Para evaluación} \\ \hline
+Freq & Respuesta & Pasaje \\ \hline
+Span & Respuesta & Pasaje \\ \hline
+Covr & Respuesta & Pasaje \\ \hline
+\end{tabular}
+\end{center}
+
+A estos Scorers se le suman los scores del documento asociado al pasaje (ver \allref{subsec:docs}). 
+Sobre estas dimensiones disponibles, intentamos las siguientes combinaciones de priorización:
+
+\begin{center}
+\begin{tabular}{|l|l|l|}
+\hline
+\#& Nombre & Fórmula \\ \hline
+1& Simple & $2+2=4$ \\ \hline
+2& Respuesta & $2+2=4$ \\ \hline
+3& Compleja & $2+2=4$ \\ \hline
+\end{tabular}
+\end{center}
+
+Y consideramos la ocurrencia de respuestas, de la misma manera que en el apartado anterior (Match Exacto y tres medidas de covertura de tokens: 1, .9 y .8), 
+sobre los primeros $n$ pasajes, con $n$ = 1, 5, 10, 20, 50 y 100.
+
+\begin{center}
+\begin{tabular}{|l|l|l|l|l|l|}
+\hline
+Fórmula & \#Docs & Exacto & Covr 1 & Covr .9 & Covr . 8 \\ \hline
+\multirow{6}{*}{1} & 1 & x & x & x & x \\  \cline{2-6}
+ & 5 & x & x & x & x \\ \cline{2-6}
+ & 10 & x & x & x & x \\ \cline{2-6}
+ & 20 & x & x & x & x \\ \cline{2-6}
+ & 50 & x & x & x & x \\ \cline{2-6}
+ & 100 & x & x & x & x \\ \hline
+\end{tabular}
+\end{center}
+
+
+\subsubsection{Respuestas}
+
+
+
 
 
 \begin{figure}

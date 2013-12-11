@@ -2,10 +2,11 @@
 \chapter{Herramientas}
 
 \section{Stanford Question Classifier}
+\label{sec:stanford-qc}
 The question classifier (QuestionClassifier) is implemented with the 
-STANFORD CLASSIFIER (Manning and Klein 2003), using the question taxonomy 
+STANFORD CLASSIFIER (Manning and Klein 2003), using the question taxonomy\footnote{http://cogcomp.cs.illinois.edu/Data/QA/QC/definition.html} 
 explained in (Li and Roth 2002) and is responsible for finding out the expected 
-answer type of a given question
+answer type of a given question.
 
 Li, Xin, and Dan Roth. "Learning Question Classifiers." International Conference 
 on Computational Linguistics (COLING).2002.
@@ -17,6 +18,73 @@ Maximum entropy models are otherwise known as conditional loglinear
 models, and are essentially equivalent to multiclass logistic
 regression models (though parameterized slightly differently, in a way
 that is advantageous with sparse explanatory feature vectors). 
+
+\begin{center}
+\begin{tabular}{| l | l |}
+\hline
+Clase y subclase & Definición \\ \hline
+ABBREVIATION &  abbreviation \\ \hline 
+  abb & abbreviation\\ \hline 
+  exp & expression abbreviated\\ \hline 
+ENTITY  & entities\\ \hline 
+  animal  & animals\\ \hline 
+  body & organs of body\\ \hline 
+  color & colors\\ \hline 
+  creative & inventions, books and other creative pieces\\ \hline 
+  currency & currency names\\ \hline 
+  dis.med. & diseases and medicine\\ \hline 
+  event & events\\ \hline 
+  food & food\\ \hline 
+  instrument & musical instrument\\ \hline 
+  lang & languages\\ \hline 
+  letter & letters like a-z\\ \hline 
+  other & other entities\\ \hline 
+  plant & plants\\ \hline 
+  product & products\\ \hline 
+  religion  & religions\\ \hline 
+  sport & sports\\ \hline 
+  substance & elements and substances\\ \hline 
+  symbol & symbols and signs\\ \hline 
+  technique & techniques and methods\\ \hline 
+  term  & equivalent terms\\ \hline 
+  vehicle & vehicles\\ \hline 
+  word & words with a special property\\ \hline 
+DESCRIPTION & description and abstract concepts\\ \hline 
+  definition & definition of sth.\\ \hline 
+  description & description of sth.\\ \hline 
+  manner & manner of an action\\ \hline 
+  reason & reasons\\ \hline 
+\end{tabular}
+\begin{tabular}{| l | l |}
+\hline
+HUMAN & human beings\\ \hline 
+  group & a group or organization of persons\\ \hline 
+  ind & an individual\\ \hline 
+  title & title of a person\\ \hline 
+  description & description of a person\\ \hline 
+LOCATION & locations\\ \hline 
+  city & cities\\ \hline 
+  country & countries\\ \hline 
+  mountain & mountains\\ \hline 
+  other & other locations\\ \hline 
+  state & states\\ \hline 
+NUMERIC & numeric values\\ \hline 
+  code  & postcodes or other codes\\ \hline 
+  count & number of sth.\\ \hline 
+  date  & dates\\ \hline 
+  distance &  linear measures\\ \hline 
+  money & prices\\ \hline 
+  order & ranks\\ \hline 
+  other & other numbers\\ \hline 
+  period  & the lasting time of sth.\\ \hline 
+  percent & fractions\\ \hline 
+  speed & speed\\ \hline 
+  temp & temperature\\ \hline 
+  size & size, area and volume\\ \hline 
+  weight & weight\\ \hline 
+\end{tabular}
+\end{center}
+
 
 \section{Stanford POS Tagger}
 
@@ -176,102 +244,76 @@ Esta librería tiene métodos útiles para trabajar con dumps de wikipedia. La u
 
 \chapter{Comparadores}
 \label{sec:comparadores}
+
 Dada la frecuencia en la que resultaba necesario comparar dos string,
 decidimos reificar la operación de comparación como una familia de
 clases que implementan Comparadores. 
 
+
 Gracias a esto se hace posible cambiar las nociones de igualdad o
 similaridad en un módulo completo del sistema o en alguna clase
-simplemente configurando otro comparador como parámetro. \ La
+simplemente configurando otro comparador como parámetro. La
 interfaz permite a los distintos comparadores tomar valores binarios
 así como también valores entre 0 y 1. A su vez, esta considerada la
 posibilidad de configurar un umbral (threshold) a partir del cual
 redondear un valor entre 0 y 1 a un valor binario. Otro factor que tuvo
-mucha utilidad fue la capacidad de anidar comparadores. A nivel
-superclase también está permitida la posiblidad de ignorar o no
-ignorar la diferencia de mayúsculas, aunque este funcionamiento puede
-granularizarse en las instancias particulares. Los comparadores sirven,
+mucha utilidad fue la capacidad de anidar comparadores. 
+El concepto de comparador incluye cualquier operación que tome dos
+strings y genere un resultado booleano o analógico. Es decir, es posible 
+incorporar análisis lingüísticos o queries a la base de datos en ellos.
+También se incorpora la posibilidad de ignorar o no ignorar la diferencia de mayúsculas, 
+y obviar o no las tildes y otros signos problemáticos. Los comparadores sirven,
 en general, para comparar tanto strings representando palabras como
 string representado listas de palabras (oraciones o textos). Algunos,
 en particular, sólo sirven para este segundo caso. Los comparadores
-disponibles actualmente son los siguientes, en un pseudo-orden
-decreciente de exactitud:
+que finalmente utilizamos en esta tesis son los siguientes.
 
-
-\begin{itemize}
-\item Equal: compara por igualdad estricta
-\item EqualNoPunct: compara por igualdad, eliminando signos de
+\begin{center}
+\begin{tabular}{| l | p {8cm} |}
+\hline
+\multicolumn{2}{|c|}{Comparadores de Strings} \\ \hline
+Nombre & Descripción\\ \hline 
+Equal & Compara por igualdad estricta \\ \hline 
+EqualNoPunct &  Compara por igualdad, eliminando signos de
 puntuación y normalizando acentos y otras posibles diferencias que no
-deberían tenerse en cuenta.
-\item Contains: verifica si un string contiene a otro
-\item EditDistance: no implementado
-\end{itemize}
+deberían tenerse en cuenta. \\ \hline 
+Contains & Verifica si un string contiene a otro. Puede usar Equal o EqualNoPunct \\ \hline 
+EditDistance & Verifica cuan similares son dos string contando la mínima cantidad de operaciones requeridas para transformar un string en el otro \\ \hline 
+\end{tabular}
+\end{center}
+
 Los siguiente comparadores son algoritmos fueron adaptados a partir de
-los Scorers del \ proyecto Qanus. Todos devuelven valores reales entre
-0 y 1 y sirven para comparar textos (y no palabras). Estos
+los Scorers del proyecto Qanus. Todos devuelven valores reales entre
+0 y 1 y sirven para comparar secuencias de tokens (y no sólo palabras). Estos
 comparadores, al igual que Contains, no son simétricos. Para
 distinguir, llamaremos primer string al buscado y segundo string a
 aquel en el cual se busca el primero. 
 
-
-\begin{itemize}
-\item Frequency: cuenta la cantidad de veces que los tokens del primer
+\begin{center}
+\begin{tabular}{| l | l | p {8cm} |}
+\hline
+\multicolumn{3}{|c|}{Comparadores de Secuencias de Tokens} \\ \hline
+Abreviatura & Nombre &  Descripción\\ \hline 
+Freq & Frequencia & Computa la cantidad de veces que los tokens del primer
 string ocurren en el segundo string. Esta suma se divide por la
-longitud del segundo string, dando un valor entre 0 y 1.
-\item Coverage: cuenta cuantos tokens del primer string aparecen al
+longitud del segundo string, dando un valor entre 0 y 1. \\ \hline 
+Covr & Cobertura &  Computa cuantos tokens del primer string aparecen al
 menos una vez en el segundo, y divide esta suma por el total de tokens
-del \textit{primer} string.
-\item Proximity: computa la distancia de 
-\end{itemize}
-This feature computes the distance between the occurences of two search
-strings within a passage.
+del \textit{primer} string.\\ \hline 
+Prox & Proximidad &  Computa la distancia entre dos strings en un tercero. Ver abajo.   \\ \hline 
+Span & Distancia entre tokens & Computa la distancia media entre términos del primer string en el segundo. Ver abajo. \\ \hline
+\end{tabular}
+\end{center}
 
-Typically the search string may span multiple word tokens in the
-passage. 
+Vamos a explicar los algoritmos de $Prox$ y $Span$ ya que no son triviales. \newline
+$Prox$ toma dos strings a buscar en un tercero. Busca ambos en el tercero y computa la distancia en tokens entre ellos.
+Esta distancia se calcula como la distancia entre el centro de ambos strings.
+Por ejemplo, para los strings de búsqueda \dq{Argentina es un país americano} y \dq{independizado en 1810} sobre el texto \dq{Argentina es un país americano, originalmente una colonia española, independizado en 1810} se considera la distancia entre \sq{un} y \sq{en} (por ser los tokens \sq{intermedios} de ambos strings
+de búsqueda. La distancia entre ambos, en el tercer string, es 7. Esta distancia se divide por la longitud en tokens del string en el que se buscan (12), dando un resultado de 0.58. Un score cercano a 1 denota que los dos string están cercanos uno al otro en el tercer string. \newline
+Por su parte, $Span$ tiene un concepto similar, pero funciona sobre un solo string de búsqueda, considerando sus tokens. Los distintos tokens buscados ocurren en ciertas posiciones. $Span$ considera la distancia entre las posiciones de los tokens más distantes, dividiendo el total de tokens encontrados por este valor.
+Un score cercano a 1 significa que los términos del string buscado están cerca en el string en el que se buscan.
+Por ejemplo, suponiendo los siguientes matchs de tokens (denotados por una X): \newline
+..... X ..... X ..... X ...... \newline
+......a ...... b ...... c ...... \newline
 
-To compute the distance, we will compute the midpoint of the span of the
-two
-
-search strings, and find the difference between the two midpoints. 
-
-\ * \ ... X .. X... X .... Y ... Y
-
-\ * \ \ \ \ \ \ \ \ \ \ {\textbar} \ \ \ \ \ \ \ \ \ \ \ \ \ {\textbar}
-
-\ *
-\ \ \ \ \ \ \ \ \ \ \ {\textless}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{\textgreater}
-
-\ * \ where X are matches to search string 1 and Y are matches to the
-other search string.
-
-
-\begin{itemize}
-\item TermSpan
-\end{itemize}
-\ * This feature makes use of the span of matching search terms within a
-passage.
-
-\ * For example, suppose the passage has the following search term
-matches (denoted by X)
-
-\ * ..... X ..... X ..... X ......
-
-\ * ......a ..... b ...... c .....
-
-\ * 
-
-\ * a, b, c are position of the matching term within the passage (in
-terms of words).
-
-\ * The span is thus {\textbar}c-a{\textbar}.
-
-\ * 
-
-\ * The score of this feature is given as 
-
-\ * \ \ \# matching terms / span
-
-\ * 
-
-\ * This score is guaranteed to be between 0 and 1 inclusive.
-
+El score de $Span$ estaría dado por \#total de tokens encontrados /  {\textbar}c-a{\textbar}.
