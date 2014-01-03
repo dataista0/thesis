@@ -6,7 +6,7 @@
 
 \usepackage{color}
 
-
+\usepackage{longtable}
 \usepackage{graphicx}
 \usepackage{float} % para settear posicion a imagenes
 \usepackage[utf8]{inputenc}
@@ -92,48 +92,15 @@
 
 \begin{appendices}
   \input{5-a-herramientas.tex}
-%  \chapter{Herramientas}
-%  \section{Stanford NER}
-%   \appendix
-  
-%   \chapter{Herramientas}
-  
-%    \chapter{Gráficos}
-%      \section{Figura tal}
-%    \chapter{Glosario}
-%         \section{Diccionario de términos}
-%         \section{Diccionario de términos}
-
 \end{appendices}
+
 %%%% BIBLIOGRAFIA
 \backmatter
-\bibliographystyle{plain}
+\bibliographystyle{apalike}
 \cleardoublepage
 \phantomsection
 \addcontentsline{toc}{chapter}{Bibliografía}
 \bibliography{tesis}
 
 
-%\backmatter
-%\chapter{Last note}
-
-%%%% BIBLIOGRAFIA
-%\let\Section\section 
-%\def\section*#1{\Section{#1}} 
-%\section{Bibliografía}
-%\bookmarksetup{startatroot}
-
-
-
-% \chapter{Bibliografia}
-% \begin{thebibliography}{9}
-
-% \bibitem{lamport94}
-%   Leslie Lamport,
-%   \emph{\LaTeX: A Document Preparation System}.
-%   Addison Wesley, Massachusetts,
-%   2nd Edition,
-%   1994.
-
-% \end{thebibliography}
 \end{document}

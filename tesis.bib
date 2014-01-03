@@ -1,23 +1,122 @@
-@article{greenwade93,
-    author  = "George D. Greenwade",
-    title   = "The {C}omprehensive {T}ex {A}rchive {N}etwork ({CTAN})",
-    year    = "1993",
-    journal = "TUGBoat",
-    volume  = "14",
-    number  = "3",
-    pages   = "342--351",
-    note 	= "Articulo de ejemplo"
-}
+%% CITADOS y/o LINDO
 
-@misc{nakatani2010langdetect,
-  title  = {Language Detection Library for Java},
-  author = {Shuyo, Nakatani}, 
-  howpublished    = "\url{http://code.google.com/p/language-detection/}",
-  year   = {2010}
-}
+%POS - Manual de NLP
+@book{POS0,
+ author = "Jurafsky, Dan",
+ title = "Speech and language processing : an introduction to natural language processing, computational linguistics, and speech recognition pp. 286-314",
+ publisher = "Pearson Prentice Hall",
+ year = "2000",
+ address = "Upper Saddle River, N.J"
+ }
 
-@misc{Clef07,
-    author    = "Clef 2007",
+
+%POS-tagger de Stanford. Unos agregados locales con mejoras bajas. Resumen en en gdrive.
+@inproceedings{POS1,
+ author = {Toutanova, Kristina and Klein, Dan and Manning, Christopher D. and Singer, Yoram},
+ title = {Feature-rich Part-of-speech Tagging with a Cyclic Dependency Network},
+ booktitle = {Proceedings of the 2003 Conference of the North American Chapter of the Association for Computational Linguistics on Human Language Technology - Volume 1},
+ series = {NAACL '03},
+ year = {2003},
+ location = {Edmonton, Canada},
+ pages = {173--180},
+ numpages = {8},
+ url = {http://dx.doi.org/10.3115/1073445.1073478},
+ doi = {10.3115/1073445.1073478},
+ acmid = {1073478},
+ publisher = {Association for Computational Linguistics},
+ address = {Stroudsburg, PA, USA},
+} 
+
+%POS-tagger de Stanford. Unos agregados locales con mejoras bajas. Resumen en en gdrive.
+%	note="POS-Tagger de Stanford. Un upgrade del grupo a un POS tagger de Maxima Entropía (Ver Ratnaparkhi, 1990)"
+@inproceedings{POS2,
+ author = {Toutanova, Kristina and Manning, Christopher D.},
+ title = {Enriching the Knowledge Sources Used in a Maximum Entropy Part-of-speech Tagger},
+ booktitle = {Proceedings of the 2000 Joint SIGDAT Conference on Empirical Methods in Natural Language Processing and Very Large Corpora: Held in Conjunction with the 38th Annual Meeting of the Association for Computational Linguistics - Volume 13},
+ series = {EMNLP '00},
+ year = {2000},
+ location = {Hong Kong},
+ pages = {63--70},
+ numpages = {8},
+ url = {http://dx.doi.org/10.3115/1117794.1117802},
+ doi = {10.3115/1117794.1117802},
+ acmid = {1117802},
+ publisher = {Association for Computational Linguistics},
+ address = {Stroudsburg, PA, USA},
+} 
+
+
+%Question Classifier de Stanford
+@inproceedings{QC2,
+ author = {Li, Xin and Roth, Dan},
+ title = {Learning Question Classifiers},
+ booktitle = {Proceedings of the 19th International Conference on Computational Linguistics - Volume 1},
+ series = {COLING '02},
+ year = {2002},
+ location = {Taipei, Taiwan},
+ pages = {1--7},
+ numpages = {7},
+ url = {http://dx.doi.org/10.3115/1072228.1072378},
+ doi = {10.3115/1072228.1072378},
+ acmid = {1072378},
+ publisher = {Association for Computational Linguistics},
+ address = {Stroudsburg, PA, USA},
+ 	%journal = "COLING '02 Proceedings of the 19th international conference on Computational linguistics - Volume 1"
+	%other="Department of Computer Science", 
+	%author="University of Illinois at Urbana-Champaign", 
+%	note="Sobre el Question Classifier implementado"
+} 
+
+@inproceedings{QC3,
+ author = {Manning, Christopher and Klein, Dan},
+ title = {Optimization, Maxent Models, and Conditional Estimation Without Magic},
+ booktitle = {Proceedings of the 2003 Conference of the North American Chapter of the Association for Computational Linguistics on Human Language Technology: Tutorials - Volume 5},
+ series = {NAACL-Tutorials '03},
+ year = {2003},
+ location = {Edmonton, Canada},
+ pages = {8--8},
+ numpages = {1},
+ url = {http://dx.doi.org/10.3115/1075168.1075176},
+ doi = {10.3115/1075168.1075176},
+ acmid = {1075176},
+ publisher = {Association for Computational Linguistics},
+ address = {Stroudsburg, PA, USA},
+} 
+
+
+@incollection{QC-other,
+ author = {Lehnert, W},
+ chapter = {A Conceptual Theory of Question Answering},
+ title = {Readings in Natural Language Processing},
+ editor = {Grosz, Barbara J. and Sparck-Jones, Karen and Webber, Bonnie Lynn},
+ year = {1986},
+ pages = {651--657},
+ publisher = {Morgan Kaufmann Publishers Inc.},
+ address = {San Francisco, CA, USA},
+} 
+
+
+@inproceedings{QC1,
+ author = {Hermjakob, Ulf},
+ title = {Parsing and Question Classification for Question Answering},
+ booktitle = {Proceedings of the Workshop on Open-domain Question Answering - Volume 12},
+ series = {ODQA '01},
+ year = {2001},
+ location = {Toulouse, France},
+ pages = {1--6},
+ numpages = {6},
+ url = {http://dx.doi.org/10.3115/1117856.1117859},
+ doi = {10.3115/1117856.1117859},
+ acmid = {1117859},
+ publisher = {Association for Computational Linguistics},
+ address = {Stroudsburg, PA, USA},
+} 
+
+
+
+@misc{GuidelineClef07,
+    author    = "Clef",
+    year      = "2007",
     title     = "Guidelines for participants QA@CLEF 2007",
     howpublished = "\url{http://celct.fbk.eu/QA4MRE/scripts/downloadFile.php?file=/websites/ResPubliQA/resources/past_campaigns/2007/Documentation/QA_2007_Track_Guidelines.pdf}"
 %    howpublished = "\url{http://celct.fbk.eu/QA4MRE/scripts/downloadFile.php?file=/websites/ResPubliQA/resources/past_campaigns/2007/Documentation/QA_2007_Track_Guidelines.pdf}"
@@ -27,7 +126,8 @@
 }
 
 @misc{OverviewClef07,
-    author    = "Clef 2007",
+    author    = "Clef",
+    year      = "2007",
     title     = "OVERVIEW OF THE CLEF 2007 MULTILINGUAL QUESTION ANSWERING TRACK",
     howpublished = "\url{http://celct.fbk.eu/QA4MRE/scripts/downloadFile.php?file=/websites/ResPubliQA/resources/past_campaigns/2007/Documentation/QA07_Overview_Working_Notes.pdf}"
     %year     = "XXXX",
@@ -36,29 +136,15 @@
 }
 
 
-
-
-@article{greenwade922,
-    author  = "George D. Greenwade",
-    title   = "The {C}omprehensive {T}ex {A}rchive {N}etwork ({CTAN})",
-    year    = "1993",
-    journal = "TUGBoat",
-    volume  = "14",
-    number  = "3",
-    pages   = "342--351",
-    note 	= "Articulo de ejemplo"
+@misc{nakatani2010langdetect,
+  title  = {Language Detection Library for Java},
+  author = {Shuyo, Nakatani}, 
+  howpublished    = "\url{http://code.google.com/p/language-detection/}",
+  year   = {2010}
 }
 
-@article{gsreenwade922,
-    author  = "George D. Greenwade",
-    title   = "The {C}omprehensive {T}ex {A}rchive {N}etwork ({CTAN})",
-    year    = "1993",
-    journal = "TUGBoat",
-    volume  = "14",
-    number  = "3",
-    pages   = "342--351",
-    note 	= "Articulo de ejemplo"
-}
+%% FIN CITADOS
+
 
 %Papers Impresos
 @article{RE3,
@@ -131,25 +217,39 @@
 	year="Mayo 2012"
 	note="Keywords: Just.Ask, Open Ephyra, Aranea",
 }
+
 @article{NER1,
-	title="A survey of named entity recognition and classiffication", 
-	author="D. Nadeau, S. Sekine", 
-	journal="National Research Council Canada / New York University"
-
+  author = {Nadeau, David and Sekine, Satoshi},
+  description = {A survey of named entity recognition and classification},
+  doi = {10.1075/li.30.1.03nad},
+  journal = {Lingvisticae Investigationes},
+  keywords = {NER POS-tagging conceptExtraction},
+  number = 1,
+  pages = {3-26},
+  timestamp = {2013-03-17T21:47:42.000+0100},
+  title = {A survey of named entity recognition and classification},
+  url = {http://www.ingentaconnect.com/content/jbp/li/2007/00000030/00000001/art00002},
+  volume = 30,
+  year = 2007
 }
-@article{NER2,
-	title="Incorporating Non-local Information into Information Extraction Systems by Gibbs Sampling", 
-	author="Finkel, Manning et al", 
-	author="CS Department, Standford University"
+@inproceedings{NER2,
+ author = {Finkel, Jenny Rose and Grenager, Trond and Manning, Christopher},
+ title = {Incorporating Non-local Information into Information Extraction Systems by Gibbs Sampling},
+ booktitle = {Proceedings of the 43rd Annual Meeting on Association for Computational Linguistics},
+ series = {ACL '05},
+ year = {2005},
+ location = {Ann Arbor, Michigan},
+ pages = {363--370},
+ numpages = {8},
+ url = {http://dx.doi.org/10.3115/1219840.1219885},
+ doi = {10.3115/1219840.1219885},
+ acmid = {1219885},
+ publisher = {Association for Computational Linguistics},
+ address = {Stroudsburg, PA, USA},
+} 
 
-}
-@article{QC1,
-	title="Parsing and Question Classification for Question Answering", 
-	author="U. Hermjakob", 
-	journal="IS Institute, University of Southern California"
 
-}
-@article{QALL-ME1,
+ @article{QALL-ME1,
 	title="Entailment-based Question Answering for Structured Data", 
 	author="Sacaleanu et al.", 
 	journal="University of Wolverhampton"
@@ -187,21 +287,4 @@
 @article{ARANEA1,
 	title="An Exploration of the Principles Underlying Redundancy-Based Factoid Question Answering", 
 	author="Jimmy Lin"
-
-}
-
-%Papers Bajados
-@article{LIROTH,
-	title="Learning Question Classifiers", 
-	author="Xin Li Dan Roth", 
-	journal="Department of Computer Science", 
-	author="University of Illinois at Urbana-Champaign", 
-	note="Sobre el Question Classifier implementado"
-
-}
-@article{LIXIN,
-	title="Learning Question Classifiers", 
-	author="Li Xin and Dan Roth", 
-	journal="International Conference on Computational Linguistics (COLING).2002."
-
 }

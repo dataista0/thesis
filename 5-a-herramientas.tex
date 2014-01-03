@@ -1,26 +1,26 @@
 \appendix
 \chapter{Herramientas}
+\label{chap:herramientas}
+\section{Citas a Textos trascriptos pero no usados}
+\begin{itemize}
+\item QC: \cite{QC1}, \cite{QC2} y también \cite{QC3} (y \cite{QC-other})
+\item Clef: \cite{GuidelineClef07} y \cite{OverviewClef07} 
+\item POS: El manual \cite{POS0} y los dos de Stanford: \cite{POS1} y \cite{POS2}
+\item LangDetect: \cite{nakatani2010langdetect}
+\item NER: Survey \cite{NER1} y el NER de Stanford: \cite{NER2}
+\end{itemize}
 
 \section{Stanford Question Classifier}
 \label{sec:stanford-qc}
-The question classifier (QuestionClassifier) is implemented with the 
-STANFORD CLASSIFIER (Manning and Klein 2003), using the question taxonomy\footnote{http://cogcomp.cs.illinois.edu/Data/QA/QC/definition.html} 
-explained in (Li and Roth 2002) and is responsible for finding out the expected 
-answer type of a given question.
+El Question Classifier de Stanford \cite{QC2} es un sistema de clasificación de preguntas basado en machine learning que utiliza la arquitectura de aprendizaje SNoW. Es un sistema jerárquico guiado por una semántica de dos niveles que permite la clasificación en categorías granulares. Según los tests de los autores, el proceso logra una efectividad del 90\% sobre 50 diferentes clases finales, utilizando features sintácticos y semánticos. 
 
-Li, Xin, and Dan Roth. "Learning Question Classifiers." International Conference 
-on Computational Linguistics (COLING).2002.
-Manning, Christopher, and Dan Klein. "Optimization, Maxent Models, and 
-Conditional Estimation without Magic." Tutorial at HLT-NAACL and ACL. 2003.
+El clasificador dispone de una taxonomía de dos capas basada en los tipos de respuesta típicos de la TREC. Las clases superiores son seis: abreviatura, entidad, descripción, humano, lugar y numérico; divididas a su vez en 50 subclases más finas no solapadas (50 en total). La motivación de la existencia de clases superiores es doble: por un lado, ellas preservan compatibilidad y coherencia con las clases usadas en trabajos previos de clasificación de preguntas. Por otro, se esperaba obtener mejoras de performance aplicando dos fases de clasificación, pero esta intención no se corroboró en la experiencia
 
-This software is a Java implementation of a maximum entropy classifier.
-Maximum entropy models are otherwise known as conditional loglinear
-models, and are essentially equivalent to multiclass logistic
-regression models (though parameterized slightly differently, in a way
-that is advantageous with sparse explanatory feature vectors). 
+La tabla siguiente muestra la taxonomía de clasificación dividida en clases y subclases \footnote{Puede encontrarse en esta url: \url{http://cogcomp.cs.illinois.edu/Data/QA/QC/definition.html} y está explicada en \cite{QC2} y \cite{QC3}} 
+
 
 \begin{center}
-\begin{tabular}{| l | l |}
+\begin{longtable}{| l | l |}
 \hline
 Clase y subclase & Definición \\ \hline
 ABBREVIATION &  abbreviation \\ \hline 
@@ -54,9 +54,9 @@ DESCRIPTION & description and abstract concepts\\ \hline
   description & description of sth.\\ \hline 
   manner & manner of an action\\ \hline 
   reason & reasons\\ \hline 
-\end{tabular}
-\begin{tabular}{| l | l |}
-\hline
+%\end{tabular}
+%\begin{tabular}{| l | l |}
+%\hline
 HUMAN & human beings\\ \hline 
   group & a group or organization of persons\\ \hline 
   ind & an individual\\ \hline 
@@ -82,31 +82,47 @@ NUMERIC & numeric values\\ \hline
   temp & temperature\\ \hline 
   size & size, area and volume\\ \hline 
   weight & weight\\ \hline 
-\end{tabular}
+\end{longtable}
 \end{center}
 
 
-\section{Stanford POS Tagger}
+Uno de los principales problemas que tuvieron los autores al enfrentarse a clases tan específicas fue la ambigüedad instrínseca de ciertas preguntas. Los siguientes ejemplos de este problema están tomados de \cite{QC2}:
+\begin{itemize}
+\item What is bipolar disorder? (¿Qué es el desorden bipolar?)
+\item What do bats eat? (¿Qué comen los murciélagos?)
+\end{itemize}
+La primer pregunta puede pertenecer a la clase \textit{definición} o bien a la clase \textit{enfermedad / medicina} y la segunda a \textit{comida}, \textit{planta} o \textit{animal}. Para abordar este problema, el clasificador asigna diferentes clases ponderadas y no una única clase.
 
-Part of Speech Tagging Stanford POS Tagger (Toutanova and Manning 
-2000)
+Los dos niveles de clasificación están implementados como dos clasificadores simples en secuencia, ambos utilizando el algoritmo Winnow de SNoW. El primero etiqueta la pregunta en función de las clases más generales y el segundo asigna las clases más finas (dentro de las suclases determinadas por la clase del primero). 
+El modelo para el algoritmo de aprendizaje representa las preguntas como listas de características (\textit{features}) tanto sintácticos como semánticos. Los features utilizando son, en total, más de 200.000, siendo casi todos combinaciones complejas de un set acotado de features simples basados en palabras, pos tags, chunks (componentes constitucionales de la oración), chunks principales (por ejemplo: componente nominal principal), entidades nombradas y palabras semánticamente relacionadas a ciertas clases. De estos seis tipos de features primitivos, tres son sintácticos (pos tags, chunks, chunks principales) mientras que otros son semánticos (named entities, palabras relacionadas).
 
-Toutanova, Kristina, and Christopher Manning. "Enriching the Knowledge 
-Sources Used in a Maximum Entropy Part-of-Speech Tagger." Proceedings of 
-the Joint SIGDAT Conference on Empirical Methods in Natural Language 
-Processing and Very Large Corpora. 2000. 63-70.
+El clasificador, al igual que el resto de las herramientas de nlp de Stanford, está implementado en java.
 
 
-\section{Stanford NER Tagger}
+\section{Stanford POS \& NER Taggers}
+\label{sec:stanford-pos}
 \label{sec:stanford-ner}
+El POS tagger de Stanford es un algortimo basado en entropía máxima (\textit{maximum entropy}), implementado en java originalmente en \cite{POS2}, con algunos agregados y mejoras técnicas realizadas en \cite{POS1}. Al descargar el paquete, también está disponible uno más complejo con soporte para los idiomas árabe, chino y alemán. En este trabajo utilizamos el paquete sencillo, que consta de dos modelos entrenados para inglés, usando, como señalamos en \allref{subsec:pos} el tagset de Penn Treebank. 
 
+
+Por su parte, el NER tagger de Stanford, es una implementación general de 
+
+It comes with well-engineered feature extractors for Named Entity Recognition, and many options for defining feature extractors. Included with the download are good named entity recognizers for English, particularly for the 3 classes (PERSON, ORGANIZATION, LOCATION), and we also make available on this page various other models for different languages and circumstances, including models trained on just the CoNLL 2003 English training data. The distributional similarity features in some models improve performance but the models require considerably more memory.
+
+Stanford NER is also known as CRFClassifier. The software provides a general implementation of (arbitrary order) linear chain Conditional Random Field (CRF) sequence models. That is, by training your own models, you can actually use this code to build sequence models for any task. (CRF models were pioneered by Lafferty, McCallum, and Pereira (2001); see Sutton and McCallum (2006) or Sutton and McCallum (2010) for more comprehensible introductions.)
+
+The CRF code is by Jenny Finkel. The feature extractors are by Dan Klein, Christopher Manning, and Jenny Finkel. Much of the documentation and usability is due to Anna Rafferty. The CRF sequence models provided here do not precisely correspond to any published paper, but the correct paper to cite for the software is:
+
+Jenny Rose Finkel, Trond Grenager, and Christopher Manning. 2005. Incorporating Non-local Information into Information Extraction Systems by Gibbs Sampling. Proceedings of the 43nd Annual Meeting of the Association for Computational Linguistics (ACL 2005), pp. 363-370. http://nlp.stanford.edu/~manning/papers/gibbscrf3.pdf
+The software provided here is similar to the baseline local+Viterbi model in that paper, but adds new distributional similarity based features (in the -distSim classifiers). The big models were trained on a mixture of CoNLL, MUC-6, MUC-7 and ACE named entity corpora, and as a result the models are fairly robust across domains.
 Named Entity Recognition Stanford Named Entity Recognizer (Finkel, 
 Grenager and Manning 2005) 
 
 Finkel, Jenny Rose, Trond Grenager, and Christopher Manning. "Incorporating 
 Non-local Information into Information Extraction Systems by Gibbs Sampling." 
 roceedings of the 43nd Annual Meeting of the Association for Computational 
-Linguistics. 2005. \cite{NER2}
+Linguistics. 2005. 
+
 
 
 \section{Freeling}
@@ -153,6 +169,10 @@ Freeling 3.1 ofrece los siguientes analizadores lingüisticos:
 \item Coreference resolution
 \end{itemize}
 
+
+\subsection{Módulos de Freeling}
+\label{subsec:freeling-pos}
+El módulo de POS tagging de Freeling dispone de dos tagger. El primero, $hmm\_tagger$, es un algoritmo clásico que utiliza Hidden Markov Models (HMMs) con tri-gramas. La descripción del algoritmo de tagging basado en HMM se encuentra con detalle en  en \cite{POS0}. Por otro lado, el módulo incorpora un método llamado $relax\_tagger$ que permite la creación de un sistema híbrido que permite reglas escritas a mano y modelos estadísticos. 
 
 
 \section{Lang Detect de Cybozu Labs}
