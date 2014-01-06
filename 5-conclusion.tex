@@ -1,2 +1,101 @@
-\section{Conclusión}
+
+\section{Placeholders}
+
+Esta sección es un placeholder para las siguientes posibles tecnologías que podría describirse como última sección en \allref{chap:teorico}
+\begin{itemize}
+  \item Coreference Resolution \\
+  Ejemplos de resolución de Freeling.
+  \item Word sense disambiguation \\
+  Hablar algo de wordnet?
+  \item Relation Extraction \\
+  La detección y extracción de relaciones es una tarea de procesamiento
+de lenguaje natural que consiste en extraer entidades y relaciones semánticas
+entre entidades a partir de un texto no estructurado. 
+
+[[Escribir sobre distintos algoritmos conocidos basado en el paper RE1]]
+  \item Machine Translation \\
+    Hablar de los problemas con Google y otros y de las memorias de traducción. 
+  \item Detección de idiomas \\
+  La detección o identificación de idioma es la tarea de reconocer el
+idioma de un cierto contenido. Esta tarea puede pensarse como una
+tarea de clasificación donde las clases son los distintos
+idiomas que el detector puede reconocer. 
+  \item Shallow parsing (also chunking, "light parsing") \\
+  is an analysis of a sentence which identifies the constituents (noun groups, verbs, verb groups, etc.), but does not specify their internal structure, nor their role in the main sentence.
+It is a technique widely used in natural language processing. It is similar to the concept of lexical analysis for computer languages.
+[[Expandir con detalles técnicos de wikipedia]]
+\end{itemize}
+
+
+
+\section{Secciones del apéndice}
+
+\subsection{MyMemory}
+MyMemory es la Memoria de Traducción más grande del mundo: 300 millones de segmentos a finales de 2009
+
+Como las MT tradicionales, MyMemory almacena segmentos con sus traducciones, ofreciendo a los traductores correspondencias y concordancias. El proyecto se diferencia de las tecnologías tradicionales por sus ambiciosas dimensiones y por su arquitectura centralizada y basada en la colaboración colectiva. Todos pueden consultar MyMemory o hacer aportaciones a través de Internet; la calidad de las aportaciones será cuidadosamente ponderada.
+MyMemory gives you quick access to a large number of translations originating from professional translators, LSPs, customers and multilingual web content. It uses a powerful matching algorithm to provide the best translations available for your source text. MyMemory currently contains 644.377.834 professionally translated segments.
+
+Las memorias de traducción son almacenes compuestos de textos originales en una lengua alineados con su traducción en otras. Esta definición de memorias de traducción coincide literalmente con una de las definiciones más aceptadas de corpus lingüístico de tipo paralelo (Baker, 1995). Por esto se puede decir que las memorias de traducción son corpus paralelos.
+
+
+Por el momento, no estamos utilizando ningún módulo de traducciones:
+todo el enfoque multilingüe está dado por la detección del idioma
+de la pregunta y la determinación de distintas herramientas de
+análisis según qué idioma sea. Sin embargo, en un momento se
+evaluó un enfoque distinto, basado en la traducción. Por ejemplo:
+utilizar módulos de procesamiento sólo en inglés y
+{\textquotedblleft}normalizar{\textquotedblright} los inputs en otros
+idiomas (en principio, en espa\~nol), a este idioma interno, y luego lo
+mismo con la generación de respuestas. A pesar de que no es el
+enfoque actual, hubo una fase de investigación dentro del dominio de
+la traducción, que resultó en un módulo de traducción basado en
+MyMemoryAPI.
+
+Intento con google translator y la privatización. ?`La falta de
+software de traducción offline? El módulo de mymemory, robado de
+algún lugar. El sistema de cobro. 
+
+\subsection{Reverb}
+
+ReVerb is a program that automatically identifies and extracts binary relationships from English sentences. ReVerb is designed for Web-scale information extraction, where the target relations cannot be specified in advance and speed is important.
+
+ReVerb takes raw text as input, and outputs (argument1, relation phrase, argument2) triples. For example, given the sentence "Bananas are an excellent source of potassium," ReVerb will extract the triple (bananas, be source of, potassium).
+
+\subsection{gwtwiki -Java Wikipedia API}\label{sec:gwtwiki}
+
+Java Wikipedia API (Bliki engine)
+http://code.google.com/p/gwtwiki/
+Esta librería tiene métodos útiles para trabajar con dumps de wikipedia. La usamos para testear los métodos no estructurados de la tesis.
+
+
+\subsection{Modelos de Morphia}\label{sec:modelos-morphia}
+
+Java Wikipedia API (Bliki engine)
+http://code.google.com/p/gwtwiki/
+Esta librería tiene métodos útiles para trabajar con dumps de wikipedia. La usamos para testear los métodos no estructurados de la tesis.
+
+
+
+\section{Conclusiones}
 \section{Trabajo futuro}
+
+
+\section{Citas a Textos trascriptos pero no usados}
+\begin{itemize}
+\item QC: \cite{QC1}, \cite{QC2} y también \cite{QC3} (y \cite{QC-other})
+\item Clef: \cite{GuidelineClef07} y \cite{OverviewClef07} 
+\item POS: El manual \cite{POS0} y los dos de Stanford: \cite{POS1} y \cite{POS2}
+\item LangDetect: \cite{nakatani2010langdetect}
+\item NER: Survey \cite{NER1} y el NER de Stanford: \cite{NER2}
+\item Watson: \cite{WATSON1} y \cite{WATSON2}
+\item Qanus: \cite{QANUS1}
+\item RE: Survey \cite{RE1}, for QA \cite{RE2} y reverb: \cite{RE3}
+\item Ephyra: \cite{EPHYRA1}
+\item Freeling: \cite{FREELING1} y \cite{FREELING2} (este no impreso)
+\item Wordnet para web ir: \cite{WN1} (no leido)
+\item Varios de QA: Yago \cite{YAGO-QA1}, sobre una teoria de QA como interfaz a DBs: \cite{QADB1}. Corpus: \cite{TRAIN-QA1}, qall-me: \cite{QALL-ME1}, practical QA: \cite{QAS1}, simple QA: \cite{QAS2} y Surface de Ravishandran: \cite{SURF1}. Introducción a QA: \cite{QA1} y \cite{QA2} y \cite{QA3}
+\item Aranea: \cite{ARANEA1} (no leido)
+\item Passage retrieval evaluation: \cite{PASSAGE1}
+\item Evaluacion de las TREC8 (metrica de \cite{QA3} LASSO): \cite{TREC8}
+\end{itemize}

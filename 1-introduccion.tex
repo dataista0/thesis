@@ -82,7 +82,7 @@ respuesta existe.
 
 \bigskip
 
-Algunos de estos subproblemas tienen nombre propio en la literatura. Por
+Algunos de estos subproblemas tienen nombre propio en la literatura y son, por así decirlo, toda un área aparte. Por
 ejemplo, dependiendo de la amplitud de la base de conocimiento, un
 sistema puede ser \textit{closed domain}, si la base es acotada a un dominio de la realidad específico, y
 \textit{open domain}, si no lo es, es decir, si se espera que sepa responder preguntar de cualquier dominio.
@@ -111,11 +111,11 @@ suelen ser no estructuradas.
 
 \section{Estructura de la tesis}
 
-En este proyectos nos proponemos investigar y evaluar herramientas de procesamiento de lenguaje y los diferentes enfoques existentes al problema
+En este proyectos nos proponemos investigar y evaluar herramientas de procesamiento de lenguaje y diferentes enfoques existentes al problema
 de Question-Answering. Para esto implementamos un modelo simple de QA estructurado de dominio cerrado sobre una base de datos (ver \allref{subsec:mitic})y otro 
-no estructurado (ver \allref{subsec:clef07}). El foco principal es la capacidad de incorporar nuevas herramientas de procesamiento de lenguaje, en particular,
+no estructurado sobre diferentes versiones de wikipedia (ver \allref{subsec:clef07}). El foco principal es la capacidad de incorporar nuevas herramientas de procesamiento de lenguaje, en particular,
 herramientas para otros idiomas de los implementados. Así, utilizamos la librería freeling que permite la fácil adaptación del sistema a nuevos idiomas.
-Mientras el approach estructurado resulta imposible de evaluar debido a su dominio acotado, sí resulta posible evaluar estas herramientas al utilizarlas en el modelo no estructurado, gracias a las distintas competencias cuyo \textit{leitmotiv} es, justamente, la creación de criterios únicos de evaluación al nivel de la comunidad de investigadores del área. El resultado de la tesis es un modelo básico de interfaz qa a la base de datos del proyecto mitic, cuya implementación está disponible online\footnote{\url{url del sistema}} y un modelo no estructurado que resuelve algunas subtareas de la competencia Clef '07.
+Mientras el approach estructurado resulta imposible de evaluar debido a su dominio acotado, sí resulta posible evaluar estas herramientas al utilizarlas en el modelo no estructurado, gracias a las distintas competencias cuyo \textit{leitmotiv} es, justamente, la creación de criterios únicos de evaluación al nivel de la comunidad de investigadores del área\footnote{{\color{red} Mencionar un poco de historias de competencias de procesamiento multilingüe}}. El resultado de la tesis es un modelo básico de interfaz qa a la base de datos del proyecto mitic, cuya implementación está disponible online\footnote{{\color{red}\url{url del sistema}}} y un modelo no estructurado open domain que resuelve algunas subtareas de la competencia Clef '07.
 
 
 \subsection{Dominio cerrado: Mitic}
@@ -127,7 +127,7 @@ del Departamento de Computación de la Facultad y la Fundación Sadosky\footnote
  y la recuperación de la información en el dominio de la investigación y la
 producción relacionada con TICs en Argentina: el proyecto Mitic.
 Mitic\footnote{\url{http://www.fundacionsadosky.org.ar/es/Programas-Proyectos/quien-es-quien\#mitic}} es una plataforma web que permite buscar investigadores, empresas, universidades, proyectos y organismos que se encuentren trabajando en temáticas relacionadas con las TIC, y explorar además las relaciones existentes entre ellos. El grafo de relaciones generado por este proyecto es la base de datos sobre la que trabajamos en la sección closed domain de esta tesis.
-La base de conocimiento generada es estructurada y \textit{closed domain}, y consta de
+La base de conocimiento generada es estructurada y consta de
 una serie de entidades: investigadores, universidades, publicaciones,
 proyectos, empresas y temáticas, con diferentes tipos de relaciones.
 Esta base de conocimiento está definida como un grafo de relaciones con diferentes pesos y valores entre
@@ -150,7 +150,7 @@ analizadores de distintas librerías, descriptas en \allref{chap:teorico} y en \
 En particular, ver \allref{sec:freeling}, librería de procesamiento de lenguaje natural multilingüe, que
 es la principal herramienta utilizada a la hora de traducir preguntas en distintos idiomas al mismo lenguaje formal.
 La base de datos con la que comenzamos era una serie de xmls que requerían un esfuerzo de modelado bastante alto,
-pero finalmente obtuvimos esta base de datos de mongdbo dónde los modelos estaban mucho mejor definidos.
+pero finalmente obtuvimos esta base de datos de mongdb dónde los modelos estaban mucho mejor definidos.
 
 \subsection{Dominio abierto: Clef '07}
 \label{subsec:clef07}
@@ -169,7 +169,7 @@ La competencia del '07 ofrece dos tipos de ejercicios:
 \end{itemize}
 Los ejercicios consideran los siguientes idiomas: inglés, búlgaro, alemán, español, italiano, francés, holandés, rumano y portugués. Por su parte, algunos
 ejercicios utilizan corpus de datos privados de la competencia y otros utilizan como fuente las distintas wikipedias. De los ejercicios que utilizan
-wikipedia, implementamos un sistema que responde las preguntas en español, mono-idioma, es decir, ejercicios con preguntas formuladas en español que se responden en base a la wikipedia en español. A su vez, implementamos esta misma solución para el inglés, dado que estaban disponibles las preguntas y señalados los links a los snapshots de wikipedia en inglés pero no fue posible evaluar sus resultados debido a que las respuestas esperadas no estaban disponibles online y no obtuvimos respuesta de los organizadores de la competencia. El uso estructural de la librería freeling permite que la implementación de soluciones para otros idiomas mediante el set-up del corpus en el idioma y una pequeña configuración. 
+wikipedia, implementamos un sistema que responde las preguntas en español, mono-idioma, es decir, ejercicios con preguntas formuladas en español que se responden en base a la wikipedia en español. A su vez, implementamos esta misma solución para el inglés, dado que estaban disponibles las preguntas y señalados los links a los snapshots de wikipedia en inglés, pero no fue posible evaluar sus resultados debido a que las respuestas esperadas no estaban disponibles online y no obtuvimos respuesta de los organizadores de la competencia. El uso estructural de la librería freeling permite que la implementación de soluciones para otros idiomas mediante el set-up del corpus en el idioma y una pequeña configuración. 
 Los ejercicios elegidos constan de 200 preguntas agrupadas. Los grupos de preguntas refieren a un tema, inferible a partir de la primer pregunta.
 Por ejemplo, el primer grupo de preguntas es:
 \begin{itemize}
@@ -183,7 +183,4 @@ las preguntas son preguntas simples. Más adelante haremos un análisis de las m
 
 \subsection*{Estructura}
 
-Los siguientes capitulos se estructuran de la siguiente manera: En el capítulo \allref{chap:teorico} se hará una breve introducción terminológica y conceptual de las herramientas de information retrieval y procesamiento de lenguaje natural, complementada por el detalle técnico más concreto de estas herramientas expuesto en \allref{chap:herramientas}, en el capítulo \allref{chap:estado-de-arte} pasamos revista del sistema de IBM, Watson y de su arquitectura DeepQA como ejemplo de un proyecto exitoso de question answering y también comentamos otros sistemas -Qanus, OpenEphyra, Aranea y Just.Ask-, haciendo énfasis en Qanus. Finalmente, en el capítulo \allref{chap:implementacion} describiremos nuestra implementación propia de los modelos closed y open domain.
-
-
-\bigskip
+El trabajo se estructura de la siguiente manera. En el capítulo \allref{chap:teorico} se hará una breve introducción terminológica y conceptual algunas de las  herramientas principales de information retrieval y procesamiento de lenguaje natural utilizadas en esta tesis, complementada por el detalle técnico más concreto expuesto en \allref{chap:herramientas}. En el capítulo \allref{chap:estado-de-arte} pasamos revista de varias implementaciones de sistemas de question answering, haciendo especial foco en el sistema de IBM -Watson- y de su arquitectura DeepQA como ejemplo de un proyecto exitoso de question answering, mientras también comentamos otros sistemas -Qanus, OpenEphyra, Aranea y Just.Ask-, haciendo énfasis en Qanus, debido a que su uso en un modelo inicial del proyecto. Finalmente, en el capítulo \allref{chap:implementacion} describiremos nuestra implementación de los modelos closed y open domain para la base de datos de Mitic y para los ejercicios de la competencia CLEF '07.
