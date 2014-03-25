@@ -1,5 +1,6 @@
 \chapter{Implementación}
 \label{chap:implementacion}
+
 \section{Frameworks}
 
 \subsection{No funcionales}
@@ -184,6 +185,8 @@ por contar con un subconjunto de ejercicios bastante adecuados para nuestro sist
 de datos necesario para completar estos ejercicios estaba (en parte) disponible dentro de los tiempos 
 requeridos por nuestro proyecto. 
 
+\subsection{Base de datos de dominio cerrado}
+\subsection{Ejercicios de dominio abierto}
 \bigskip
 
 \subsection{Modelo}
@@ -347,6 +350,7 @@ es & 50M & \# 16 millones & 2.5min \\ \hline
 es & 50M & \# 16 millones & 2.5min \\ \hline
 \end{tabular}
 \end{center}
+
 
 El proceso de creación de índices está ilustrado en la figura \ref{fig:LuceneIndexWriterBoth}
 
@@ -596,6 +600,53 @@ Así, el tipo de respuesta esperada de \dblquote{¿En qué colegio estudia Harry
 \label{subsec:entidad-de-grupo}
 
 El formato de las preguntas para los ejercicios Clef que elegimos es un xml para cada idioma. En particular, nosotros resolvimos los ejercicios en español y inglés que podían responderse en base a wikipedia. Contar del tema de los grupos. Poner algún ejemplo.
+
+\subsection{Analisis de las preguntas de Clef}
+
+De las respuestas goldstandard, discriminamos las soportadas por wikipedia, las soportadas por el corpora para miembros registrados y las que no tienen respuesta (NIL):
+
+\begin{center}
+\begin{tabular}{| l | l | l | l | l |}
+\hline
+Idioma & Wiki & News & NIL & Total \\ \hline
+es & 155 & 37 & 8 & 200 \\ \hline
+pt & 130 & 59 & 11 & 200 \\ \hline
+\end{tabular}
+\end{center}
+
+
+Los resultados positivos esperamos que sean en wiki (news seguro no y nil no sé). 
+
+
+Por QTYPe
+\begin{center}
+\begin{tabular}{| l | l | l | l | l | l |}
+\hline
+Subset & Idioma & Factoid & Definition & List & Total \\ \hline
+\multirow{2}{*}{Todo} & es & 158 & 32 & 10 & 200 \\ \cline{2-6}
+ & pt & 159 & 31 & 10 & 200 \\ \hline
+ \multirow{2}{*}{Wiki} & es & 122 & 24 & 9 & 155 \\ \cline{2-6}
+ & pt & 104 & 18 & 8 & 130 \\ \hline
+\end{tabular}
+\end{center}
+
+Analisis por tipo de respuesta esperada:
+\begin{center}
+\begin{tabular}{| l | l | l | l | l | l |l |l|l|}
+\hline
+Tipo & pt & es & pt-factoid & es-factoid & pt-def & es-def & pt-list & es-list \\ \hline
+COUNT & 21 & 22 & 21 & 22 & 0 & 0 & 0  & 0\\ \hline
+OBJECT & 11 & 27 & 6  & 18 & 5 & 9 & 0  & 0\\ \hline
+MEASURE & 15 & 20 & 15 & 20 & 0 & 0 & 0  & 0\\ \hline
+PERSON & 33  & 35 & 21 & 24 & 9 & 8 & 3 & 3\\ \hline
+TIME & 19 & 16 & 18 & 16 & 0 & 0 & 1 & 0\\ \hline
+LOCATION & 33 & 18  & 30 & 18 & 0 & 0 & 3 & 0 \\ \hline
+ORGANIZATION & 31 & 32 & 24 & 22 & 6 & 8 & 1 & 2\\ \hline
+OTHER & 37 & 30 & 24 & 18 & 11 & 7 & 2 & 5 \\ \hline
+Total & 200 & 200 & 159 & 158 & 31 & 32  & 10 & 10\\ \hline
+\end{tabular}
+\end{center}
+
 
 \section{Generación de Respuestas}
 

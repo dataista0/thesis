@@ -1,10 +1,33 @@
 \chapter{Estado de Arte}
 \label{chap:estado-de-arte}
-En este capítulo analizaremos diferentes investigaciones sobre question answering para poder ilustrarnos acerca de los distintos problemas y las distintas formas de encararlos que existen. Discutiremos primero una serie de investigaciones académicas pequeñas, presentadas en general en congresos y competencias del área para inferir un modelo más o menos general del dominio de problemas y los acercamientos típicos. Luego, comentaremos el sistema de IBM -Watson- para ilustrarnos, más allá de los enfoques usuales, un enfoque exitoso. Finalmente pasaremos revista de una serie de sistemas disponibles para facilitar la creación de modelos de question answering, haciendo foco en Qanus (un framework que de hecho pudimos utilizar durante un periodo de nuestra investigación) y mencionando algunos sistemas que evaluamos teóricamente pero que, lamentablemente, no estaban disponibles \textit{out of the box}, principalmente debido a restricciones y modificaciones en el acceso programático que implementaron los buscadores populares en los últimos años\footnote{Ver por ejemplo, Google Search API, deprecado el 1ero de noviembre de 2010 aquí: https://developers.google.com/web-search/}
+En este capítulo analizaremos diferentes investigaciones sobre question answering para poder ilustrarnos acerca de los distintos problemas y las distintas formas de encararlos que existen. Discutiremos {\color{red}primero} una serie de investigaciones académicas pequeñas, presentadas en general en congresos y competencias del área, para definir un modelo más o menos estándar del dominio de problemas y los acercamientos típicos. Luego, comentaremos el sistema de IBM -Watson- para ver, más allá de los enfoques usuales, un enfoque exitoso. Finalmente pasaremos revista de una serie de sistemas disponibles para facilitar la creación de modelos de question answering, haciendo foco en Qanus (un framework que de hecho pudimos utilizar durante un periodo de nuestra investigación) y mencionando algunos sistemas que evaluamos teóricamente pero que, lamentablemente, no estaban disponibles \textit{out of the box}, principalmente debido a restricciones y modificaciones en el acceso programático que implementaron los buscadores populares en los últimos años\footnote{Ver por ejemplo, Google Search API, deprecado el 1ero de noviembre de 2010 aquí: https://developers.google.com/web-search/}. 
+
+
+\section{Dominio de problemas}
+QA, NLP, IR, Open domain y closed domain. Historia: primeros enfoques, BASEBALL y LUNAR. 
+En esta sección comentaremos algunos enfoques conocidos para resolver los problemas de question answering open domain y closed domain. 
+
+\subsection{Enfoques sobre open domain}
+La investigación, la producción de software y la formación de una comunidad de i+d vinculada con el question answering estuvo impulsada fuertemente por la competencia TREC. Esta competencia duró de tal año a tal año, momento en el que se suspendió. CLEF. NCTIC. 
+Los diferentes autores coiniciden en un modelo general de tres módulos principales: 
+\begin{itemize}
+\item Interfaz a una base de conocimientos
+\item Procesamiento lingüístico de la pregunta
+\item Búsqueda, extracción y retorno de la respuesta
+\end{itemize}
+El primer módulo consiste, por lo general, en algún soporte de documentos de information retrieval, como por ejemplo, un indice Lucene o IRQI[x]. 
+El segundo piripipí. El tercero piripipí. Por su parte, cada módulo define una serie de problemas y enfoques distintos. Subproblemas de cada problema y enfoques típicos. 
+
+\subsubsection{Métricas}
+
+
+\subsection{QA como interfaz a una base de datos}
+
+
 
 \section{IBM-Watson}
 
-Watson es un sistema diseñado por IBM con el objetivo de competir en
+Watson\cite{WATSON1}\cite{WATSON2} es un sistema diseñado por IBM con el objetivo de competir en
 tiempo real en el programa de televisión estadounidense Jeopardy,
 logrando resultados del nivel de los campeones humanos de este
 programa.
@@ -13,7 +36,7 @@ El proyecto demoró 3 años de investigación, en los cuales se
 logró obtener la performance esperada (nivel humano experto) en
 cuanto a precisión, confiabilidad y velocidad, logrando derrotar a
 dos de los hombre con mayores récords históricos del show en un
-programa en vivo [MáS DATOS -LINKS]
+programa en vivo\footnote{En esta url está disponible el programa en el que el sistema vence a sus competidores humanos: \url{http://www.youtube.com/watch?v=WFR3lOm_xhE}} en febrero de 2011.
 
 El objetivo del \ proyecto puede considerarse una extensión de lo que
 fue Deep Blue, el sistema que logró el nivel de los expertos humanos
@@ -24,18 +47,21 @@ científica como para la sociedad en general:
 competir con los mejores hombre en alguna tarea que requiera altos
 niveles de inteligencia humana y, si es el caso, que clase de
 tecnología, algoritmos e ingenieria se
-requiere?{\textquotedblright}\footnote{\ Traducción propia de
-Building Watson: An Overview of the DeepQA Project, p2}
+requiere?{\textquotedblright}\footnote{Traducción propia de
+un fragmento de \cite{WATSON1}, p. 2}
 
 Watson es la implementación específica para participar en este
 programa de una arquitectura más genérica de question answering,
 DeepQA, que da el nombre al proyecto de la corporación. Esta
-arquitectura ejemplifica perfectamente la complejidad del problema de
+arquitectura es de construcción reciente y ejemplifica perfectamente la complejidad del problema de
 QA de dominio abierto e incorpora tecnologías de punta de distintos
 dominios de ciencias de la computación, y de IA en particular:
 information retrieval, natural language processing, knowledge
 representation and reasoning, machine learning e interfaces humano -
-computadora.
+computadora. En el transcurso de esta tesis, IBM lanzó el programa
+\sq{Watson Ecosystem} (en noviembre de 2013) que promete la utilización
+de tecnología de punta para aplicaciones creadas por la comunidad\footnote{
+Announcing the IBM Watson Ecosystem Program: \url{http://www-03.ibm.com/innovation/us/watson/}}.
 
 \subsection{El problema}
 
