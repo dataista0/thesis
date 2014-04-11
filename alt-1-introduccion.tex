@@ -1,0 +1,199 @@
+
+\chapter{Introducción}
+La tesis se articula así: En la Introducción explico como se articula la tesis, introduciendo el concepto general de lo que significa el question answering, con un cierto grado de detalle (categorías de datos y corpus), enfasis en multilenguaje. 
+El QA está parado sobre dos ramas más amplias: Information retrieval y procesamiento de lenguajes. En el capitulo II - Marco Teórico, se introducen los conceptos básicos de estas dos ramas. Acá cuento muy a vuelo de pajaro de que se habla ahí.
+En el capitulo III, "Estado de Arte", paso revista del estado de arte del área, comentando el nucleamiento de la investigación en torno a las competencias TREC y CLEF, también señalando a IBM y comentando el devenir de las evaluaciones. En "Literatura científica y sistemas" hago una reseña explicita del "Survey". Además, menciono a OpenEphyra, Just.Ask y el estado deplorable del entorno. También hago una reseña explícita del paper de Interfaz a DB y "Structured Data in IBM-Watson". 
+En el capitulo IV, "Implementación de datos estructurados" comento el inicio del proyecto, la motivación de este tipo de sistemas y presento un modelo final, simple, pero elegante y funcionado. Hachando todo lo que se deba y pueda hachar. 
+En el capitulo V, "Implementación sobre QANUS" viene toda la papota. Presento los ejercicios seleccionados de la CLEF 07 y hago un análisis de las wikipedias y de las preguntas. Explico qué me quedo y qué saco. Explico la adaptación a Freeling y lo copado de que sea multilingüe. Presento los datos de una manera más o menos vistosa.
+En el capitulo VI, "Conclusiones y trabajo futuro" comentos las virtudes y las limitaciones del experimento y hablo de estado del campo con más descriptividad que optimismo. Sobre trabajo futuro puedo sugerir muchas mejoras técnicas. 
+En el Apéndice presento librerías y datos de implementación muy burdos
+En la bibliografía van los textos que leí.
+
+
+
+% \chapter{Introducción}
+% %La base de conocimiento semi estructurada está relacionada con el proyecto mitic, mientras que la base de conocimiento no estructurada 
+% \section{Qué es Question Answering}
+% %{\begin{small}%
+% %\begin{flushright}%
+% %\it
+% %A veces gano, a veces no
+% %Soy sobre todo\\ un soñador. \\
+% %--Mambrú
+% %\end{flushright}%
+% %\end{small}%
+% %\vspace{.5cm}}
+% \textbf{\textit{Question Answering}} es un área de ciencias de la computación que combina herramientas de búsqueda y recuperación
+% de la información (\textit{information retrieval}) y de procesamiento del lenguaje natural (\textit{nlp}), buscando
+% generar respuestas a preguntas formuladas en algún lenguaje humano.
+% Por ejemplo, para el input \textit{\dq{?`Cuándo nació Noam Chomsky?}} un sistema de QA debe devolver \dq{\textit{7 de diciembre de 1928}}. 
+% Existen varios sistemas de QA conocidos: quizás los más populares sean Wolfram Alpha e IBM-Watson, el sistema que venció a los campeones humanos del 
+% programa de televisión estadounidense Jeopardy! en tiempo real\footnote{En esta url está disponible el programa en el que el sistema vence a sus competidores humanos: \url{http://www.youtube.com/watch?v=WFR3lOm_xhE}}. Desde hace un tiempo, el buscador de Google está implementado también, lentamente
+% procesos de QA. El campo de investigación está muy lejos de \sq{cerrarse} y los resultados son aún muy básicos debido a la complejidad inherente al problema. 
+% El dominio de problemas está  vinculado con la \textit{web semántica}, ya que en ambos lo que se busca es dotar de
+% información semántica los datos {\textquotedblleft}planos{\textquotedblright} disponibles en un corpus y
+% también escribir sistemas capaces de manejar nociones semánticas al tratar con estos datos. 
+
+
+
+% \subsection{Information Retrieval}
+
+% El problema conocido como\textbf{ }\textbf{\textit{information
+% retrieval}} consiste, formalmente, en retornar \textit{información
+% relevante} para una \textit{consult}a (\textit{information need}) a
+% partir de una \textit{base de conocimiento}. El caso de uso típico,
+% ilustrado por los motores de búsqueda web, consiste en devolver una
+% lista de documentos relevantes, en orden de relevancia, para una
+% consulta del usuario. En estos sistemas, las consultas se interpretan
+% como una serie de tokens concatenados con distintos operadores
+% lógicos binarios, donde la barra espaciadora funciona como or
+% inclusivo. El core del sistema es un\textit{ índice} \textit{de
+% búsqueda} de los documentos de la base de conocimiento, que podemos pensar como 
+% un diccionario indexado de palabras en documentos (más adelante tocaremos este tema). El
+% proceso de creación y mantenimiento de estos índices depende del
+% tipo y del dinamismo de la base de conocimiento, y oscila entre un
+% modesto setup a mano de una lista de documentos estáticos hasta el
+% ejército de \textit{spiders} de google indexando la web en tiempo
+% real. 
+
+
+% \bigskip
+
+% \subsection{Natural Language Processing}
+
+% El problema de question answering puede pensarse como un problema de information
+% retrieval, pero en realidad excede este dominio: su objetivo no es devolver una lista de documentos para
+% una serie de palabras, sino una respuesta puntual a una pregunta
+% puntual. Para esto incorpora una dimensión semántica, esto es, toda
+% una serie de problemas de procesamiento de lenguaje natural que se
+% abordan con varias herramientas, que aportan distintos modelos de
+% análisis lingüístico a nivel \textit{oración}, tanto de la
+% consulta del usuario, como de los documentos indexados. Por ejemplo: el
+% pos-tagger es un analizador que genera la estructura gramatical de la
+% oración, mientras que \ el reconocimiento de entidades nombradas
+% (NER) identifica entidades como {\textquotedblleft}Buenos
+% Aires{\textquotedblright}, {\textquotedblleft}José
+% Pérez{\textquotedblright}, etc- y las clasifica (como \textit{lugar}
+% y \textit{persona}, respectivamente) . Los sistemas de QA utilizan
+% distintas herramientas para modelar la consulta y para buscarla, con
+% algún grado de comprensión semántica, dentro de su base de
+% conocimiento.
+
+
+% \bigskip
+
+% \subsection{Distintos problemas}
+
+% Los sistemas de QA suelen ser sistemas complejos que abordan distintas
+% problemáticas: por un lado deben definir y optimizar la base de
+% conocimiento para el dominio dado, por otro deben realizar un
+% análisis de las preguntas en lenguaje natural a fin de volverlas
+% tratables computacionalmente y, finalmente, deben poder buscar -o generar- y
+% decidir la mejor respuesta para la pregunta ingresada, si es que esa
+% respuesta existe.
+
+
+% \bigskip
+
+% Algunos de estos subproblemas tienen nombre propio en la literatura y son, por así decirlo, toda un área aparte. Por
+% ejemplo, dependiendo de la amplitud de la base de conocimiento, un
+% sistema puede ser \textit{closed domain}, si la base es acotada a un dominio de la realidad específico, y
+% \textit{open domain}, si no lo es, es decir, si se espera que sepa responder preguntar de cualquier dominio.
+% Por su parte, dominios de conocimiento más pequeños, en general, requieren y permiten un modelado más exhaustivo
+% de los datos y un análisis más estructurado, mientras que dominios de conocimiento más abiertos suelen
+% tener un enfoque apoyado más fuertemente en el análisis lingüístico cuantitativo.
+
+
+% \bigskip
+
+% Otra distinción usual contempla el tipo de datos de la base de
+% conocimiento: este puede ser estructurado, como en una base de datos
+% relacional, semi estructurado, como los documentos xml, o también sin
+% estructura, como el texto plano. Cada tipo de datos tiene su enfoque:
+% los datos estructurados definen una ontología acotada que limita
+% qué cosas se pueden preguntar y, en consecuencia, qué cosas se pueden responder: el
+% problema en este caso consiste en traducir la pregunta formulada en un lenguaje humano a una query
+% definida en el modelo de datos. Por otro lado, si los datos no
+% tienen estructura, no es posible definir una ontología rígida y se
+% hace necesario otro tipo de enfoque más difuso y basado en análisis
+% lingüísticos del corpus de datos mismo contra la pregunta. No siempre, 
+% pero en general una base de conocimiento closed domain está asociada
+% a un tipo de datos estructurado o semi-estructurado, mientras que las bases open domain
+% suelen ser no estructuradas.
+
+
+% \section{Estructura de la tesis}
+
+% En este proyectos nos proponemos investigar y evaluar herramientas de procesamiento de lenguaje y diferentes enfoques existentes al problema
+% de Question-Answering. Para esto implementamos un modelo simple de QA estructurado de dominio cerrado sobre una base de datos (ver \allref{subsec:mitic})y otro 
+% no estructurado sobre diferentes versiones de wikipedia (ver \allref{subsec:clef07}). El foco principal es la capacidad de incorporar nuevas herramientas de procesamiento de lenguaje, en particular,
+% herramientas para otros idiomas de los implementados. Así, utilizamos la librería freeling que permite la fácil adaptación del sistema a nuevos idiomas.
+% Mientras el approach estructurado resulta imposible de evaluar debido a su dominio acotado, sí resulta posible evaluar estas herramientas al utilizarlas en el modelo no estructurado, gracias a las distintas competencias cuyo \textit{leitmotiv} es, justamente, la creación de criterios únicos de evaluación al nivel de la comunidad de investigadores del área\footnote{{\color{red} Mencionar un poco de historias de competencias de procesamiento multilingüe}}. El resultado de la tesis es un modelo básico de interfaz qa a la base de datos del proyecto mitic, cuya implementación está disponible online\footnote{{\color{red}\url{url del sistema}}} y un modelo no estructurado open domain que resuelve algunas subtareas de la competencia Clef '07.
+
+
+% \subsection{Dominio cerrado: Mitic}
+% \label{subsec:mitic}
+
+% Esta sección de la tesis está vinculada con un marco de trabajo común entre el
+% Grupo de Autómatas, Lenguajes, Lingüística e Información (GALLI)\footnote{\url{http://www.galli.dc.uba.ar/}}, 
+% del Departamento de Computación de la Facultad y la Fundación Sadosky\footnote{\url{http://www.fundacionsadosky.org.ar/}}, relacionado con la construcción de una base de conocimiento
+%  y la recuperación de la información en el dominio de la investigación y la
+% producción relacionada con TICs en Argentina: el proyecto Mitic.
+% Mitic\footnote{\url{http://www.fundacionsadosky.org.ar/es/Programas-Proyectos/quien-es-quien\#mitic}} es una plataforma web que permite buscar investigadores, empresas, universidades, proyectos y organismos que se encuentren trabajando en temáticas relacionadas con las TIC, y explorar además las relaciones existentes entre ellos. El grafo de relaciones generado por este proyecto es la base de datos sobre la que trabajamos en la sección closed domain de esta tesis.
+% La base de conocimiento generada es estructurada y consta de
+% una serie de entidades: investigadores, universidades, publicaciones,
+% proyectos, empresas y temáticas, con diferentes tipos de relaciones.
+% Esta base de conocimiento está definida como un grafo de relaciones con diferentes pesos y valores entre
+% las entidades, a partir de lo que originalmente era una
+% recopilación heterogénea de datos en xml. El grafo de Mitic
+% tiene relaciones directas y también inferidas, con un cierto grado
+% de confiabilidad (peso) para cada relación. Tomando como punto de
+% partida esta base de conocimiento, este proyecto se propone construir
+% un sistema de question answering biingüe de dominio cerrado, expandible a más idiomas.
+% Para esto, definimos sobre la base de conocimiento una ontología
+% rígida, que determina el conjunto de preguntas tratables, y
+% utilizamos herramientas de procesamiento de lenguaje natural para
+% clasificar las consultas del usuario dentro de este esquema. Para la
+% ontología , definimos una interfaz única para las entidades que
+% permite la integración de nuevos tipos con un esfuerzo mínimo. 
+% La base de datos está principalmente en español, solo algunos títulos y resumenes de publicaciones están en inglés,
+% pero la ontología definida es formal y no tiene idioma. 
+% Para la traducción o el mappeo de la pregunta a esta esquema utilizamos 
+% analizadores de distintas librerías, descriptas en \allref{chap:teorico} y en \allref{chap:herramientas}.
+% En particular, ver \allref{sec:freeling}, librería de procesamiento de lenguaje natural multilingüe, que
+% es la principal herramienta utilizada a la hora de traducir preguntas en distintos idiomas al mismo lenguaje formal.
+% La base de datos con la que comenzamos era una serie de xmls que requerían un esfuerzo de modelado bastante alto,
+% pero finalmente obtuvimos esta base de datos de mongdb dónde los modelos estaban mucho mejor definidos.
+
+% \subsection{Dominio abierto: Clef '07}
+% \label{subsec:clef07}
+% Por su parte, para desarrollar y evaluar mecanismos de dominio abierto resolvimos algunos ejercicios de la competencia de QA organizada por CLEF 
+% en 2007. 
+% CLEF (de \textit{Cross-Language Evaluation Forum}) es una organización que busca fomentar la investigación en sistemas de information retrieval cross-language. 
+% En particular, una vez por año CLEF lanza una competencia de Question Answering multilenguaje, con diferentes corpus y diferentes tipos de ejercicios. Estas competencia permiten obtener un patrón estándar de comparación entre distintos desarrollos y una idea general del estado de arte alcanzado en cada área.
+% Por ejemplo, la competencia ya finalizada del año 2013, QA4MRE@CLEF2013, (Question Answering for Machine Reading Evaluation) se enfoca principalmente en Machine Reading, tarea que incluye un grado de razonamiento elevado para la computadora\footnote{\url{http://celct.fbk.eu/QA4MRE/}}.
+
+% Existen distintas conferencias de evaluación de sistemas QA o de subtareas asociadas (por ejemplo TREC - Text Retrieval Conference \footnote{\url{http://trec.nist.gov/}}-, TAC - Text Analysis Conference \footnote{\url{http://www.nist.gov/tac/}}) - y, a su vez, estas distintas competencias ofrecen distinos llamados a competencias. Elegimos resolver una tarea de la competencia Clef '07  por varias razones (Ver \cite{GuidelineClef07} y \cite{OverviewClef07} para un detalle exhaustivo de la conferencia en cuestión). La razón principal fue la pertinencia de la tarea a evaluar al scope de esta tesis. Muchas competencias exigen un grado de complejidad que excede por mucho lo que puede alcanzarse en el tiempo estimado de una tesis de licenciatura. 
+% Otra razón fue la disponibilidad y el atractivo de la base de conocimiento para estos ejercicios: utilizan snapshots de wikipedia. 
+% La competencia del '07 ofrece dos tipos de ejercicios:
+% \begin{itemize}
+% \item Mono-lingual: donde el idioma de la pregunta y el idioma de la fuente de información son el mismo
+% \item Cross-lingual: donde el idioma de la pregunta y el idioma de la fuente de información difieren
+% \end{itemize}
+% Los ejercicios consideran los siguientes idiomas: inglés, búlgaro, alemán, español, italiano, francés, holandés, rumano y portugués. Por su parte, algunos
+% ejercicios utilizan corpus de datos privados de la competencia y otros utilizan como fuente las distintas wikipedias. De los ejercicios que utilizan
+% wikipedia, implementamos un sistema que responde las preguntas en español, mono-idioma, es decir, ejercicios con preguntas formuladas en español que se responden en base a la wikipedia en español. A su vez, implementamos esta misma solución para el inglés, dado que estaban disponibles las preguntas y señalados los links a los snapshots de wikipedia en inglés, pero no fue posible evaluar sus resultados debido a que las respuestas esperadas no estaban disponibles online y no obtuvimos respuesta de los organizadores de la competencia. El uso estructural de la librería freeling permite que la implementación de soluciones para otros idiomas mediante el set-up del corpus en el idioma y una pequeña configuración. 
+% Los ejercicios elegidos constan de 200 preguntas agrupadas. Los grupos de preguntas refieren a un tema, inferible a partir de la primer pregunta.
+% Por ejemplo, el primer grupo de preguntas es:
+% \begin{itemize}
+% \item ¿En qué colegio estudia Harry Potter?
+% \item ¿Cuál es el lema del colegio?
+% \item ¿En qué casas está dividido?
+% \item ¿Quién es el director del colegio?
+% \end{itemize}
+% Es decir, para cada grupo se debe inferir el \dq{tema} en la primer pregunta para arrastrarlo a la hora de responder las siguientes. Más allá de esta particularidad,
+% las preguntas son preguntas simples. Más adelante haremos un análisis de las mismas con más detalle.
+
+% \subsection*{Estructura}
+
+% El trabajo se estructura de la siguiente manera. En el capítulo \allref{chap:teorico} se hará una breve introducción terminológica y conceptual algunas de las  herramientas principales de information retrieval y procesamiento de lenguaje natural utilizadas en esta tesis, complementada por el detalle técnico más concreto expuesto en \allref{chap:herramientas}. En el capítulo \allref{chap:estado-de-arte} pasamos revista de varias implementaciones de sistemas de question answering, haciendo especial foco en el sistema de IBM -Watson- y de su arquitectura DeepQA como ejemplo de un proyecto exitoso de question answering, mientras también comentamos otros sistemas -Qanus, OpenEphyra, Aranea y Just.Ask-, haciendo énfasis en Qanus, debido a que su uso en un modelo inicial del proyecto. Finalmente, en el capítulo \allref{chap:implementacion} describiremos nuestra implementación de los modelos closed y open domain para la base de datos de Mitic y para los ejercicios de la competencia CLEF '07.
