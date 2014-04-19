@@ -1,33 +1,21 @@
 \chapter{Implementación sobre QANUS}
+\label{chap:qanus}
+Como parte de nuestra investigación, construimos un sistema de question answering multilingüe y lo evaluamos utilizando como guia dos tareas monolingual de la competencia QA@Clef '07, una para español y otra para portugués. El sistema está basado en un framework académico de código abierto llamado Qanus. Este framework está empaquetado con una sistema de QA simple, QA-sys, que resuelve ejercicios de la competencia TREC '07 para QA solo en inglés. Nosotros adaptamos este sistema para utilizar como librería de procesamiento de lenguajes a Freeling, generando un sistema baseline multilingüe. A este sistema le agregamos features reseñados en \allref{sec:literatura} y realizamos diferente mediciones sobre las instancias en español y portugués sobre los ya mencionados ejercicios de Clef '07.
+
+La estructura de este capitulo es la siguiente: en \allref{sec:ejecicio-de-clef} se describe con detalle el panorama general de tareas de question answering en la competencia Clef '07, haciendo énfasis en las tareas seleccionadas, en los corpus y las preguntas disponibles y en las decisiones tomadas a la hora de elegir estas tareas; en \allref{sec:sistema} se comenta la adaptación del sistema baseline y las modificaciones realizadas a los algoritmos, {\color{red}mientras que los resultados pueden observarse como apartados en las mismas secciones o como una sección aparte al final}.
+
 \section{Ejercicio de CLEF}
+\label{sec:ejecicio-de-clef}
+Aca
 \subsection{Tareas}
 \subsection{Corpus}
 \subsection{Preguntas}
 
 \section{Sistema}
-Para la implementación del sistema optamos por la utilización del framework qanus y su sistema baseline.
+\label{sec:sistema}
+Nuestra implementación está basada en Qanus como framework o arquitectura de diseño de QA y en Freeling como proveedor de servicios de procesamiento de lenguaje multilingue. Qanus (Question-Answering @ National University of Singapore) es un framework de question answering basado en information retrieval y también un sistema de QA funcional simple construido sobre este framework. El proyecto se actualizó por última vez en noviembre de 2012 y contiene herramientas actuales de nlp para inglés (el POS-tagger, el NER-tagger y el Question Classifier de Stanford) y también de information retrieval (índice de búsquedas lucene) bajo licencia de código abierto. El paquete cuenta con un framework (qanus), que cumple un rol equivalente a la arquitectura DeepQA en la organización del proyecto de IBM, y un sistema montado sobre este framework -QA-sys-, equivalente a Watson (Ver Figura ~\ref{fig:Quanus}). 
 
-\subsection{Arquitectura de Qanus}
-
-QANUS (Question-Answering @ National University of Singapore) es un
-sistema de question answering basado en information retrieval. El
-proyecto se actualizó por última vez en noviembre de 2012 y
-contiene las herramientas más actuales de nlp (el POS-tagger, el
-NER-tagger y el Question Classifier de Stanford) y también de
-information retrieval índice de búsquedas lucene), todo de código
-abierto. El código cuenta con un framework (Qanus), que cumple un rol
-equivalente a la arquitectura DeepQA en el proyecto anterior, y un
-sistema montado sobre este framework QA-sys, equivalente a Watson (Ver Figura ~\ref{fig:Quanus}). La
-motivación de esto es proveer a la comunidad científica un
-framework para ingresar al mundo de QA de una manera más sencilla y
-rápida, permitiendo construir nuevos sistemas de QA sobre esta
-arquitectura. En efecto, la arquitectura DeepQA no está disponible
-para la comunidad, el ya mencionado OpenEphyra, como veremos en breve,
-no funciona, mientras que otros sistemas resultan igualmente
-inaccesibles (Aranea, Qanda) mientras que QA-sys es un sistema de QA
-out of the box. Mencionaremos los logros y los límites de estos
-objetivos cuando hablemos de nuestro intento por montar nuestro propio
-sistema sobre Qanus. 
+% La motivación del proyecto es proveer a la comunidad científica un framework para ingresar al mundo de QA de una manera más sencilla y rápida, permitiendo construir nuevos sistemas de QA sobre esta arquitectura. 
 
 \begin{figure}
   \centering
@@ -37,41 +25,22 @@ sistema sobre Qanus.
 \end{figure}
 
 
-La arquitectura, al igual que la de DeepQA, es la de un pipeline. Este
-sistema consta de tres pasos principales, que se ejecutan todos por
-separado (off-line): 
+La arquitectura de Qanus mantiene la estructura de pipeline típica similar a las reseñadas en la sección \allref{chap:estado-de-arte}. 
+Consta de los siguientes pasos:
 
+\textbf{Preparación de la fuente de información: } El primer step del pipeline es preprocesar las fuentes de información para un acceso optimizado en pasos posteriores del proceso. La implementación QA-sys incorpora una base de conocimiento en formato XML de AQUAINT\footnote{\ } a un índice de
+búsquedas Lucene. En este paso se incorpora todo el conocimiento offline; bases de conocimiento dinámicas como la web se modelan en el pasos posteriores. \newline
 
-\bigskip
-
-\subsubsection*{Preparación de la fuente de información}
-Este paso está pensado para preprocesar cualquier base de conocimiento
-y dejarla preparada para el paso 3 (retorno de la pregunta). El
-framework se propone tan amplio que no hay más especificaciones al
-respecto. La implementación puntual asume una base de conocimiento en
-formato XML de AQUAINT\footnote{\ } y la incorpora a un índice de
-búsquedas Lucene. Este paso incorpora todo el conocimiento que
-estará finalmente offline; accesos dinámicos a la web, por ejemplo,
-se modelan en el paso 3.
-
-
-\bigskip
-
-\subsubsection*{Análisis de la pregunta}
-Este paso, igualmente genérico, permite la incorporación de
+\textbf{Análisis de la pregunta: } Este paso, igualmente genérico, permite la incorporación de
 distintos componentes para anotar los tokens de la pregunta con datos
 útiles para ser consumidos por el paso 3. Otro procesamiento a
 realizar en este paso podría ser la generación de queries
 entendibles por los distintos motores de almacenamientos de
 información del paso 1. En particular, la implementación trae un
 pos-tagger, un ner-tagger y un question classiffier, todos de Stanford.
-Hablaremos más de estos componentes más adelante. 
+Hablaremos más de estos componentes más adelante. \newline
 
-
-\bigskip
-
-\subsubsection*{Generación de respuestas}
-En este paso se utiliza la información generada en la preparación
+\textbf{Generación de respuestas: } En este paso se utiliza la información generada en la preparación
 de la base de información y en el procesamiento de la pregunta para
 generar una respuesta. También puede incorporarse accesos a la web y
 validaciones de las respuestas candidatas. La implementación concreta
@@ -86,18 +55,15 @@ completo con los tres pasos anteriores), para la fase de desarrollo y
 de evaluación de la performance del sistema:\newline
 
 
-\subsubsection*{Evaluación}
-
-Este paso está pensado para evaluar las respuestas generadas y
+\textbf{Evaluación: }Este paso está pensado para evaluar las respuestas generadas y
 presentarlas de un modo conciso en la fase de desarrollo.
 Básicamente, cruza las respuestas obtenidas contra unas respuestas
 esperadas escritas a mano y presenta el total de respuestas dadas
-correctamente.
+correctamente.\newline
 
+En esta sección de la tesis adoptamos el framework Qanus y adaptamos el sistema QA-sys para 1) incorporar Freeling como librería de herramientas de procesamiento del lenguaje permitiendo un funcionamiento multilenguaje, 2) trabajar sobre el corpus de datos y preguntas de los ejercicios de CLEF '07 de español y portugués descriptos en \allref{sec:ejecicio-de-clef} y, finalmente, 3) incorporamos y evaluamos diferentes mejoras tomadas de la reseña a la literatura científica del apartado anterior \allref{sec:literatura}.
 
-\bigskip
-
-\subsubsection*{Implementación}
+\subsubsection{Notas de Qanus y QA-sys}
 
 El código está escrito en java y mantiene una interfaz común a
 todos los pasos: un controller cuyas responsabilidades son cargar los
