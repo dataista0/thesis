@@ -7,6 +7,136 @@
 \section{Sistema}
 Para la implementación del sistema optamos por la utilización del framework qanus y su sistema baseline.
 
+\subsection{Arquitectura de Qanus}
+
+QANUS (Question-Answering @ National University of Singapore) es un
+sistema de question answering basado en information retrieval. El
+proyecto se actualizó por última vez en noviembre de 2012 y
+contiene las herramientas más actuales de nlp (el POS-tagger, el
+NER-tagger y el Question Classifier de Stanford) y también de
+information retrieval índice de búsquedas lucene), todo de código
+abierto. El código cuenta con un framework (Qanus), que cumple un rol
+equivalente a la arquitectura DeepQA en el proyecto anterior, y un
+sistema montado sobre este framework QA-sys, equivalente a Watson (Ver Figura ~\ref{fig:Quanus}). La
+motivación de esto es proveer a la comunidad científica un
+framework para ingresar al mundo de QA de una manera más sencilla y
+rápida, permitiendo construir nuevos sistemas de QA sobre esta
+arquitectura. En efecto, la arquitectura DeepQA no está disponible
+para la comunidad, el ya mencionado OpenEphyra, como veremos en breve,
+no funciona, mientras que otros sistemas resultan igualmente
+inaccesibles (Aranea, Qanda) mientras que QA-sys es un sistema de QA
+out of the box. Mencionaremos los logros y los límites de estos
+objetivos cuando hablemos de nuestro intento por montar nuestro propio
+sistema sobre Qanus. 
+
+\begin{figure}
+  \centering
+    \includegraphics{graficos/Quanus}
+  \caption{El framework Quanus y la implementación QA-sys}
+  \label{fig:Quanus}
+\end{figure}
+
+
+La arquitectura, al igual que la de DeepQA, es la de un pipeline. Este
+sistema consta de tres pasos principales, que se ejecutan todos por
+separado (off-line): 
+
+
+\bigskip
+
+\subsubsection*{Preparación de la fuente de información}
+Este paso está pensado para preprocesar cualquier base de conocimiento
+y dejarla preparada para el paso 3 (retorno de la pregunta). El
+framework se propone tan amplio que no hay más especificaciones al
+respecto. La implementación puntual asume una base de conocimiento en
+formato XML de AQUAINT\footnote{\ } y la incorpora a un índice de
+búsquedas Lucene. Este paso incorpora todo el conocimiento que
+estará finalmente offline; accesos dinámicos a la web, por ejemplo,
+se modelan en el paso 3.
+
+
+\bigskip
+
+\subsubsection*{Análisis de la pregunta}
+Este paso, igualmente genérico, permite la incorporación de
+distintos componentes para anotar los tokens de la pregunta con datos
+útiles para ser consumidos por el paso 3. Otro procesamiento a
+realizar en este paso podría ser la generación de queries
+entendibles por los distintos motores de almacenamientos de
+información del paso 1. En particular, la implementación trae un
+pos-tagger, un ner-tagger y un question classiffier, todos de Stanford.
+Hablaremos más de estos componentes más adelante. 
+
+
+\bigskip
+
+\subsubsection*{Generación de respuestas}
+En este paso se utiliza la información generada en la preparación
+de la base de información y en el procesamiento de la pregunta para
+generar una respuesta. También puede incorporarse accesos a la web y
+validaciones de las respuestas candidatas. La implementación concreta
+evalúa cada pasaje de los primeros n documentos retornados por Lucene
+para la pregunta original con una serie de componentes ad-hoc de
+distancia para adjudicar diferentes grados de confiabilidad a los
+distintos pasajes. \newline
+
+
+Además, se provee de un cuarto paso opcional (el sistema de QA está
+completo con los tres pasos anteriores), para la fase de desarrollo y
+de evaluación de la performance del sistema:\newline
+
+
+\subsubsection*{Evaluación}
+
+Este paso está pensado para evaluar las respuestas generadas y
+presentarlas de un modo conciso en la fase de desarrollo.
+Básicamente, cruza las respuestas obtenidas contra unas respuestas
+esperadas escritas a mano y presenta el total de respuestas dadas
+correctamente.
+
+
+\bigskip
+
+\subsubsection*{Implementación}
+
+El código está escrito en java y mantiene una interfaz común a
+todos los pasos: un controller cuyas responsabilidades son cargar los
+componentes y un engine que utiliza los componentes para leer el input,
+procesarlo y grabar el resultado. La adaptabilidad del framework está
+dada en la posibilidad de incorporar componentes respetando la interfaz
+especificada para los mismos o bien, en modificar esta misma interfaz.
+Presuntamente, el framework es lo suficientemente abierto para permitir
+la implementación de sistemas basados en distintas fuentes de
+conocimiento (ontologías, archivos, web) y con distintos modos de
+funcionamiento mediante poco esfuerzo de customización.
+
+La implementación llamada QA-sys está desarrollada para correr sobre
+el tipo de datos de las evaluaciones TREC 2007 (XML AQUAINT). En el
+primer paso, incorpora los XML en este formato a un índice Lucene, en
+el segundo paso utiliza anota la pregunta con POS tags, NERs y
+clasifica el tipo de respuesta con un clasificador entrenado y luego,
+en el tercer paso se busca la pregunta sobre el índice lucene y se
+retorna una lista con n documentos rankeados. Estos documentos se
+subdividen en pasajes. Luego se aplican diferente algoritmos ad-hoc
+dependiendo del tipo de respuesta esperada. \ Por ejemplo, si la
+respuesta es un nombre de persona, se ejecuta NER sobre los diferentes
+pasajes buscando nombres candidatos, si el tipo esperado es una fecha,
+se utilizan expresiones regulares escritas a mano, etc. Finalmente, los
+pasajes candidatos se evalúan utilizando heurísticas de proximidad
+de los candidatos a la pregunta inicial. Para esto se utilizan
+diferentes Scorers que rankean los pasajes según diferentes
+características (features) y luego se selecciona alguna priorizando
+algunas características sobre otras, dependiendo también del tipo
+de respuesta esperada. Por último, el evaluador de resultados mide la
+exactitud (\textit{accuracy}): total de respuestas correctas sobre
+total de preguntas. QA-sys funciona sólo sobre preguntas del tipo
+factoid y, a modo de comparación, el mejor sistema según la TREC
+2007, el LymbaPA07 obtuvo un grado de exactitud del 0.706 y el décimo
+(Quanta) obtuvo 0.206, mientras que QA-sys logra el 0.119. La
+implementación es realmente simple y funciona sólo a modo de
+ilustración de lo que puede construirse sobre el framework. 
+
+
 \subsection{Information Base Processing}
 Los datos de wikipedia constaban de esta información.
 \subsection{Question Processing}
@@ -35,7 +165,7 @@ Qanus solo trabaja sobre preguntas de tipo "FACTOID". Esto descarta "NO FACTOID"
 Para la generación de queries, el sistema baseline tiene 4 algoritmos diferentes según QType, es decir, según el resultado de Question Classifier. 
 Los casos son los siguientes:
 \textbf{Casos especificos para \sq{HUM:ind}} \\
-Hay 3 casos especiales para 'HUM:ind', que chequea contra regexs.
+Hay 3 casos especiales para 'HUM:ind', que se chequean contra regexs. En nuestra adaptación ml del sistema baseline, realizamos estos chequeos contra la traducción al inglés de la pregunta original, disponible en los xml de input. Hacer estadísticas con las preguntas. Descomentar y adaptar código. 
 
 $HUM\_IND\_TYPE1\_IC$
 
@@ -50,7 +180,9 @@ $HUM\_IND\_TYPE2$
 $"[wW]ho/WP( )([^w]+/VBD(([ A-Za-z0-9'\\-]+/[A-Z]+)*([ A-Za-z0-9'\\-\\?]+/[A-Z]+)+))"$
 
 \textbf{Default: FormQuery} \\
-Todas las palabras no stopwords + otras NN, VB y JJ. 
+El sistema original espera como parámetro, además de la pregunta propiamente dicha, un campo "target", aparentemente definido en la competencia TREC para la que está escrito. 
+Utilizamos este valor esperado para completar con el "topic" del grupo de preguntas, lo cual no está permitido en las reglas originales de la competencia. 
+El método default FormQuery genera una query que contiene, sin repetir, todas las palabras no-stopwords del campo target y todos los sustantivos, verbos y adjetivos de la pregunta completa según el pos tagger de stanford. 
 
 A partir de la query generada, se hace un pedido al índice lucene. Los documentos son divididos en oraciones de manera indiscriminada, es decir: las oraciones no heredan posición de acuerdo al ranking de los documentos a los que pertenecían.
 
