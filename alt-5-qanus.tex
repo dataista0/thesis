@@ -8,7 +8,88 @@ La estructura de este capitulo es la siguiente: en \allref{sec:ejecicio-de-clef}
 \label{sec:ejecicio-de-clef}
 Aca
 \subsection{Tareas}
-\subsection{Corpus}
+\label{subsec:clef07}
+Por su parte, para desarrollar y evaluar mecanismos de dominio abierto resolvimos algunos ejercicios de la competencia de QA organizada por CLEF 
+en 2007. 
+CLEF (de \textit{Cross-Language Evaluation Forum}) es una organización que busca fomentar la investigación en sistemas de information retrieval cross-language. 
+En particular, una vez por año CLEF lanza una competencia de Question Answering multilenguaje, con diferentes corpus y diferentes tipos de ejercicios. Estas competencia permiten obtener un patrón estándar de comparación entre distintos desarrollos y una idea general del estado de arte alcanzado en cada área.
+Por ejemplo, la competencia ya finalizada del año 2013, QA4MRE@CLEF2013, (Question Answering for Machine Reading Evaluation) se enfoca principalmente en Machine Reading, tarea que incluye un grado de razonamiento elevado para la computadora\footnote{\url{http://celct.fbk.eu/QA4MRE/}}.
+
+Existen distintas conferencias de evaluación de sistemas QA o de subtareas asociadas (por ejemplo TREC - Text Retrieval Conference \footnote{\url{http://trec.nist.gov/}}-, TAC - Text Analysis Conference \footnote{\url{http://www.nist.gov/tac/}}) - y, a su vez, estas distintas competencias ofrecen distinos llamados a competencias. Elegimos resolver una tarea de la competencia Clef '07  por varias razones (Ver \cite{GuidelineClef07} y \cite{OverviewClef07} para un detalle exhaustivo de la conferencia en cuestión). La razón principal fue la pertinencia de la tarea a evaluar al scope de esta tesis. Muchas competencias exigen un grado de complejidad que excede por mucho lo que puede alcanzarse en el tiempo estimado de una tesis de licenciatura. 
+Otra razón fue la disponibilidad y el atractivo de la base de conocimiento para estos ejercicios: utilizan snapshots de wikipedia. 
+La competencia del '07 ofrece dos tipos de ejercicios:
+\begin{itemize}
+\item Mono-lingual: donde el idioma de la pregunta y el idioma de la fuente de información son el mismo
+\item Cross-lingual: donde el idioma de la pregunta y el idioma de la fuente de información difieren
+\end{itemize}
+Los ejercicios consideran los siguientes idiomas: inglés, búlgaro, alemán, español, italiano, francés, holandés, rumano y portugués. Por su parte, algunos
+ejercicios utilizan corpus de datos privados de la competencia y otros utilizan como fuente las distintas wikipedias. De los ejercicios que utilizan
+wikipedia, implementamos un sistema que responde las preguntas en español, mono-idioma, es decir, ejercicios con preguntas formuladas en español que se responden en base a la wikipedia en español. A su vez, implementamos esta misma solución para el inglés, dado que estaban disponibles las preguntas y señalados los links a los snapshots de wikipedia en inglés, pero no fue posible evaluar sus resultados debido a que las respuestas esperadas no estaban disponibles online y no obtuvimos respuesta de los organizadores de la competencia. El uso estructural de la librería freeling permite que la implementación de soluciones para otros idiomas mediante el set-up del corpus en el idioma y una pequeña configuración. 
+Los ejercicios elegidos constan de 200 preguntas agrupadas. Los grupos de preguntas refieren a un tema, inferible a partir de la primer pregunta.
+Por ejemplo, el primer grupo de preguntas es:
+\begin{itemize}
+\item ¿En qué colegio estudia Harry Potter?
+\item ¿Cuál es el lema del colegio?
+\item ¿En qué casas está dividido?
+\item ¿Quién es el director del colegio?
+\end{itemize}
+Es decir, para cada grupo se debe inferir el \dq{tema} en la primer pregunta para arrastrarlo a la hora de responder las siguientes. Más allá de esta particularidad,
+las preguntas son preguntas simples. Más adelante haremos un análisis de las mismas con más detalle.
+
+\subsubsection{Corpus}
+El subset de ejercicios de CLEF'07 que elegimos resolver
+utiliza como corpus un snapshot de wikipedia en inglés y otro en español,
+ambos anteriores al año 2007.
+El set de preguntas completo involucra una serie de documentos para los cuales hay que 
+registrarse en la asociación: algunas preguntas se responden en base a wikipedia y otras en base a estos documentos.
+Identificamos las preguntas que se responden desde wikpedia chequeando los documentos fuente de las respuestas esperadas.
+
+Wikipedia ofrece diferentes formas para obtener una propia imagen de la enciclopedia.
+Es posible incorporar la base de datos de wikipedia a una instalación wikimedia
+propia, es posible descargar una imagen estática del sitio en archivos html y también se puede
+descargar un archivo xml gigante con todos los artículos. 
+
+En la guía para los participantes de la competencia \cite{GuidelineClef07} hay un link para descargar 
+wikipedia en inglés preprocesada de Noviembre de 2006 \footnote{\url{http://ilps.science.uva.nl/WikiXML/}} y dos opciones para descargar wikipedia en español: una imagen estática en html de Noviembre de 2006 \footnote{\url{http://static.wikipedia.org/downloads/November_2006/es/}} y un dump xml de Diciembre de 2006 
+\footnote{\url{http://download.wikimedia.org/images/archive/eswiki/20061202/pages-articles.xml.bz2}}
+
+La guía aclara que, bajo responsabilidad de los participantes, se puede usar
+cualquier otra versión de Wikipedia, siempre y cuando sea anterior a noviembre / diciembre de 2006.
+Además, se pide que las respuestas sean tomadas de ``entradas reales" o artículos de wikipedia y
+no de otros documentos (por ejemplo: ``image", ``discussion", ``category", etc).
+
+Los links a páginas de wikipedia en español no estaban más disponibles (ambos respondieron 404), mientras que el formato
+preprocesado pedido para el inglés resultaba realmente complejo de instalar y parecía una linea muerta. Por estos motivos,
+seguimos la sugerencia sobre el uso responsable de otras wikipedias y utilizamos las siguientes:
+
+\medskip
+
+\begin{center}
+\begin{tabular}{ | l | l | l |}
+    \hline
+    Idioma & Fecha & Tamaño\\ \hline
+    Inglés \footnote{\url{http://dump-ingles-1}} & 4 de noviembre de 2006 & 7,6G \\ \hline
+    Español \footnote{\url{http://dump-español-1}} & 7 de julio de 2006 & 558M \\ \hline
+\end{tabular}  
+\end{center}
+
+El mantenimiento de un mismo formato para ambos idiomas nos permitió crear un indexador único para cualquier
+dump en xml de una wikipedia. Durante el desarrollo y las pruebas, para evitar tiempos de carga innecesarios y también
+para probar, utilizamos otras imagenes disponibles de wikipedia:
+
+\medskip
+
+\begin{center}
+\begin{tabular}{ | l | l | l |}
+    \hline
+    Idioma & Fecha & Tamaño\\ \hline
+    Español & 26 de enero de 2007 & 902M \\ \hline
+    Español & 14 de junio de 2013 & 7,3G \\ \hline
+    Inglés simple & 4 de julio de 2006 & 26M \\ \hline
+    Inglés simple & 24 de julio de 2013 & 406M \\ \hline
+ \end{tabular}
+\end{center}
+
 \subsection{Preguntas}
 
 \section{Sistema}
@@ -104,7 +185,35 @@ ilustración de lo que puede construirse sobre el framework.
 
 
 \subsection{Information Base Processing}
-Los datos de wikipedia constaban de esta información.
+Para la construcción de indices lucene con los dumps de wikipedia usamos la librería gwtwiki (Ver Apéndice~\ref{sec:gwtwiki}).
+Los artículos se indexan como documentos con los siguiente campos: \emph{id, title, body y all}. En este proceso se descartan artículos mal formados y 
+entradas representado imágenes o discusiones, tal como se sugiere en la guía. 
+Por mera curiosidad, tomamos tiempos en la contrucción de estos índices locales sobre versiones de wikipedia.
+Estos son algunos tiempos de indexación para distintos dumps sobre una [[detalles de la compu]]:
+\begin{center}
+\begin{tabular}{| l | l | l | l |}
+\hline
+Idioma & Tamaño & \# Entradas & Tiempo \\ \hline
+es & 50M & \# 16 millones & 2.5min \\ \hline
+es & 50M & \# 16 millones & 2.5min \\ \hline
+es & 50M & \# 16 millones & 2.5min \\ \hline
+es & 50M & \# 16 millones & 2.5min \\ \hline
+\end{tabular}
+\end{center}
+
+
+El proceso de creación de índices está ilustrado en la figura \ref{fig:LuceneIndexWriterBoth}
+
+
+
+\begin{figure}[H]
+  \centering
+    \includegraphics{graficos/LuceneIndexWriterWiki}
+  \caption{Lucene Index Writer para dumps de Wikipedia}
+  \label{fig:LuceneIndexWriterWiki}
+\end{figure}
+
+
 \subsection{Question Processing}
 Inclusión de freeling como librería y parametrización de idioma.
 QC -aprovechando paralelismo con inglés. No hay QC de otros.
@@ -663,61 +772,6 @@ Métricas de medición: definición de documento relevante.
 
 % Los atributos de cada entidad se pueden ver en el Anexo: [[HACER Y LINKEAR]].
 
-% \subsubsection{Wikipedia}
-% El subset de ejercicios de CLEF'07 que elegimos resolver
-% utiliza como corpus un snapshot de wikipedia en inglés y otro en español,
-% ambos anteriores al año 2007.
-% El set de preguntas completo involucra una serie de documentos para los cuales hay que 
-% registrarse en la asociación: algunas preguntas se responden en base a wikipedia y otras en base a estos documentos.
-% Identificamos las preguntas que se responden desde wikpedia chequeando los documentos fuente de las respuestas esperadas.
-
-% Wikipedia ofrece diferentes formas para obtener una propia imagen de la enciclopedia.
-% Es posible incorporar la base de datos de wikipedia a una instalación wikimedia
-% propia, es posible descargar una imagen estática del sitio en archivos html y también se puede
-% descargar un archivo xml gigante con todos los artículos. 
-
-% En la guía para los participantes de la competencia \cite{GuidelineClef07} hay un link para descargar 
-% wikipedia en inglés preprocesada de Noviembre de 2006 \footnote{\url{http://ilps.science.uva.nl/WikiXML/}} y dos opciones para descargar wikipedia en español: una imagen estática en html de Noviembre de 2006 \footnote{\url{http://static.wikipedia.org/downloads/November_2006/es/}} y un dump xml de Diciembre de 2006 
-% \footnote{\url{http://download.wikimedia.org/images/archive/eswiki/20061202/pages-articles.xml.bz2}}
-
-% La guía aclara que, bajo responsabilidad de los participantes, se puede usar
-% cualquier otra versión de Wikipedia, siempre y cuando sea anterior a noviembre / diciembre de 2006.
-% Además, se pide que las respuestas sean tomadas de ``entradas reales" o artículos de wikipedia y
-% no de otros documentos (por ejemplo: ``image", ``discussion", ``category", etc).
-
-% Los links a páginas de wikipedia en español no estaban más disponibles (ambos respondieron 404), mientras que el formato
-% preprocesado pedido para el inglés resultaba realmente complejo de instalar y parecía una linea muerta. Por estos motivos,
-% seguimos la sugerencia sobre el uso responsable de otras wikipedias y utilizamos las siguientes:
-
-% \medskip
-
-% \begin{center}
-% \begin{tabular}{ | l | l | l |}
-%     \hline
-%     Idioma & Fecha & Tamaño\\ \hline
-%     Inglés \footnote{\url{http://dump-ingles-1}} & 4 de noviembre de 2006 & 7,6G \\ \hline
-%     Español \footnote{\url{http://dump-español-1}} & 7 de julio de 2006 & 558M \\ \hline
-% \end{tabular}  
-% \end{center}
-
-% El mantenimiento de un mismo formato para ambos idiomas nos permitió crear un indexador único para cualquier
-% dump en xml de una wikipedia. Durante el desarrollo y las pruebas, para evitar tiempos de carga innecesarios y también
-% para probar, utilizamos otras imagenes disponibles de wikipedia:
-
-% \medskip
-
-% \begin{center}
-% \begin{tabular}{ | l | l | l |}
-%     \hline
-%     Idioma & Fecha & Tamaño\\ \hline
-%     Español & 26 de enero de 2007 & 902M \\ \hline
-%     Español & 14 de junio de 2013 & 7,3G \\ \hline
-%     Inglés simple & 4 de julio de 2006 & 26M \\ \hline
-%     Inglés simple & 24 de julio de 2013 & 406M \\ \hline
-%  \end{tabular}
-% \end{center}
-
-
 % \subsection{Creación de Indices}
 
 % \begin{figure}[H]
@@ -743,34 +797,6 @@ Métricas de medición: definición de documento relevante.
 % %     \includegraphics{graficos/LuceneIndexWriterEstructurado}
 % %   \caption{Lucene Index Writer para datos del proyecto Mitic}
 % %   \label{fig:LuceneIndexWriterEstructurado}
-% % \end{figure}
-
-% Para la construcción de indices lucene con los dumps de wikipedia usamos la librería gwtwiki (Ver Apéndice~\ref{sec:gwtwiki}).
-% Los artículos se indexan como documentos con los siguiente campos: \emph{id, title, body y all}. En este proceso se descartan artículos mal formados y 
-% entradas representado imágenes o discusiones, tal como se sugiere en la guía. 
-% Por mera curiosidad, tomamos tiempos en la contrucción de estos índices locales sobre versiones de wikipedia.
-% Estos son algunos tiempos de indexación para distintos dumps sobre una [[detalles de la compu]]:
-% \begin{center}
-% \begin{tabular}{| l | l | l | l |}
-% \hline
-% Idioma & Tamaño & \# Entradas & Tiempo \\ \hline
-% es & 50M & \# 16 millones & 2.5min \\ \hline
-% es & 50M & \# 16 millones & 2.5min \\ \hline
-% es & 50M & \# 16 millones & 2.5min \\ \hline
-% es & 50M & \# 16 millones & 2.5min \\ \hline
-% \end{tabular}
-% \end{center}
-
-
-% El proceso de creación de índices está ilustrado en la figura \ref{fig:LuceneIndexWriterBoth}
-
-
-
-% % \begin{figure}[H]
-% %   \centering
-% %     \includegraphics{graficos/LuceneIndexWriterWiki}
-% %   \caption{Lucene Index Writer para dumps de Wikipedia}
-% %   \label{fig:LuceneIndexWriterWiki}
 % % \end{figure}
 
 
