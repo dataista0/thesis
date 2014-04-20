@@ -7,13 +7,19 @@ La estructura de este capitulo es la siguiente: en \allref{sec:ejecicio-de-clef}
 \section{Ejercicio de Clef}
 \label{sec:ejecicio-de-clef}
 
-Tras investigar distintas competencias y métodos de evaluación, optamos por utilizar como guía de trabajo dos ejercicios de la tarea principal de question answering de la competencia Clef del 2007. Principalmente por contar con un subconjunto de ejercicios bastante adecuados para nuestra tesis y disponer de un corpus de datos libre y disponible en el acto para evaluar una parte importante de las funcionalidades implementadas en nuestro proyecto. 
+Tras investigar distintas competencias y métodos de evaluación, optamos por utilizar como guía de trabajo dos ejercicios de la tarea principal de question answering de la competencia Clef de 2007. Principalmente por contar con un subconjunto de ejercicios bastante adecuados para nuestra tesis y disponer de un corpus de datos libre y disponible en el acto para evaluar una parte importante de las funcionalidades implementadas en nuestro proyecto. 
+
+Como mencionamos en \allref{sec:competencias}, Clef (de \textit{Cross-Language Evaluation Forum}) es una organización que busca fomentar la investigación en sistemas de information retrieval cross-language. En particular, una vez por año Clef lanza una competencia de Question Answering multilingüe, con diferentes corpus y diferentes tipos de ejercicios. Estas competencia permiten obtener un patrón estándar de comparación entre distintos desarrollos y una idea general del estado de arte alcanzado en los diferentes idiomas por la diferentes actores académicos o {\color{red}comerciales}. Por lo demás, Clef es el principal organizador de conferencias de question answering multilingüe para idiomas europeos y la tarea principal de '07 presentaba una complejidad adecuada para el scope de esta tesis.
+
+La competencia de 2007 es la quinta campaña de QA multilingüe de Clef, siendo la primera en 2003 {\color{red} tomando la posta dejada por las Trec multilingües}. 
+
+La tarea estandar principal de question answering incorpora algunas particularidades que la diferencian de anteriores campañas: los temas o tópicos, la co-referencia y el uso de wikipedia como corpus de datos parcial. Además de la tarea principal se presentaron tres tareas más: Answer Validation Exercise (AVE) y QUAST, question answering in speech transcription y Question Answering Real Time, con métricas de performance temporales. Como nota general, es importante notar que las tareas fueron de una complejidad elevada y en comparación con los resultados del año anterior, la mejor precisión general bajó del 49\% al 41.75\% para tareas multi-lingües, mientras que, más significativamente, bajó de 68\% a 54\% en tareas monolingües.
+
 
 \subsection{Tareas}
 \label{subsec:tareas}
 
-Como mencionamos en \allref{sec:competencias}, Clef (de \textit{Cross-Language Evaluation Forum}) es una organización que busca fomentar la investigación en sistemas de information retrieval cross-language. En particular, una vez por año Clef lanza una competencia de Question Answering multilingüe, con diferentes corpus y diferentes tipos de ejercicios. Estas competencia permiten obtener un patrón estándar de comparación entre distintos desarrollos y una idea general del estado de arte alcanzado en los diferentes idiomas por la diferentes actores académicos o {\color{red}comerciales}.
-Utilizamos como guia dos ejercicios de tarea principal de question answering de la competencia Clef '07  por varias razones (Ver \cite{GuidelineClef07} y \cite{OverviewClef07} para un detalle exhaustivo de la conferencia en cuestión). Clef es la principal competencia de multilingüe para idiomas europeos y la tarea principal de '07 presentaba una complejidad adecuada para el scope de esta tesis. Además, para esta tarea estaban disponibles los datos para una experimentación  multilingüe que abarque tanto inglés como español y portugués. Además, estos ejercicios incorporaban, por única vez, diferentes wikipedias como parte del corpus de datos, lo cual resulta de por si atractivo. 
+Utilizamos como guia dos ejercicios de la tarea principal de question answering de '07  por varias razones (Ver \cite{GuidelineClef07} y \cite{OverviewClef07} para un detalle exhaustivo de la conferencia en cuestión). Para esta tarea estaban disponibles en acto corpus, inputs de prueba y resultados esperados para una experimentación multilingüe que abarque tanto inglés como español y portugués. Además, estos ejercicios incorporaban, por única vez, diferentes wikipedias como parte del corpus de datos, lo cual resulta de por si atractivo. 
 
 La tarea principal de QA de Clef '07 ofrece dos grandes grupos de ejercicios:
 \begin{itemize}
@@ -21,78 +27,70 @@ La tarea principal de QA de Clef '07 ofrece dos grandes grupos de ejercicios:
 \item Cross-lingual: donde el idioma de la pregunta y el idioma de la fuente de información difieren
 \end{itemize}
 
-Los ejercicios consideran los siguientes idiomas: inglés, búlgaro, alemán, español, italiano, francés, holandés, rumano y portugués. 
+En ambos grupos, los sistemas reciben un set de 200 preguntas - que pueden ser de hechos o eventos (FACTOID), definiciones de personas, cosas u organizaciones (DEFINITION), listas de personas, objetos o datos (LIST) - y se exige devolver una respuesta exacta, donde exacta significa sin más información de la mínima necesaria. Siguiendo el ejemplo de Trec, los ejercicios de este año contienen topics, i.e. clusters de preguntas relacionadas con un mismo tema y con posibilidad de co-referencia entre las preguntas del grupo. Ni el tipo de la pregunta ni el tópico es dado a los participantes.
 
-{\color{red} Tabla de activaciones}
-Por su parte, algunos ejercicios utilizan como corpus solo una colección de datos privados de la competencia, mientras otros utilizan como fuente estos mismos corpus privados y también distintas versiones de wikipedia. 
+La respuesta tiene que estar soportada por el id del documento del cual se extrajo y por la porción de texto que proveyó contexto suficiente para soportar la corrección de la respuesta. Los “textos de soporte” pueden venir de diferentes partes de documentos relevantes y deben sumar un máximo de 700 bytes. No hubo restricciones sobre la longitud del string de respuesta, pero fragmentos de información innecesaria fueron penalizados marcando la respuesta como ineXacta. 
 
-De los ejercicios que utilizan
-wikipedia, implementamos un sistema que responde las preguntas en español, mono-idioma, es decir, ejercicios con preguntas formuladas en español que se responden en base a la wikipedia en español. A su vez, implementamos esta misma solución para el inglés, dado que estaban disponibles las preguntas y señalados los links a los snapshots de wikipedia en inglés, pero no fue posible evaluar sus resultados debido a que las respuestas esperadas no estaban disponibles online y no obtuvimos respuesta de los organizadores de la competencia. El uso estructural de la librería freeling permite que la implementación de soluciones para otros idiomas mediante el set-up del corpus en el idioma y una pequeña configuración. 
-Los ejercicios elegidos constan de 200 preguntas agrupadas. Los grupos de preguntas refieren a un tema, inferible a partir de la primer pregunta.
-Por ejemplo, el primer grupo de preguntas es:
-\begin{itemize}
-\item ¿En qué colegio estudia Harry Potter?
-\item ¿Cuál es el lema del colegio?
-\item ¿En qué casas está dividido?
-\item ¿Quién es el director del colegio?
-\end{itemize}
-Es decir, para cada grupo se debe inferir el \dq{tema} en la primer pregunta para arrastrarlo a la hora de responder las siguientes. Más allá de esta particularidad,
-las preguntas son preguntas simples. Más adelante haremos un análisis de las mismas con más detalle.
+Otra particularidad de los ejercicios es que hay preguntas sin respuesta en el corpus que esperan como respuesta 'Nil'.
 
-\subsection{Corpus}
-El subset de ejercicios de Clef'07 que elegimos resolver utiliza como corpus un snapshot de wikipedia en inglés y otro en español, ambos anteriores al año 2007.
-El set de preguntas completo involucra una serie de documentos para los cuales hay que 
-registrarse en la asociación: algunas preguntas se responden en base a wikipedia y otras en base a estos documentos.
-Identificamos las preguntas que se responden desde wikipedia chequeando los documentos fuente de las respuestas esperadas.
 
-Wikipedia ofrece diferentes formas para obtener una propia imagen de la enciclopedia.
-Es posible incorporar la base de datos de wikipedia a una instalación wikimedia
-propia, es posible descargar una imagen estática del sitio en archivos html y también se puede
-descargar un archivo xml gigante con todos los artículos. 
+Se consideraron 10 idiomas para preguntas: búlgaro, holandés, inglés, francés, alemán, indonesio, italiano, portugués, romano y español. Todos estos idiomas se usaron como idiomas del corpus, a excepción del indonesio para el que no se disponía de una colección de noticias.
 
-En la guía para los participantes de la competencia \cite{GuidelineClef07} hay un link para descargar 
-wikipedia en inglés preprocesada de Noviembre de 2006 \footnote{\url{http://ilps.science.uva.nl/WikiXML/}} y dos opciones para descargar wikipedia en español: una imagen estática en html de Noviembre de 2006 \footnote{\url{http://static.wikipedia.org/downloads/November_2006/es/}} y un dump xml de Diciembre de 2006 
-\footnote{\url{http://download.wikimedia.org/images/archive/eswiki/20061202/pages-articles.xml.bz2}}
+Se propusieron, en total, 37 tareas concretas: 8 monolingües y 29 bilingües. Dada la complejidad de la construcción del ejercicio mismo, la organización solo implementó concretamente las tareas tomadas por algún equipo competidor. 
+
+
+\begin{figure}
+  \centering
+    \includegraphics[scale=0.5]{graficos/clef07}
+  \caption{Tareas activadas en la competencia Clef '07}
+  \label{fig:tareas}
+\end{figure}
+
+El corpus de datos propuesto consiste en dos corpora distintos: una serie de de recopilados especificamente por los organizadores de la competencia y utilizado con frecuencia en competencias anteriores y, por otro lado, snapshops de las wikipedias en diferentes idiomas con límite en Diciembre de 2006.
+
+Para nuestro proyecto utilizamos las preguntas y los datos de evaluación de los ejercicios monolingües es-es (español-español) y pt-pt (portugués-portugués) implementando como corpus de datos solo las wikipedias.
+
+Los datos de los ejercicios constan de dos archivos: un archivo con 200 preguntas agrupadas por temas y otro archivo con diferentes traducciones de la pregunta, una respuesta goldstandard con soporte textual y el id del documento de soporte para el idioma target (del corpus). 
+
+Por otro lado, en la guía de ingreso a la competencia\cite{GuidelineClef07} se proveen links para descargar los snapshots de wikipedia sugeridos. Se ofrece una versión de wikipedia en inglés preprocesada de Noviembre de 2006 \footnote{\url{http://ilps.science.uva.nl/WikiXML/}}, dos opciones para descargar wikipedia en español: una imagen estática en html de Noviembre de 2006 \footnote{\url{http://static.wikipedia.org/downloads/November_2006/es/}} y un dump xml de Diciembre de 2006 \footnote{\url{http://download.wikimedia.org/images/archive/eswiki/20061202/pages-articles.xml.bz2}} y también X opciones de portugués.
 
 La guía aclara que, bajo responsabilidad de los participantes, se puede usar
 cualquier otra versión de Wikipedia, siempre y cuando sea anterior a noviembre / diciembre de 2006.
 Además, se pide que las respuestas sean tomadas de ``entradas reales" o artículos de wikipedia y
-no de otros documentos (por ejemplo: ``image", ``discussion", ``category", etc).
+no de otros documentos (imagenes, discusión, categoría, template, histórico de reviosones, datos de usuario y páginas con meta información).
 
-Los links a páginas de wikipedia en español no estaban más disponibles (ambos respondieron 404), mientras que el formato
+Los links a páginas de wikipedia en español y en portugués no estaban más disponibles (ambos respondieron 404), mientras que el formato
 preprocesado pedido para el inglés resultaba realmente complejo de instalar y parecía una linea muerta. Por estos motivos,
-seguimos la sugerencia sobre el uso responsable de otras wikipedias y utilizamos las siguientes:
+seguimos la sugerencia sobre el uso responsable de otras wikipedias y utilizamos las siguientes snapshots encontrados en Wikidumps\footnote{link a wikidumps}.
 
-\medskip
 
 \begin{center}
-\begin{tabular}{ | l | l | l |}
+\begin{tabular}{ | l | l | l | l |}
     \hline
-    Idioma & Fecha & Tamaño\\ \hline
-    Inglés \footnote{\url{http://dump-ingles-1}} & 4 de noviembre de 2006 & 7,6G \\ \hline
-    Español \footnote{\url{http://dump-español-1}} & 7 de julio de 2006 & 558M \\ \hline
+    Idioma & Fecha & Tamaño & Cantidad de archivos\\ \hline
+    Español \footnote{\url{http://dump-español-1}} & 7 de julio de 2006 & 558M & archivos \\ \hline
+    Portugués \footnote{\url{http://dump-español-1}} & fecha & peso & archivos \\ \hline
 \end{tabular}  
 \end{center}
 
-El mantenimiento de un mismo formato para ambos idiomas nos permitió crear un indexador único para cualquier
-dump en xml de una wikipedia. Durante el desarrollo y las pruebas, para evitar tiempos de carga innecesarios y también
-para probar, utilizamos otras imagenes disponibles de wikipedia:
 
-\medskip
+% Durante el desarrollo y las pruebas utilizamos otras imagenes de wikipedia:
 
-\begin{center}
-\begin{tabular}{ | l | l | l |}
-    \hline
-    Idioma & Fecha & Tamaño\\ \hline
-    Español & 26 de enero de 2007 & 902M \\ \hline
-    Español & 14 de junio de 2013 & 7,3G \\ \hline
-    Inglés simple & 4 de julio de 2006 & 26M \\ \hline
-    Inglés simple & 24 de julio de 2013 & 406M \\ \hline
- \end{tabular}
-\end{center}
+% \medskip
 
+% \begin{center}
+% \begin{tabular}{ | l | l | l |}
+%     \hline
+%     Idioma & Fecha & Tamaño\\ \hline
+%     Inglés \footnote{\url{http://dump-ingles-1}} & 4 de noviembre de 2006 & 7,6G \\ \hline
+%     Español & 26 de enero de 2007 & 902M \\ \hline
+%     Español & 14 de junio de 2013 & 7,3G \\ \hline
+%     Inglés simple & 4 de julio de 2006 & 26M \\ \hline
+%     Inglés simple & 24 de julio de 2013 & 406M \\ \hline
+%  \end{tabular}
+% \end{center}
 
-De las respuestas goldstandard, discriminamos las soportadas por wikipedia, las soportadas por el corpora para miembros registrados y las que no tienen respuesta (NIL):
+Utilizando la información disponible en los archivos de respuestas esperadas, discriminamos las preguntas con respuestas con soporte de wikipedia, las soportadas por el corpora de noticias de la organización y las que no tienen respuesta (NIL):
 
 \begin{center}
 \begin{tabular}{| l | l | l | l | l |}
@@ -104,16 +102,58 @@ pt & 130 & 59 & 11 & 200 \\ \hline
 \end{center}
 
 
-Los resultados positivos esperamos que sean en wiki (news seguro no y nil no sé). 
+\subsection{Análisis de las preguntas}
+
+Las 200 preguntas del test set están agrupadas por tema, y cada tema tiene de una a cuatro preguntas. Los temas pueden ser entidades nombradas, evento o también categorías como objetos, fenómenos naturales, etc (por ejemplo: Bush, Juegos Olímpicos, notebooks, huracanes, etc). 
+Los temas no están dados en el set de test, pero pueden ser inferidos del primer par pregunta respuesta. La relación del tema con el grupo de preguntas respetaba las siguiente condiciones:
+
+\begin{itemize}
+\item El tema es nombrado en la primer pregunta o bien en la primera respuesta.
+\item Las siguientes preguntas pueden contener co-referencias al tema expresado en el primer par pregunta/respuesta
+\end{itemize}
 
 
+Para ilustrar el punto consideremos el primer grupo de preguntas para el ejercicio de español es:
+\begin{itemize}
+\item ¿En qué colegio estudia Harry Potter?
+\item ¿Cuál es el lema del colegio?
+\item ¿En qué casas está dividido?
+\item ¿Quién es el director del colegio?
+\end{itemize}
 
-\subsection{Preguntas}
 
-El formato de las preguntas para los ejercicios Clef que elegimos es un xml para cada idioma. 
+{\color{red} El set de preguntas estaba numerado de 1 a 200, sin indicación de si pertenecian a un cluster del mismo tema o no} 
 
-Por QTYPe
+Como ya mencionamos, algunas preguntas podían no tener respuesta en la colección de documentos, y en ese caso la respuesta exacta era “NIL” y la justificación y el docid vacíos. La organización definió como criterio de inexistencia de la respuesta que ni los asesores humanos ni los demás sistemas participantes pudieran encontrar alguna.
+
+En lo que respecta a los tipos de pregunta, el ejercicio considerara tres categorías: Factoid, Definition y Closed List.
+
 \begin{center}
+\begin{table}
+\begin{tabular}{| l |  p {12cm} |}
+\hline
+Tipo & Descripción  \\ \hline
+FACTOID & preguntas fácticas, preguntando el nombre de una persona, un lugar, la medida de algo, el día en que algo ocurrió, etc. \\ \hline
+DEFINITION & preguntas como Qué/ Quién es X? \\ \hline
+CLOSED LIST & questions that require one answer containing a determined number of items, e.g \\ \hline
+\end{tabular}
+\caption{Definición de los tipos de pregunta}
+\label{table:question-type-definition}
+\end{table}
+\end{center}
+
+Todos los tipos de pregunta podian contener restricciones temporales, i. e: una especificación temporal proveyendo importante información para devolver una respuesta correcta. Por ejemplo: \newline
+Q: Who was the Chancellor of Germany from 1974 to 1982? \newline
+A: Helmut Schmidt.\newline
+Q: Which book was published by George Orwell in 1945?\newline
+A: Animal Farm.\newline
+Q: Which organization did Shimon Perez chair after Isaac Rabin’s death?\newline
+A: Labour Party Central Committee.\newline
+
+
+%Los calculos propios coinciden con el análisis presentado en \cite{OverviewClef07} en la siguiente discriminación del total de preguntas en función de las categorías recién señaladas:
+\begin{center}
+\begin{table}
 \begin{tabular}{| l | l | l | l | l | l |}
 \hline
 Subset & Idioma & Factoid & Definition & List & Total \\ \hline
@@ -122,10 +162,68 @@ Subset & Idioma & Factoid & Definition & List & Total \\ \hline
  \multirow{2}{*}{Wiki} & es & 122 & 24 & 9 & 155 \\ \cline{2-6}
  & pt & 104 & 18 & 8 & 130 \\ \hline
 \end{tabular}
+\caption{Totales por tipo de pregunta}
+\label{table:totals-type-question}
+\end{table}
 \end{center}
 
-Analisis por tipo de respuesta esperada:
+Los tipos de preguntas disponen a su vez de subtipos. Las preguntas factoid disponen de 8 subtipos, las de definiciones y listas tienen 4.
+Se consideraron los siguiente 8 tipos de Factoids: 
+
 \begin{center}
+\begin{table}
+\begin{tabular}{| l | p{12cm}|}
+\hline
+Tipo & Ejemplo \\ \hline
+PERSON &  Q: Who was called the \dq{Iron-Chancellor}? \newline A: Otto von Bismarck. \\ \hline 
+LOCATION & Q: Which town was Wolfgang Amadeus Mozart born in? \newline A: Salzburg. \\ \hline
+ORGANIZATION & Q: What party does Tony Blair belong to? \newline A: Labour Party.\\ \hline
+MEASURE &Q: How high is Kanchenjunga?\newline A: 8598m. \\ \hline
+COUNT & Q: How many people died during the Terror of Pol Pot? \newline A: 1 million.\\ \hline
+OBJECT & Q What does magma consist of?\newline A: Molten rock.\\ \hline
+TIME & Q: What year was Martin Luther King murdered?\newline A: 1968.\\ \hline
+OTHER & i.e. everything that does not fit into the other categories above.\newline Q: Which treaty was signed in 1979? \newline
+A: Israel-Egyptian peace treaty.\\ \hline
+\end{tabular}
+\caption{Tipos de respuesta esperada para preguntas Factoid}
+\label{table:type-factoid}
+\end{table}
+\end{center}
+
+Las preguntas de tipo LIST consisten son enumeraciones de 4 tipos posibles: PERSON, LOCATION, ORGANIZATION y OTHER.
+Por ejemplo:\newline
+Q: Name all the airports in London, England. \newline
+A: Gatwick, Stansted, Heathrow, Luton and City.
+
+Como solo una fuente estaba estaba permitida, los items debían aparecer en secuencia, uno después del otro, en uno documento de la colección .
+Con respecto a las preguntas de tipo definition, también cuatro tipos, con otra semántica.
+
+
+\begin{center}
+\begin{table}
+\begin{tabular}{| l | p{12cm}|}
+\hline
+Tipo & Descripción y ejemplo \\ \hline
+PERSON & i.e. questions asking for the role/job/important information about someone, \newline
+ Q: Who is Robert Altmann? \newline
+ A: Film maker. \\ \hline
+ORGANIZATION & i.e. questions asking for the mission/full name/important information about an organization \newline
+ Q: What is the Knesset? \newline
+ A: Parliament of Israel. \\ \hline
+OBJECT & i.e. questions asking for the description/function of objects, e.g. \newline
+Q: What is Atlantis? \newline
+A: Space Shuttle. \\ \hline
+OTHER & i.e. question asking for the description of natural phenomena, technologies, legal procedures etc. \newline
+Q: What is Eurovision? \newline
+A: Song contest. \\ \hline
+\end{tabular}
+\caption{Tipos de respuesta esperada para preguntas Definition}
+\label{table:definition-questions}
+\end{table}
+\end{center}
+
+\begin{center}
+\begin{table}
 \begin{tabular}{| l | l | l | l | l | l |l |l|l|}
 \hline
 Tipo & pt & es & pt-factoid & es-factoid & pt-def & es-def & pt-list & es-list \\ \hline
@@ -139,7 +237,11 @@ ORGANIZATION & 31 & 32 & 24 & 22 & 6 & 8 & 1 & 2\\ \hline
 OTHER & 37 & 30 & 24 & 18 & 11 & 7 & 2 & 5 \\ \hline
 Total & 200 & 200 & 159 & 158 & 31 & 32  & 10 & 10\\ \hline
 \end{tabular}
+\caption{Tipos de respuesta esperada en función de tipo de pregunta}
+\label{table:tipo-general}
+\end{table}
 \end{center}
+
 
 \section{Sistema}
 \label{sec:sistema}
@@ -203,8 +305,9 @@ dada en la posibilidad de incorporar componentes respetando la interfaz
 especificada para los mismos o bien, en modificar esta misma interfaz.
 
 La implementación QA-sys está desarrollada para correr sobre
-el tipo de datos de las evaluaciones Trec 2007 (XML Aquaint). En el
-primer paso, incorpora los XML en este formato a un índice Lucene, en
+el tipo de datos de las evaluaciones Trec 2007. 
+Brevemente, la implementación realiza las siguientes tareas:
+En el primer paso, incorpora los XML en el formato XML Aquaint propuesto por la competencia a un índice Lucene, en
 el segundo paso anota la pregunta con POS tags, NERs y
 clasifica el tipo de respuesta con un clasificador entrenado y luego,
 en el tercer paso se busca la pregunta sobre el índice lucene y se
@@ -221,18 +324,24 @@ características (features) y luego se selecciona alguna priorizando
 algunas características sobre otras, dependiendo también del tipo
 de respuesta esperada. Por último, el evaluador de resultados mide la
 exactitud (\textit{accuracy}): total de respuestas correctas sobre
-total de preguntas. QA-sys funciona sólo sobre preguntas del tipo
+total de preguntas. 
+
+QA-sys funciona sólo sobre preguntas del tipo
 factoid y, a modo de comparación, el mejor sistema según la Trec
 2007, el LymbaPA07 obtuvo un grado de exactitud del 0.706 y el décimo
 (Quanta) obtuvo 0.206, mientras que QA-sys logra el 0.119 disponiendo de una implementación sumamente simple.
 
+En las siguientes secciones de la tesis describiremos la implementación de nuestro sistema de question answering tomando como base los tres pasos principales del pipeline de QA-sys. 
 
-\subsection{Information Base Processing}
-Para la construcción de indices lucene con los dumps de wikipedia usamos la librería gwtwiki (Ver Apéndice~\ref{sec:gwtwiki}).
-Los artículos se indexan como documentos con los siguiente campos: \emph{id, title, body y all}. En este proceso se descartan artículos mal formados y 
-entradas representado imágenes o discusiones, tal como se sugiere en la guía. 
-Por mera curiosidad, tomamos tiempos en la contrucción de estos índices locales sobre versiones de wikipedia.
-Estos son algunos tiempos de indexación para distintos dumps sobre una [[detalles de la compu]]:
+\subsection{Procesamiento de la base de información}
+
+El módulo de procesamiento de la base de información de la implementación QA-sys está desarrollada para correr sobre el tipo de datos de las evaluaciones Trec 2007, un formato XML conocido como ``Aquaint". Por otro lado, el mismo framework esta atado al procesador de XMLs SAX, una entre varias implementaciones disponibles en el entorno de java. En nuestra adaptación, incorporamos la librería gwtwiki (Ver Apéndice~\ref{sec:gwtwiki}) para procesar los xml dumps de wikipedia. Como esta librería no utiliza SAX, nos vimos obligados a modificar el framework. 
+
+En este proceso descartamos artículos mal formados y entradas representado imágenes o discusiones, tal como se sugiere en la guía. 
+Los artículos se indexan en índices Lucene como documentos con los siguiente campos: \emph{id, title, body y all}. 
+La tabla \ref{table:creacion-indices} muestra algunos datos del proceso de generación de índices, mientra que la figura \ref{fig:LuceneIndexWriterWiki} ilustra el proceso.
+
+\begin{table}
 \begin{center}
 \begin{tabular}{| l | l | l | l |}
 \hline
@@ -242,12 +351,10 @@ es & 50M & \# 16 millones & 2.5min \\ \hline
 es & 50M & \# 16 millones & 2.5min \\ \hline
 es & 50M & \# 16 millones & 2.5min \\ \hline
 \end{tabular}
+\caption{Datos de procesamiento sobre las diferentes versiones de wikipedia analizadas. Los tiempos de procesamiento están tomados en una Pentium tanto con tanto de RAM y tal OS.}
+\label{table:creacion-indices}
 \end{center}
-
-
-El proceso de creación de índices está ilustrado en la figura \ref{fig:LuceneIndexWriterBoth}
-
-
+\end{table}
 
 \begin{figure}[H]
   \centering
@@ -257,11 +364,13 @@ El proceso de creación de índices está ilustrado en la figura \ref{fig:Lucene
 \end{figure}
 
 
-\subsection{Question Processing}
-Inclusión de freeling como librería y parametrización de idioma.
-QC -aprovechando paralelismo con inglés. No hay QC de otros.
-Resultados de QC.
-\subsubsection{Experimentación de Question Processing}
+\subsection{Anotado de la pregunta}
+
+El módulo original de QA-sys de procesamiento de la pregunta espera preguntas en el formato Aquaint definido por Trec, al igual que el tipo de datos esperado sobre el corpus en el paso anterior. En el procesamiento lleva a cabo las tareas descriptas de modo general en \allref{subsec:impl-pos}, \allref{subsec:impl-ner} y \allref{subsec:qtype},  utiliza como librerías de procesamiento de lenguaje las el POS-Tagger, el NER-Tagger y el Question Classifier de la Universidad de Stanford, disponibles solo para inglés, descriptas en \allref{sec:stanford-both} y \allref{sec:stanford-qc} respectivamente.
+En nuestra adaptación incorporamos los módulos de POS y NERC multilingües de freeling. Con respecto a la clasificación de preguntas, ya mencionamos que no existen clasificadores para español {\color{red} y tampoco para el portugués}. Frente a esta situación podríamos haber implementado clasificadores heurísticos basados en reglas escritas a mano como en el caso del sistema estructurado (\allref{sec:qp-mitic}). Aprovechando la disponibilidad de una traducción confiable al inglés de las preguntas en archivos de datos (debido a la activación de los ejercicios cross-lingual en-es y en-pt), decidimos utilizar el clasificador de Stanford sobre la traducción inglesa de la pregunta.
+Las tablas \ref{table:x} y \ref{table:x} presentan la distribución de las 200 preguntas para español y para portugués según las cincos clases principales del esquema de Li \& Roth. Los niveles de confianza en la clasificación logradas oscilan entre tanto y tanto, dato dato dato.
+
+
 \subsection{Answer Retrieval}
 \subsubsection{Baseline}
 Como baseline de desarrollo y pruebas, adaptamos los algoritmos de Qanus. 
@@ -332,8 +441,6 @@ Ver \allref{chap:resultados-ingles-simple} para una tabla de los datos.
 
 \textbf{Baseline multilingüe}
 
-
-
 \subsubsection{Group Entity extraction}
 \label{subsubsec:entidad-de-grupo}
 Formas de extraer la entidad de grupo o tópico y de incorporarlo en la query.
@@ -348,6 +455,12 @@ Métricas de medición: definición de documento relevante.
 \subsubsection{Heuristic 2}
 \subsubsection{Heuristic 3}
 \subsubsection{Experimentación de Answer Retrieval}
+
+
+\section{Evaluación}
+\subsection{Evaluación y resultados de Clef}
+Como en años anteriores, la respuesta correcta pudo estar copiada y pegada exactamente desde el documento, aún cuando sea gramaticamente incorrecta (por ejemplo: el caso de inflexión no coincide con el requerido por la pregunta). De todos modos, este año se les permitió a los sistemas usar generación de lenguaje natural para corregir inconsistencias morfosintácticas. (Por ejemplo, en alemán cambiar “dem Presidenten” por “der President” si la pregunta implica que la respuesta está en caso nominativo) y para introducir cambios gramáticos y léxicos (por ejemplo: Pregunta: ¿De qué nacionalidad es X? Respuesta: X es de Holanda => Respuesta Exacta: Holandés).
+
 
 % \chapter{Implementación}
 % \label{chap:implementacion}
