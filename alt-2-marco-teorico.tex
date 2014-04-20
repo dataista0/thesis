@@ -125,27 +125,45 @@ Features & Ejemplo \\ \hline
 \section{Information Retrieval}
 \label{sec:information-retrieval}
 
-El problema conocido como\textbf{ }\textbf{\textit{information
-retrieval}} consiste, formalmente, en retornar \textit{información
-relevante} para una \textit{consult}a (\textit{information need}) a
-partir de una \textit{base de conocimiento}. El caso de uso típico,
-ilustrado por los motores de búsqueda web, consiste en devolver una
-lista de documentos relevantes, en orden de relevancia, para una
-consulta del usuario. En estos sistemas, las consultas se interpretan
-como una serie de tokens concatenados con distintos operadores
-lógicos binarios, donde la barra espaciadora funciona como or
-inclusivo. El core del sistema es un\textit{ índice} \textit{de
-búsqueda} de los documentos de la base de conocimiento, que podemos pensar como 
-un diccionario indexado de palabras en documentos (más adelante tocaremos este tema). El
-proceso de creación y mantenimiento de estos índices depende del
-tipo y del dinamismo de la base de conocimiento, y oscila entre un
-modesto setup a mano de una lista de documentos estáticos hasta el
-ejército de \textit{spiders} de google indexando la web en tiempo
-real. 
+El problema conocido como recuperación de la información (o \textit{information retrieval}) consiste, formalmente, en retornar \textit{información relevante} para una \textit{consulta} (\textit{information need}) a partir de una \textit{base de conocimiento}. 
+
+Como la generalidad de esta definición sugiere, information retrieval es un área de trabajo amplia que abarca disciplinas variadas y problemas diversos (como por ejemplo: el almacenamiento físico de la información y su calidad, la representación de la información en modelos formales, el modelado semántico de las nociones de ``similaridad`` y ``relevancia`` entre las consultas de usuarios y los diferentes documentos de la base de información). 
+
+El caso de uso socialmente más relevante y conocido son los motores de búsqueda web: en los motores de búsqueda, la base de conocimiento son las páginas de la web, la consulta es la cadeba de texto que ingresamos en el input del buscador, y la información relevante es una lista de documentos priorizados que, se espera, satisfará la necesidad de información del usuario. En estos sistemas, las consultas se interpretan como una serie de tokens concatenados con distintos operadores lógicos binarios, donde la barra espaciadora funciona como or inclusivo. El core del sistema es un \textit{índice de búsqueda} de los documentos de la base de conocimiento, que en principio podemos pensar como un diccionario indexado de palabras en documentos (más adelante veremos índices invertidos). El proceso de creación y mantenimiento de estos índices depende del tipo y del dinamismo de la base de conocimiento, y oscila entre un modesto setup a mano de una lista de documentos estáticos hasta el ejército de \textit{spiders} de google indexando la web en tiempo real. 
+
+La consulta no es la necesidad de información del usuario sino lo que el usuario puede expresar de su necesidad dentro de la interfaz de consultas que el sistema de information retrieval sabe interpretar. Question Answering puede pensarse como un sistema de recuperación de la información que busca presentar una interfaz de consultas más cercana a la representación lingüística usual de una pregunta concreta y que entiende como información relevante una respuesta concreta en lugar de una lista de documentos. 
 
 \subsection{Métricas}
+Las métricas de rendimiento de los sistemas de information retrieval articulan de diferentes maneras los documentos totales devueltos por el sistema, la cantidad de documentos relevantes y la cantidad de documentos irrelevantes para una consulta dada. En la práctica existen diferentes maneras de adjudicar relevancia a un documento. 
 
-{\color{red}Mencionar métricas}.
+\begin{equation}\label{eq:precision}
+ \mbox{Precisión}=\frac{|\{\mbox{documentos relevantes}\}\cap\{\mbox{documentos recuperados}\}|}{|\{\mbox{documentos recuperados}\}|} 
+\end{equation}
+
+\begin{equation}\label{eq:recall}
+  \mbox{Recall}=\frac{|\{\mbox{documentos relevantes}\}\cap\{\mbox{documentos recuperados}\}|}{|\{\mbox{documentos relevantes}\}|} 
+\end{equation}
+
+\medskip 
+
+Las dos métricas principales son la precisión y el recall.
+La precisión \eqref{eq:precision} mide cuantos de los documentos devueltos son relevantes, la proporción de documentos relevantes en el total de documentos devueltos para la consulta. La precisión puede evaluarse sobre el total de documentos devueltos o sobre un corte arbitrario, considerando solamente los primeros $n$  resultados obtenidos. Por su parte, el recall\eqref{eq:recall} (traducido como \textit{exhaustividad}), mide cuantos de los documentos relevantes disponibles en la base de conocimiento fueron efectivamente recuperados. En general la precisión es la métrica privilegiada en casos de uso de sistemas de information retrieval. En QA, como veremos, las condiciones son diferentes.
+
+
+
+Otras métricas conocidas son la familia de métricas $F$, que representa distintos trade off entre precisión y recall.
+La formula general \eqref{eq:fb} introduce el parámetro $\beta$ que podera recall sobre precisión. $F_\beta$ pondera $\beta$ veces más el recall que la precisión. Las más utilizadas son $F_1$ (o solo $F$), $F_2$ y $F_{0.5}$. $F_2$ \eqref{eq:f2} pondera 2 veces más el recall que la precisión, por lo que es muy utilizada para evaluar subtareas de information retrieval en question answering.
+
+\begin{equation}\label{eq:fb}
+  F_\beta = \frac{(1 + \beta^2) \cdot (\mathrm{Precision} \cdot \mathrm{Recall})}{(\beta^2 \cdot \mathrm{Precision} + \mathrm{Recall})}
+\end{equation}
+
+
+\begin{equation}\label{eq:f2}
+%  F = \frac{2 \cdot \mathrm{Precision} \cdot \mathrm{Recobrado}}{(\mathrm{Precision} + \mathrm{Recobrado})}
+  F_2 = \frac{5 \cdot (\mathrm{Precision} \cdot \mathrm{Recall})}{(4 \cdot \mathrm{Precision} + \mathrm{Recall})}
+\end{equation}
+
 
 \subsection{Indice invertido de búsqueda}
 Un índice invertido es la estructura de datos típica utilizada en problemas de information retrieval. Consiste en un mapeo de términos en documentos que los contienen. Es decir, para un término dado, un índice invertido devuelve una lista de los documentos cargados que lo contienen. Este tipo de estructuras invierte la relación normal en la cual a partir de un documento se accede a la lista de términos que este documento contiene (de allí el nombre invertido).
