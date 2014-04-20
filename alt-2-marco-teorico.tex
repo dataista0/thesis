@@ -1,7 +1,7 @@
-\chapter{Marco teórico}
+\chapter{Marco teórico y Herramientas}
 \label{chap:teorico}
 
- En este capítulo vamos a recorrer rápidamente algunos términos básicos y problemas de procesamiento de lenguaje e information retrieval que deben  mencionados para poder adentrarnos en el tema de esta tesis. En la primer sección vamos a introducir terminología básica como $token$, \textit{n-grama}, \textit{ontología} y $feature$, mientras que en la segunda veremos algunos problemas o áreas -bien resueltos o no- de procesamiento de lenguajes y recuperación de la información en los que los sistemas de question answering se apoyan o pueden apoyarse. Primero comentaremos qué es un índice invertido de búsqueda en information retrieval, luego comentaremos problemas propios de procesamiento de lenguajes: POS tagging o etiquetado gramatical, NE tagging o reconocimiento de entidades y clasificación de preguntas. {\color{red} Finalmente, mencionamos algunas otras herramientas típicas que tiene sentido utilizar en un sistema de question answering, aún cuando nosotros no las aplicamos en este proyecto.}
+En este capítulo vamos a recorrer algunos términos básicos y problemas de procesamiento de lenguaje e information retrieval que deben conocerse para atravesar mejor los siguientes capítulos. En la primer sección vamos a introducir terminología básica como $token$, \textit{n-grama}, \textit{ontología} y $feature$, mientras que en la segunda veremos algunos problemas o áreas de procesamiento de lenguajes y recuperación de la información en los que los sistemas de question answering suelen apoyarse. Primero comentaremos qué es information retrieval, cuales son las métricas de evaluación del área y qué es un índice invertido de búsqueda, luego comentaremos los principales problemas propios de procesamiento de lenguajes relacionados con QA (POS tagging o etiquetado gramatical, NE tagging o reconocimiento de entidades y clasificación de preguntas) y finalmente, mencionamos algunas otras herramientas y conceptos de uso frecuente. 
 
 \section{Terminologia}
 
@@ -123,8 +123,29 @@ Features & Ejemplo \\ \hline
 
 
 \section{Information Retrieval}
+\label{sec:information-retrieval}
 
-Repetir con más detalle \allref{subsec:intro-information-retrieval}. {\color{red}Mencionar métricas}.
+El problema conocido como\textbf{ }\textbf{\textit{information
+retrieval}} consiste, formalmente, en retornar \textit{información
+relevante} para una \textit{consult}a (\textit{information need}) a
+partir de una \textit{base de conocimiento}. El caso de uso típico,
+ilustrado por los motores de búsqueda web, consiste en devolver una
+lista de documentos relevantes, en orden de relevancia, para una
+consulta del usuario. En estos sistemas, las consultas se interpretan
+como una serie de tokens concatenados con distintos operadores
+lógicos binarios, donde la barra espaciadora funciona como or
+inclusivo. El core del sistema es un\textit{ índice} \textit{de
+búsqueda} de los documentos de la base de conocimiento, que podemos pensar como 
+un diccionario indexado de palabras en documentos (más adelante tocaremos este tema). El
+proceso de creación y mantenimiento de estos índices depende del
+tipo y del dinamismo de la base de conocimiento, y oscila entre un
+modesto setup a mano de una lista de documentos estáticos hasta el
+ejército de \textit{spiders} de google indexando la web en tiempo
+real. 
+
+\subsection{Métricas}
+
+{\color{red}Mencionar métricas}.
 
 \subsection{Indice invertido de búsqueda}
 Un índice invertido es la estructura de datos típica utilizada en problemas de information retrieval. Consiste en un mapeo de términos en documentos que los contienen. Es decir, para un término dado, un índice invertido devuelve una lista de los documentos cargados que lo contienen. Este tipo de estructuras invierte la relación normal en la cual a partir de un documento se accede a la lista de términos que este documento contiene (de allí el nombre invertido).
@@ -382,5 +403,19 @@ Actualmente, un tesista del grupo GALLI está trabajando en la construcción de 
 
 
 \subsection{Other common nlp tasks}
-
 Hacer
+\begin{itemize}
+\item Detecci\'on de idioma
+\item Tokenizer
+\item Sentence splitting,
+\item Análisis morfol\'ogico
+\item NER y NEC (Detecci\'on y Clasificaci\'on de Entidades Nombradas)
+\item Reconocimiento de fechas, números, magnitudes físicas, monedas
+\item Codificaci\'on fonética
+\item POS tagging, 
+\item Shallow parsing
+\item Dependency parsing
+\item Wordnet-based sense annotation
+\item Word Sense Disambiguation
+\item Coreference resolution
+\end{itemize}

@@ -3,9 +3,7 @@
 \section{QA como interfaz a una DB}
 \subsection{Integración en sistemas open domain}
 \section{Sistema}
-
-\subsection{Corpus inicial}
-
+\subsection{Dominio de datos}
 \subsubsection{Grafo Mitic}
 Los datos originales del proyecto mitic constan de una serie de documentos 
 xml y de cinco colecciones de mongodb y relaciones entre ellas (una base de datos no relacional).
@@ -22,7 +20,7 @@ y tejen un grafo de distancias más o menos "especulativas" entre todas las enti
 
 Los atributos de cada entidad se pueden ver en el Anexo: [[HACER Y LINKEAR]].
 
-\subsection{Creación de Indices}
+\subsubsection{Creación de Indices}
 
 \begin{figure}[H]
   \centering
@@ -51,7 +49,7 @@ manteniendo también un puntero a la entidad original y su tipo.
 
 
 
-\subsection{Interfaz de servicios}
+\subsubsection{Interfaz de servicios}
 \label{subsec:modelos-db}
 La creación offline de índices lucene tiene como finalidad optimizar
 la base de conocimiento para responder con mayor eficiencia 
@@ -105,8 +103,7 @@ La segunda y la tercera verificación utiliza estos mismos comparadores jerarqui
 \end{figure}
 
 \bigskip
-\subsection{Dominio de datos}
-\subsection{Modelo}
+
 
 \subsection{Idioma}
 
@@ -153,3 +150,33 @@ Dónde vive John McCain y por qué vive allí? & es & es & es \\ \hline
 Where does Carolina Fernandez live and why does she lives there? & en & en & en \\ \hline
 \end{tabular}
 \end{center}
+
+
+Los ejercicios de Clef '07 no evaluan detección de idiomas. Los archivos de preguntas están separadas por idioma y no se espera que el idioma se infiera a partir de los textos de las preguntas, sino que es un dato dado al sistema de QA.
+
+
+\subsection{Modelo}
+
+Una vez etiquetados todos los tokens de la pregunta, se procede a marcar como procesadas las ``palabras triviales". Estas son palabras que si no formaron parte de alguna otra construcción, entonces no haberlas procesado no debería considerarse un problema. Ejemplos de ellas son las proposiciones, los pronombres y algunos conectores. Si al etiquetar la pregunta no se logró identificar ninguna entidad del modelo, entonces será dificil avanzar. Como vimos recién, la fase de procesamiento de la pregunta para el caso estructurado excede por mucho la mera anotación lingüística: al finalizar el etiquetado deberíamos disponer de alguna entidad reconocida por el modelo. Por otro lado, durante la fase de etiquetado cada palabra se marca como procesada. Como acabamos de señalar, al finalizar este proceso se marcan también como procesados ciertos tokens triviales. En este punto, el sistema debe tomar una decisión. Si no ha logrado etiquetar una cierta cantidad de tokens (más del 80\%), entonces se considera que no tiene sentido dar por ``comprendida" la pregunta y se procede a un segundo análisis, computacionalmente más costoso y además más inexacto, en el que se intenta encontrar alguna entidad con otros métodos que enunciaremos en breve. En caso de encontrarse una entidad, entonces el flujo del programa retorna al curso de análisis estructurado. Si esto no ocurre, se devuelve la lista de entidades (documentos) que el índice lucene general devuelve para la pregunta original interpretada como una query normal de information retrieval. Este caso, si bien retorna información, es un caso de falla de procesamiento. Esta lista de documentos viene acompañada de un mensaje del tipo: \dblquote{No se logró interpretar su pregunta} y, en un trabajo futuro, podría incorporar un sistema de recomendaciones e idas y vueltas con el usuario (¿Quizo decir...?).
+
+Si, en cambio, el threshold de tokens es alcanzado, entonces se pasa a otro switch. En este caso el código se bifurca de acuerdo a la cantidad de entidades del modelo reconocidas. Por entidades del modelo entenderemos, aquí, entidades internas, objetos, no nombres de clase o de atributos. Distinguimos estos tres casos: `ninguna entidad reconocida', `una entidad reconocida', `más de una entidad reconocida'.
+
+
+\begin{figure}[H]
+  \centering
+    \includegraphics[scale=0.5]{graficos/AnswerRetrievalFlowEstructurado}
+  \caption{Flow para la Generación de Respuestas - Estructurado}
+  \label{fig:AnswerRetrievalFlowEstructurado}
+\end{figure}
+
+\subsubsection*{Ninguna o más de una entidad}
+En el caso en el que no se haya identificado ninguna entidad del modelo quedan diferentes posibilidades, que se verifican en orden secuencial en base a nombres de colección, nombres de atributos, tipo de respuesta esperada y verbos. Los casos contemplados son: la pregunta por un campo de una colección (por ejemplo: direcciones de empresas en buenos aires) o por listas de entidades de una colección (investigadores de capital federal). Los diferentes casos son reglas de código escritas a mano. En todos los casos, si no se dan las condiciones para seguir especificando la dirección de la respuesta, se genera un respuesta ad-hoc con datos rankeados según el índice invertido, especificando de modo estructurado el camino recorrido hasta el momento. Por ejemplo, si se identifica que se pregunta por `investigadores' pero no es posible decidir ninguna especificación más (de capital federal, que hayan publicado en 2008, etc) entonces se retorna una lista de investigadores rankeada según el índice invertido `investigadores' con el resto de los datos de la pregunta. 
+
+Por otro lado, si hay más de una entidad reconocida entonces hay sólo algunos casos posibles de relaciones entre ellas que pueden ser respuestas, que también se reflejan como caso de código. Finalmente, si no es posible identificar ninguno de estos caso, se toma un camino similar al mecanismo ad-hoc basado en information retrieval.
+
+
+\subsubsection*{Una entidad}
+El mejor caso es aquél en el que se reconocío una entidad y otros datos lingüisticos que permitan especificar qué se está preguntando. Al especificar acerca de qué/quién resulta mucho más sencillo canalizar qué se está preguntando. Los modelos que representan objetos (ver \allref{subsec:modelos-db}) son subclases de $NodoBase$, el cual representa una entidad en abstracto. Una entidad sabe responder preguntas acerca de ella. Para esto, utiliza las anotaciones de verbos, atributos nombrados y qwords para identificar qué se está preguntando. La pregunta puede responderse con un atributo o con una relación. Los distintos atributos de las distintas entidades se corresponden con verbos y con tipos de respuesta esperada. 
+
+[[Detalle de casos y combinaciones de verbos + tipo de respuesta esperada + atributo]]
+[[Ejemplos]]

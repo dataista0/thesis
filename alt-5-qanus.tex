@@ -1,29 +1,32 @@
-\chapter{Implementación sobre QANUS}
+\chapter{Implementación sobre Qanus}
 \label{chap:qanus}
-Como parte de nuestra investigación, construimos un sistema de question answering multilingüe y lo evaluamos utilizando como guia dos tareas monolingual de la competencia QA@Clef '07, una para español y otra para portugués. El sistema está basado en un framework académico de código abierto llamado Qanus. Este framework está empaquetado con una sistema de QA simple, QA-sys, que resuelve ejercicios de la competencia TREC '07 para QA solo en inglés. Nosotros adaptamos este sistema para utilizar como librería de procesamiento de lenguajes a Freeling, generando un sistema baseline multilingüe. A este sistema le agregamos features reseñados en \allref{sec:literatura} y realizamos diferente mediciones sobre las instancias en español y portugués sobre los ya mencionados ejercicios de Clef '07.
+En este capitulo discutiremos la implementación de un sistema de question answering multilingüe y diferentes evaluaciones realizadas utilizando como guia dos tareas monolingual de la competencia QA@Clef '07, una para español y otra para portugués. El sistema está basado en un framework académico de código abierto llamado Qanus. Este framework está empaquetado con una sistema de QA simple, QA-sys, que resuelve ejercicios de la competencia Trec '07 con soporte para inglés. Nosotros adaptamos este sistema para utilizar como librería de procesamiento de lenguajes a Freeling, generando un sistema baseline multilingüe. A este sistema le agregamos features reseñados en \allref{sec:literatura} y realizamos diferente mediciones sobre las instancias en español y portugués sobre los ya mencionados ejercicios de Clef '07.
 
 La estructura de este capitulo es la siguiente: en \allref{sec:ejecicio-de-clef} se describe con detalle el panorama general de tareas de question answering en la competencia Clef '07, haciendo énfasis en las tareas seleccionadas, en los corpus y las preguntas disponibles y en las decisiones tomadas a la hora de elegir estas tareas; en \allref{sec:sistema} se comenta la adaptación del sistema baseline y las modificaciones realizadas a los algoritmos, {\color{red}mientras que los resultados pueden observarse como apartados en las mismas secciones o como una sección aparte al final}.
 
-\section{Ejercicio de CLEF}
+\section{Ejercicio de Clef}
 \label{sec:ejecicio-de-clef}
-Aca
+
+Tras investigar distintas competencias y métodos de evaluación, optamos por utilizar como guía de trabajo dos ejercicios de la tarea principal de question answering de la competencia Clef del 2007. Principalmente por contar con un subconjunto de ejercicios bastante adecuados para nuestra tesis y disponer de un corpus de datos libre y disponible en el acto para evaluar una parte importante de las funcionalidades implementadas en nuestro proyecto. 
+
 \subsection{Tareas}
 \label{subsec:tareas}
-Por su parte, para desarrollar y evaluar mecanismos de dominio abierto resolvimos algunos ejercicios de la competencia de QA organizada por CLEF 
-en 2007. 
-CLEF (de \textit{Cross-Language Evaluation Forum}) es una organización que busca fomentar la investigación en sistemas de information retrieval cross-language. 
-En particular, una vez por año CLEF lanza una competencia de Question Answering multilenguaje, con diferentes corpus y diferentes tipos de ejercicios. Estas competencia permiten obtener un patrón estándar de comparación entre distintos desarrollos y una idea general del estado de arte alcanzado en cada área.
-Por ejemplo, la competencia ya finalizada del año 2013, QA4MRE@CLEF2013, (Question Answering for Machine Reading Evaluation) se enfoca principalmente en Machine Reading, tarea que incluye un grado de razonamiento elevado para la computadora\footnote{\url{http://celct.fbk.eu/QA4MRE/}}.
 
-Existen distintas conferencias de evaluación de sistemas QA o de subtareas asociadas (por ejemplo TREC - Text Retrieval Conference \footnote{\url{http://trec.nist.gov/}}-, TAC - Text Analysis Conference \footnote{\url{http://www.nist.gov/tac/}}) - y, a su vez, estas distintas competencias ofrecen distinos llamados a competencias. Elegimos resolver una tarea de la competencia Clef '07  por varias razones (Ver \cite{GuidelineClef07} y \cite{OverviewClef07} para un detalle exhaustivo de la conferencia en cuestión). La razón principal fue la pertinencia de la tarea a evaluar al scope de esta tesis. Muchas competencias exigen un grado de complejidad que excede por mucho lo que puede alcanzarse en el tiempo estimado de una tesis de licenciatura. 
-Otra razón fue la disponibilidad y el atractivo de la base de conocimiento para estos ejercicios: utilizan snapshots de wikipedia. 
-La competencia del '07 ofrece dos tipos de ejercicios:
+Como mencionamos en \allref{sec:competencias}, Clef (de \textit{Cross-Language Evaluation Forum}) es una organización que busca fomentar la investigación en sistemas de information retrieval cross-language. En particular, una vez por año Clef lanza una competencia de Question Answering multilingüe, con diferentes corpus y diferentes tipos de ejercicios. Estas competencia permiten obtener un patrón estándar de comparación entre distintos desarrollos y una idea general del estado de arte alcanzado en los diferentes idiomas por la diferentes actores académicos o {\color{red}comerciales}.
+Utilizamos como guia dos ejercicios de tarea principal de question answering de la competencia Clef '07  por varias razones (Ver \cite{GuidelineClef07} y \cite{OverviewClef07} para un detalle exhaustivo de la conferencia en cuestión). Clef es la principal competencia de multilingüe para idiomas europeos y la tarea principal de '07 presentaba una complejidad adecuada para el scope de esta tesis. Además, para esta tarea estaban disponibles los datos para una experimentación  multilingüe que abarque tanto inglés como español y portugués. Además, estos ejercicios incorporaban, por única vez, diferentes wikipedias como parte del corpus de datos, lo cual resulta de por si atractivo. 
+
+La tarea principal de QA de Clef '07 ofrece dos grandes grupos de ejercicios:
 \begin{itemize}
 \item Mono-lingual: donde el idioma de la pregunta y el idioma de la fuente de información son el mismo
 \item Cross-lingual: donde el idioma de la pregunta y el idioma de la fuente de información difieren
 \end{itemize}
-Los ejercicios consideran los siguientes idiomas: inglés, búlgaro, alemán, español, italiano, francés, holandés, rumano y portugués. Por su parte, algunos
-ejercicios utilizan corpus de datos privados de la competencia y otros utilizan como fuente las distintas wikipedias. De los ejercicios que utilizan
+
+Los ejercicios consideran los siguientes idiomas: inglés, búlgaro, alemán, español, italiano, francés, holandés, rumano y portugués. 
+
+{\color{red} Tabla de activaciones}
+Por su parte, algunos ejercicios utilizan como corpus solo una colección de datos privados de la competencia, mientras otros utilizan como fuente estos mismos corpus privados y también distintas versiones de wikipedia. 
+
+De los ejercicios que utilizan
 wikipedia, implementamos un sistema que responde las preguntas en español, mono-idioma, es decir, ejercicios con preguntas formuladas en español que se responden en base a la wikipedia en español. A su vez, implementamos esta misma solución para el inglés, dado que estaban disponibles las preguntas y señalados los links a los snapshots de wikipedia en inglés, pero no fue posible evaluar sus resultados debido a que las respuestas esperadas no estaban disponibles online y no obtuvimos respuesta de los organizadores de la competencia. El uso estructural de la librería freeling permite que la implementación de soluciones para otros idiomas mediante el set-up del corpus en el idioma y una pequeña configuración. 
 Los ejercicios elegidos constan de 200 preguntas agrupadas. Los grupos de preguntas refieren a un tema, inferible a partir de la primer pregunta.
 Por ejemplo, el primer grupo de preguntas es:
@@ -37,12 +40,10 @@ Es decir, para cada grupo se debe inferir el \dq{tema} en la primer pregunta par
 las preguntas son preguntas simples. Más adelante haremos un análisis de las mismas con más detalle.
 
 \subsection{Corpus}
-El subset de ejercicios de CLEF'07 que elegimos resolver
-utiliza como corpus un snapshot de wikipedia en inglés y otro en español,
-ambos anteriores al año 2007.
+El subset de ejercicios de Clef'07 que elegimos resolver utiliza como corpus un snapshot de wikipedia en inglés y otro en español, ambos anteriores al año 2007.
 El set de preguntas completo involucra una serie de documentos para los cuales hay que 
 registrarse en la asociación: algunas preguntas se responden en base a wikipedia y otras en base a estos documentos.
-Identificamos las preguntas que se responden desde wikpedia chequeando los documentos fuente de las respuestas esperadas.
+Identificamos las preguntas que se responden desde wikipedia chequeando los documentos fuente de las respuestas esperadas.
 
 Wikipedia ofrece diferentes formas para obtener una propia imagen de la enciclopedia.
 Es posible incorporar la base de datos de wikipedia a una instalación wikimedia
@@ -90,7 +91,55 @@ para probar, utilizamos otras imagenes disponibles de wikipedia:
  \end{tabular}
 \end{center}
 
+
+De las respuestas goldstandard, discriminamos las soportadas por wikipedia, las soportadas por el corpora para miembros registrados y las que no tienen respuesta (NIL):
+
+\begin{center}
+\begin{tabular}{| l | l | l | l | l |}
+\hline
+Idioma & Wiki & News & NIL & Total \\ \hline
+es & 155 & 37 & 8 & 200 \\ \hline
+pt & 130 & 59 & 11 & 200 \\ \hline
+\end{tabular}
+\end{center}
+
+
+Los resultados positivos esperamos que sean en wiki (news seguro no y nil no sé). 
+
+
+
 \subsection{Preguntas}
+
+El formato de las preguntas para los ejercicios Clef que elegimos es un xml para cada idioma. 
+
+Por QTYPe
+\begin{center}
+\begin{tabular}{| l | l | l | l | l | l |}
+\hline
+Subset & Idioma & Factoid & Definition & List & Total \\ \hline
+\multirow{2}{*}{Todo} & es & 158 & 32 & 10 & 200 \\ \cline{2-6}
+ & pt & 159 & 31 & 10 & 200 \\ \hline
+ \multirow{2}{*}{Wiki} & es & 122 & 24 & 9 & 155 \\ \cline{2-6}
+ & pt & 104 & 18 & 8 & 130 \\ \hline
+\end{tabular}
+\end{center}
+
+Analisis por tipo de respuesta esperada:
+\begin{center}
+\begin{tabular}{| l | l | l | l | l | l |l |l|l|}
+\hline
+Tipo & pt & es & pt-factoid & es-factoid & pt-def & es-def & pt-list & es-list \\ \hline
+COUNT & 21 & 22 & 21 & 22 & 0 & 0 & 0  & 0\\ \hline
+OBJECT & 11 & 27 & 6  & 18 & 5 & 9 & 0  & 0\\ \hline
+MEASURE & 15 & 20 & 15 & 20 & 0 & 0 & 0  & 0\\ \hline
+PERSON & 33  & 35 & 21 & 24 & 9 & 8 & 3 & 3\\ \hline
+TIME & 19 & 16 & 18 & 16 & 0 & 0 & 1 & 0\\ \hline
+LOCATION & 33 & 18  & 30 & 18 & 0 & 0 & 3 & 0 \\ \hline
+ORGANIZATION & 31 & 32 & 24 & 22 & 6 & 8 & 1 & 2\\ \hline
+OTHER & 37 & 30 & 24 & 18 & 11 & 7 & 2 & 5 \\ \hline
+Total & 200 & 200 & 159 & 158 & 31 & 32  & 10 & 10\\ \hline
+\end{tabular}
+\end{center}
 
 \section{Sistema}
 \label{sec:sistema}
@@ -144,7 +193,7 @@ correctamente.\newline
 
 En esta sección de la tesis adoptamos el framework Qanus y adaptamos el sistema QA-sys para 1) incorporar Freeling como librería de herramientas de procesamiento del lenguaje permitiendo un funcionamiento multilenguaje, 2) trabajar sobre el corpus de datos y preguntas de los ejercicios de CLEF '07 de español y portugués descriptos en \allref{sec:ejecicio-de-clef} y, finalmente, 3) incorporamos y evaluamos diferentes mejoras tomadas de la reseña a la literatura científica del apartado anterior \allref{sec:literatura}.
 
-\subsection{Notas de Qanus y QA-sys}
+\subsection{Implementación de Qanus y QA-sys}
 
 El código está escrito en java y mantiene una interfaz común a
 todos los pasos: un controller cuyas responsabilidades son cargar los
@@ -152,15 +201,11 @@ componentes y un engine que utiliza los componentes para leer el input,
 procesarlo y grabar el resultado. La adaptabilidad del framework está
 dada en la posibilidad de incorporar componentes respetando la interfaz
 especificada para los mismos o bien, en modificar esta misma interfaz.
-Presuntamente, el framework es lo suficientemente abierto para permitir
-la implementación de sistemas basados en distintas fuentes de
-conocimiento (ontologías, archivos, web) y con distintos modos de
-funcionamiento mediante poco esfuerzo de customización.
 
-La implementación llamada QA-sys está desarrollada para correr sobre
-el tipo de datos de las evaluaciones TREC 2007 (XML AQUAINT). En el
+La implementación QA-sys está desarrollada para correr sobre
+el tipo de datos de las evaluaciones Trec 2007 (XML Aquaint). En el
 primer paso, incorpora los XML en este formato a un índice Lucene, en
-el segundo paso utiliza anota la pregunta con POS tags, NERs y
+el segundo paso anota la pregunta con POS tags, NERs y
 clasifica el tipo de respuesta con un clasificador entrenado y luego,
 en el tercer paso se busca la pregunta sobre el índice lucene y se
 retorna una lista con n documentos rankeados. Estos documentos se
@@ -177,11 +222,9 @@ algunas características sobre otras, dependiendo también del tipo
 de respuesta esperada. Por último, el evaluador de resultados mide la
 exactitud (\textit{accuracy}): total de respuestas correctas sobre
 total de preguntas. QA-sys funciona sólo sobre preguntas del tipo
-factoid y, a modo de comparación, el mejor sistema según la TREC
+factoid y, a modo de comparación, el mejor sistema según la Trec
 2007, el LymbaPA07 obtuvo un grado de exactitud del 0.706 y el décimo
-(Quanta) obtuvo 0.206, mientras que QA-sys logra el 0.119. La
-implementación es realmente simple y funciona sólo a modo de
-ilustración de lo que puede construirse sobre el framework. 
+(Quanta) obtuvo 0.206, mientras que QA-sys logra el 0.119 disponiendo de una implementación sumamente simple.
 
 
 \subsection{Information Base Processing}
@@ -285,225 +328,14 @@ Define heurísticas para los siguientes casos:
 Como las tareas cross-lingual y monolingual se cruzaban, estaban disponibles también en inglés las preguntas para nuestras tareas. 
 Como paso de desarrollo, implementamos una solución sobre una wikipedia en inglés con las herramientas de procesamiento originales del baseline: StanfordNER y StanfordPOS. Lamentablemente, la tarea inglés-inglés no fue propuesta, por lo que no disponemos de las goldstandard answers como las que disponemos para español y portugués. De todos modos, realizamos experimentos sobre este sistema, utilizando la wikipedia en inglés de noviembre de 2006. En el apéndice correspondiente pueden encontrarse resultados sobre estos experimentos.
 
-
-\begin{longtable}{ | p {4cm}| l | p {4cm} |}
-    \hline
-    Idioma & Fecha & Tamaño\\ \hline
-In what school does Harry Potter study? & Transsexual  &  Colegio Hogwarts de Magia y Hechicería \\ \hline
-Which is the school motto? & Moon Unit  &  "Draco Dormiens Nunquam Titillandus" \\ \hline
-In how many houses is it divided? & Null  &  * Gryffindor    * Slytherin    * Ravenclaw    * Hufflepuff \\ \hline
-Who is the school principal? & George Hearst  &  Albus Percival Wulfric Brian Dumbledore \\ \hline
-What do swordfishes look like? & Null  &  son grandes peces predadores altamente migratorios, caracterizados por su pico largo y aplanado \\ \hline
-Which is the IGFA record for this kind of fish? & Brato  &  536 kg \\ \hline
-When was Amintore Fanfani born? & Mae West  &  6 de febrero de 1908 \\ \hline
-And where was he born? & Birmingham  &  Provincia de Arezzo, Italia \\ \hline
-Who was Le Corbusier? & Null  &  arquitecto
- francés \\ \hline
-What was his real name? & Dr Benjamin  &  Charles-Edouard
- Jeanneret-Gris \\ \hline
-Who was Flaubert? & Null  &  novelista francés \\ \hline
-In what year did he publish "Bouvard et Pécuchet"? & 1942  &  1881 \\ \hline
-Enumerate all his works. & Null  &  * Madame Bovary (1856)    * Salambó (1862)    * La educación sentimental (1869)    * La tentación de San Antonio (1874)    * Tres cuentos (1877)    * Bouvard y Pécuchet \\ \hline
-What was the Velvet Revolution? & Null  &  el movimiento pacífico por el cual el partido comunista de Checoslovaquia perdió el monopolio del poder y se volvió a la democracia \\ \hline
-What was the Carnation Revolution? & Null  &  levantamiento militar del 25 de abril de 1974 que provocó la caída en Portugal de la dictadura salazarista \\ \hline
-Who was António de Oliveira Salazar? & Null  &  dictador portugués \\ \hline
-Who composed the song "Grândola, Vila Morena"? & McCartney  &  José Afonso \\ \hline
-Where was Bender Bending Rodriguez manufactured? & California  &  México \\ \hline
-Who is Philip J. Fry? & Null  &  es el protagonista de Futurama \\ \hline
-Who was Hermann Emil Fischer? & Null  &  químico alemán, receptor del Premio Nobel de Química \\ \hline
-What prize did he receive in 1902? & distance telephone call  &  Premio Nobel de Química \\ \hline
-Who was awarded the Nobel Prize in Literature that year? & Lorentz  &  Theodor Mommsen \\ \hline
-Who was Bertha von Suttner? & Null  &  pacifista y escritora austríaca \\ \hline
-Who was Marco Pantani? & Null  &  ciclista italiano \\ \hline
-Which was his nickname? & Milne  &  Il Pirata \\ \hline
-Who was Juan Manuel Fangio? & Null  &  pentacampeón del mundo de Fórmula Uno \\ \hline
-What is an obsidian? & Null  &  roca del tipo ígnea extrusiva perteneciente al grupo de los silicatos \\ \hline
-What is a "macana"? & Null  &  mazas de madera que utilizaban los guerreros precolombinos \\ \hline
-What is a black hole? & Null  &  una estrella o un grupo de estrellas con tal
- densidad que absorbe totalmente toda materia o energía que esté en su
- campo de gravedad \\ \hline
-What is virtual reality? & Null  &  un sistema o interfaz informático que genera entornos sintéticos en tiempo real \\ \hline
-What is a "pasodoble"? & Null  &  una variedad musical dentro de la forma marcha y posteriormente un estilo de baile \\ \hline
-What is a tarantella? & Null  &  Baile popular del sur de Italia \\ \hline
-What is Noah's Ark? & Null  &  una embarcación construida por Noé durante el Diluvio Universal \\ \hline
-What is a tachograph? & Null  &  un dispositivo electrónico que registra diversos sucesos originados en un vehículo durante su conducción \\ \hline
-What is an odometer? & Null  &  un dispositivo que indica la distancia recorrida en un viaje por automóvil u otro vehículo \\ \hline
-What is a kinnor? & Null  &  una lira hebrea portátil de 5 a 9 cuerdas \\ \hline
-What is INTASAT? & Null  &  el primer satélite artificial científico español \\ \hline
-What was the Rainbow Warrior? & Null  &  navío de la
- organización ecologista Greenpeace \\ \hline
-Who sank it in 1985? & Al MacInnis  &  los servicios secretos franceses \\ \hline
-What is a minesweeper used for? & Null  &  la identificación y destrucción de minas marinas \\ \hline
-What is INTELSAT? & Null  &  una red de satélites de comunicaciones que cubre el mundo entero \\ \hline
-What is a Non-Governmental Organization? & Null  &  una entidad de carácter privado, con fines y objetivos definidos por sus integrantes, creada independientemente de los gobiernos locales, regionales y nacionales, así como también de los organismos internacionales \\ \hline
-What was the Gestapo? & Null  &  la policía
- política del régimen nazi \\ \hline
-How many members did it have during the Second World War? & 1976  &  45.000 \\ \hline
-What is the International Organization for Standardization? & Null  &  organización internacional no gubernamental, compuesta por representantes de los organismos de normalización (ONs) nacionales, que produce normas internacionales industriales y comerciales. \\ \hline
-What was The Black Hand? & Null  &  una supuesta organización anarquista secreta y violenta que actuó en Andalucía a finales del siglo XIX \\ \hline
-What is the purpose of the World Meteorological Organization? & Null  &  asegurar y facilitar la cooperación entre los servicios meteorológicos nacionales, promover y unificar los instrumentos de medida y los métodos de observación. \\ \hline
-What is UNIDO in charge of? & Null  &  de promover y acelerar la industrialización en los países en desarrollo \\ \hline
-What does Industrial Light and Magic do? & Null  &  a producir efectos visuales y gráficos generados por ordenador para películas \\ \hline
-In what country is Çatalhöyük located? & South Africa  &  Turquía \\ \hline
-Into which sea does the Orentes river flow? & Qinghai Province  &  Mar Mediterráneo \\ \hline
-In which country is Hadrian's Wall? & Concordia  &  Gran Bretaña \\ \hline
-At what place does Homer Simpson work? & Wikicities  &  en la planta de energía nuclear de Springfield \\ \hline
-In which country is Minas Gerais located? & {\color{red}Rio de Janeiro}  &  Brasil \\ \hline
-Where is ensaymada considered traditional? & Lima  &  Mallorca \\ \hline
-In what city was Natalie Hershlag born? & Votkinsk  &  Jerusalén \\ \hline
-Who is the mayor of that city? & Joseph B. From  &  Ehud Olmert \\ \hline
-Who designed the Zilog Z80 processor? & Gerald Scarfe  &  Federico Faggin \\ \hline
-How many bits did this processor have? & 6  &  8 bits \\ \hline
-What are the names of Luke Skywalker's parents? & Null  &  Padmé Naberrie, Anakin Skywalker \\ \hline
-Which countries joined the European Union on 1st January of 1995? & Null  &  Austria, Finlandia y Suecia \\ \hline
-Who is the Queen of Australia? & Paul Ramadier  &  Isabel II \\ \hline
-Who was Pope when the Council of Clermont was held? & Opus Dei  &  Urbano II \\ \hline
-What actor plays the Chewbacca role? & Peter Pan  &  Peter Mayhew \\ \hline
-What's the name of the Greek god of medicine? & Deimos  &  Asclepio \\ \hline
-Who is the director of Nosferatu? & Tove Jansson  &  F.W. Murnau \\ \hline
-And who played the main character? & James T. Kirk  &  Max Schreck \\ \hline
-Who is the general secretary of UGT? & Pedro Calderon de la Barca  &  Cándido Méndez \\ \hline
-When was the terrorist attack on the AMIA? & Suicide bombing  &  18 de julio de 1994 \\ \hline
-How many people died on the attack? & 1914  &  85 personas \\ \hline
-When did Federica Montseny die? & Die  &  14 de enero de 1994 \\ \hline
-Which day was the assault to the Davidians Ranch in Waco? & George W. Bush  &  19 de abril de 1993 \\ \hline
-In which year did the Real Zaragoza win the European Cup Winners' Cup? & 1942  &  1995 \\ \hline
-In what year was the AVE Madrid-Seville inaugurated? & 1492  &  1992 \\ \hline
-In which date did El Corte Inglés purchase Galerías Preciados? & MediaWiki:Variantname-sr-el  &  24 de noviembre de 1995 \\ \hline
-What day was Rajiv Gandhi killed? & Indira Gandhi  &  21 de mayo de 1.991 \\ \hline
-Which four gods can be represented on a canopic jar? & Null  &  Imset, Hapi, Kebehsenuf, Duamutef \\ \hline
-Who used to manufacture Windows 95? & NA  &  Microsoft \\ \hline
-Which company does Steve Jobs chair? & Hamilton  &  Apple Computer \\ \hline
-What was the name of the GRD secret service? & Francisco de Almeida  &  Stasi \\ \hline
-Of what organization is David Stern commissioner? & Wikipedia  &  NBA \\ \hline
-Which radio station broadcasts Howard Stern's Show? & England (  &  Sirius \\ \hline
-Which school was founded by Walter Gropius? & Dr Un Yong Kim  &  Instituto de  Artes y
- Oficios Bauhaus \\ \hline
-What order did Saint Thomas Aquinas belong to? & Opus Dei  &  Dominicos \\ \hline
-What order was founded by Francis of Assisi? & People  &  Franciscanos \\ \hline
-Which military forces did Rommel lead? & Rome  &  Afrika  Korps \\ \hline
-What company has Bibendum as mascot? & Guinness  &  Michelin \\ \hline
-What was the name of Cousteau's ship? & " Nobody  &  Calypso \\ \hline
-What sort of milk is used for making mozzarella? & milk  &  leche de búfala \\ \hline
-What is the name of King Arthur's sword? & Elohim  &  Excalibur \\ \hline
-Which tree bears acorns? & tree  &  encinas \\ \hline
-From what plant are tigernuts obtained? & oils  &  juncia almendrada \\ \hline
-What material is a Moai made of? & something  &  roca volcánica \\ \hline
-What does the bearded vulture eat? & church  &  médula \\ \hline
-What was the name of the atomic bomb dropped on Nagasaki? & name  &  Fat Man \\ \hline
-Which was the first book printed by Gutenberg? & Document   &  la Biblia \\ \hline
-What form does the entrance of Louvre Museum have? & June  &  pirámide \\ \hline
-What animals pull Cybele's chariot? & Cattle  &  leones \\ \hline
-What does Mohs' Scale measure? & explanation  &  la dureza de una sustancia \\ \hline
-What liquor is made from blackthorn? & liquors  &  pacharán \\ \hline
-In what museum is Las Meninas of Velázquez? & Paris  &  Museo del Prado \\ \hline
-What scandal caused Nixon's resignation? & August  &  Watergate \\ \hline
-What does Leica manufacture? & government  &  instrumentos ópticos de precisión \\ \hline
-On what side of a boat is port? & nuisance  &  lado izquierdo mirando hacia proa \\ \hline
-What are the names of the balls used in Quidditch? & Null  &  quaffle, bludger y snitch \\ \hline
-How many people died in the sinking of the USS Maine? & 60,000  &  266 \\ \hline
-How many athletes participated in the Olympic Games of Barcelona? & 6  &  9.364 atletas \\ \hline
-How many inhabitants does Lithuania have? & 5  &  3,7 millones \\ \hline
-How many seats does the parliament of Iceland have? & 15  &  63 \\ \hline
-How many years will the global oil reserves last? & 1731  &  43 años \\ \hline
-How many times has Alain Prost been World Champion? & 25  &  cuatro \\ \hline
-How much horsepower do the turbines of the USS Nimitz have? & one  &  260.000 HP \\ \hline
-How many goals were scored overall at the 1982 Football World Cup? & 500  &  146 \\ \hline
-How many basements does the Picasso Tower have? & {\color{red}5}  &  5 \\ \hline
-How many Goya Awards did "Torrente: El brazo tonto de la ley" win? & 1934  &  dos \\ \hline
-How old is the sun? & 1899  &  4500 millones de años \\ \hline
-Which is the running time of the movie "The Ninth Gate"? & Paige  &  132 minutos \\ \hline
-At what age did Alfred Hitchcock die? & Two  &  80 años \\ \hline
-What is the span of the Airbus 380? & Airbus A380  &  79,75 metros \\ \hline
-How many passengers did it transport on 4 September 2006? & 1976  &  474 \\ \hline
-How much does each unit cost? & one  &  250 millones de EUR \\ \hline
-Which is the carrying capacity of the Antonov An-124? & Tennessee  &  130 toneladas \\ \hline
-Who are the founding members of the Star Alliance? & Null  &  Air Canada, Lufthansa, SAS Scandinavian Airlines, Thai Airways International, United Airlines \\ \hline
-In what country is náhuatl spoken? & Indonesia  &  México \\ \hline
-How many curves does the Circuit de Monaco have? & 5  &  18 \\ \hline
-Who was the first woman to go in space? & Garfunkel  &  Valentina Vladimírovna Tereshkova \\ \hline
-Who has directed "The Day of the Beast"? & Peter Jackson  &  Álex de la Iglesia \\ \hline
-Who inaugurated the Temple of Debod in Madrid? & Joseph Smith  &  Carlos Arias Navarro \\ \hline
-In which year was Torquemada appointed Grand Inquisitor? & 1712  &  1482 \\ \hline
-In what year was the Nebrija's Grammar published? & 2004  &  1492 \\ \hline
-Where did Rachel Weisz study literature? & Freud  &  Trinity Hall, Cambridge \\ \hline
-In which city is the church of La Sagrada Familia by Gaudí located? & Poland  &  Barcelona \\ \hline
-How high is Mount Vesuvius? & )  &  1.281 metros \\ \hline
-How many kilometers away is Loarre Castle from Huesca? & 420  &  35 kilómetros \\ \hline
-Which is the molar mass of Methanol? & Carbon  &  32.04 uma \\ \hline
-How high is the Pyramid of the Sun of Teotihuacan? & one  &  65 m \\ \hline
-How many falls form the Iguazu Waterfalls? & One  &  275 saltos \\ \hline
-How many steps does the Tower of Pisa have? & 27  &  294 escalones \\ \hline
-Which are the ingredients of sangría? & Null  &  * Vino tinto.    * Fruta picada o rebanada.    * Un endulzador como la miel.    * Un poco de brandy, triple sec, u otro licor. \\ \hline
-Who is in charge of the security of the Vatican City? & Pedro Calderon de la Barca  &  Guardia Suiza \\ \hline
-Who gives the Fields Medal? & Karl Marx  &  la Unión Matemática Internacional \\ \hline
-For whom does Jack Bauer work? & Louise Caroline Alberta  &  la agencia UAT \\ \hline
-What was used as defoliant in the Vietnam War? & {\color{red}Herbicides}  &  Agente Naranja \\ \hline
-Which was the codename of the seaborne invasion of Normandy? & York  &  Operación Overlord \\ \hline
-From which mold is the penicillin obtained? & one  &  Penicillium notatum \\ \hline
-From what mollusc did Phoenicians extract purple dye? & rainbow  &  Murex brandaris \\ \hline
-What did Manuel Campello Esclápez discover? & use  &  Dama de Elche \\ \hline
-What did Jason and the Argonauts look for? & times  &  vellocino de oro \\ \hline
-Who was the US president during the attack on Pearl Harbour? & U. Dryfuss  &  Roosevelt \\ \hline
-What did Norsk Hydro use to manufacture during the World War II? & Jews  &  agua pesada \\ \hline
-Which is the title of the Nadal Prize's winner in 1994? & Rio Reiser  &  Azul \\ \hline
-How many reservists did the Haganah have in 1936? & 6  &  40.000 \\ \hline
-How old was Miguel Induráin during the 1985 Tour of Spain? & , 1920/CD  &  20 años \\ \hline
-In what year did he win the Tour of Spain? & 1185  &  NIL \\ \hline
-How many stages did he win in "Tour de l'Avenir" in 1986? & 1942  &  Dos \\ \hline
-What prize was he awarded in 1992? & McEwan  &  Premio Príncipe de Asturias de los Deportes \\ \hline
-What actors are the main characters of "The Good, the Bad and the Ugly"? & Null  &  Clint Eastwood, Elli Wallach, Lee Van Cleef \\ \hline
-How many people died in Europe during the plague epidemic of the 14th Century? & 1810  &  25 millones \\ \hline
-In which country did the 1918 flu pandemic start? & Sarajevo  &  Tíbet \\ \hline
-What are the Catholic Monarchs' names? & Null  &  Fernando de Aragón e Isabel I de Castilla \\ \hline
-What is the name of the president of Burundi who died in 1994? & God  &  Cyprien Ntaryamira \\ \hline
-Which day was the Spanish constitution of 1812 promulgated? & War of 1812  &  19 de marzo \\ \hline
-Who was the captain of the "Real Sociedad" between 1974 and 1989? & Monty Python  &  Luis Miguel Arconada Echarri \\ \hline
-In what city was the final of the 1996 European Basketball Cup held? & Portugal  &  Vitoria \\ \hline
-Which terrorist group committed a terrorist attack during the Munich Olympic Games? & Francisco de Almeida  &  Septiembre Negro \\ \hline
-What political party ruled Spain from 28 October 1982 until 3 March 1996? & Crimean War  &  Partido Socialista Obrero Español (PSOE) \\ \hline
-What uniform did the King wear when intervened on television after Tejero's coup d'état? & coup d'état  &  Capitán General de los Ejércitos \\ \hline
-What did Leonardo Da Vinci draw in 1492? & Leonardo da Vinci  &  Hombre de Vitruvio \\ \hline
-What did Antonio Rebollo use to light the Olympic Torch in the Barcelona Olympic Games? & article  &  una flecha encendida \\ \hline
-What TV show did Takeshi Kitano present from 1986 to 1989? & Opus Dei  &  Humor Amarillo \\ \hline
-What gift was New York given at the commemoration of the centennial of the USA independence? & John Wayne Gacy  &  La Estatua de la Libertad \\ \hline
-Which is the distributor of the film "Planet of the Apes" which was premiered in 1968? & Sagan  &  20th Century Fox \\ \hline
-What speed did Louis Blériot reach on 25 July 1909? & test tube baby  &  64 Kms/hr \\ \hline
-How many kilos of anchovies did the Cantabric fleet catch during 1994? & 220  &  14 millones de kilos \\ \hline
-What island did Argentina dispute to the United Kingdom between 2 April and 14 June 1982? & U. China  &  Islas Malvinas \\ \hline
-Where did the Mediterranean Games of 1997 take place? & Iraq  &  Bari \\ \hline
-Which boat did James Cook command from 1768 to 1769? & Kamehameha  &  HM Endeavour \\ \hline
-Who plays the main character in the movie "Tarzan the Ape Man"? & Plankton  &  Johnny Weissmüller \\ \hline
-How many world records did he break? & 40  &  67 \\ \hline
-Who won the Academy Honorary Award in 2007? & Linda Hunt  &  NIL \\ \hline
-Who stole Bianca Castafiore's jewels? & Buffy Summers  &  NIL \\ \hline
-In what country is The Swan Lake located? & Virginia  &  NIL \\ \hline
-In what year did Captain America die? & 1778  &  NIL \\ \hline
-Which is the capital city of Neverland? & Catalonia  &  NIL \\ \hline
-What is the name of Bill Gates' wife? & Dorion Sagan  &  Melinda French \\ \hline
-In what university was he studying when Microsoft was created? & 1167  &  Universidad de Harvard \\ \hline
-What budget did that university have in 2005? & times  &  25.900 millones de dólares \\ \hline
-In what year was it founded? & 1903  &  1636 \\ \hline
-Which supersonic plane finished its commercial flights in May 2003? & Kaho'olawe  &  El Concorde \\ \hline
-How many passengers could this model of plane carry? & 1976  &  188 \\ \hline
-Which was the capacity of the Santiago Bernabéu Stadium in the 80s? & Seville  &  90.800 espectadores \\ \hline
-Who is the owner of the stadium? & God  &  Real Madrid Club de Fútbol \\ \hline
-How much money was spent during its enlargement between 2001 and 2006? & 10  &  127 millones de euros \\ \hline
-How many bombs were dropped over Dresden on 14 February 1945? & 1972  &  1.800 bombas explosivas y 136.800 bombas incendiarias \\ \hline
-How much did the bombs dropped on this city on 7 October 1944 weigh? & one  &  80 toneladas \\ \hline
-Which organization did Alan Turing lead during the Second World War? & Kamakura Period  &  la sección Naval Enigma del Bletchley Park \\ \hline
-Who was the Russian Tsar during the Second World War? & Meiji  &  NIL \\ \hline
-How many points did Yugoslavia score in the 1990 Basketball World Championship final? & 587  &  92 \\ \hline
-Against which country did Spain play the final of basketball at the 1984 Summer Olympics? & Netherlands  &  Estados Unidos \\ \hline
-In what year did Spain win the Football World Cup? & 1185  &  NIL \\ \hline
-
-\end{longtable}
+Ver \allref{chap:resultados-ingles-simple} para una tabla de los datos.
 
 \textbf{Baseline multilingüe}
 
 
 
 \subsubsection{Group Entity extraction}
+\label{subsubsec:entidad-de-grupo}
 Formas de extraer la entidad de grupo o tópico y de incorporarlo en la query.
 \subsubsection{Query Generation}
 Baseline de Qanus.
@@ -663,9 +495,7 @@ Métricas de medición: definición de documento relevante.
 
 % \subsection{Motivación}
 
-% Después del intento con Qanus, decidimos implementar el sistema por
-% fuera de cualquier framework y encaramos el dise\~no actual. En este
-% dise\~no respetamos el modelo típico de pipeline de tres pasos que
+% En este dise\~no respetamos el modelo típico de pipeline de tres pasos que
 % abunda en la literatura científica y, por lo demás, parece el
 % indicado a la hora de encarar este tipo de problemas. Un momento no-técnico
 % importante a destacar es la obtención de una base de datos en
@@ -690,284 +520,14 @@ Métricas de medición: definición de documento relevante.
 % y, por otro lado, no es necesario hacer análisis lingüístico
 % sobre el corpus de datos.
 
-% Por otro lado, dado que nuestro objetivo inicial incluía desarrollar
-% métodos de QA con soporte bilingüe basados en textos (datos no estructurados) 
-% y esta base de conocimiento no lo permite, incorporamos al proyecto la resolución
-% algunos de los ejercicios de la competencia QA4MRE (Question Answering for Machine Reading Evaluation)
-% de la CLEF (Cross-Language Evaluation Forum) del a\~no 2007. 
-
-% Estos ejercicios fueron elegidos para poder evaluar nuestros métodos de análisis lingüsticos,
-% ya que la naturaleza del dominio de conocimiento del proyecto mitic - por el formato de sus datos
-%  y por lo puntual de su temática- hace imposible cualquier métrica de evaluación objetiva.
-% Tras investigar distintas competencias y métodos de evaluación, optamos por la CLEF del 2007
-% por contar con un subconjunto de ejercicios bastante adecuados para nuestro sistema mientras que el corpus
-% de datos necesario para completar estos ejercicios estaba (en parte) disponible dentro de los tiempos 
-% requeridos por nuestro proyecto. 
 
 % \subsection{Base de datos de dominio cerrado}
 % \subsection{Ejercicios de dominio abierto}
 % \bigskip
 
-% \subsection{Modelo}
 
-% Nuestro sistema resuelve dos problemas de QA similares pero distintos. 
 
-% Por un lado, disponemos de una base de datos estructurada, con datos del área de la investigación y la
-% producción en TICs en Argentina, que requiere un enfoque estructurado con métodos basados en ontologías y en 
-% formalizaciones de dominio. El enfoque aquí es traducir la pregunta formulada en lenguaje humano a un lenguaje más
-% formal ``comprensible" según el modelo de dominio. 
 
-% Por otro lado, para evaluar métodos de QA 
-% para datos no estructurados, resolvimos algunos ejercicios de la competencia CLEF del '07. La base de conocimientos para
-% estos ejercicios son algunos snapshots de Wikipedia en Espa\~nol y en Inglés, anteriores al 2007. Sobre esta base de conocimiento,
-% el enfoque no es ``traducir" la pregunta a un lenguaje estructurado sino interpretarla y ``compararla", mediante distintas métricas, 
-% con documentos y pasajes, buscando medidas estádisticas y otras condiciones que permitan \textit{rankear} una respuesta candidata
-% con un cierto grado de confianza, o bien determinar que no fue posible encontrar una respuesta para la pregunta. 
-
-
-% Conceptualmente, el modelo consiste en los tres pasos típicos: la
-% creación de la base de conocimientos optimizada, el análisis
-% lingüístico de la pregunta y la generación de una respuesta desde
-% la base de conocimientos optimizada a partir de la pregunta con sus
-% anotaciones. 
-% Los pasos 1 y 2, la generación de la base de conocimientos optimizada y el procesamiento de la pregunta son procesos
-% esencialmente análogos para la base de conocimientos estructurada y para la no estructurada. El tercer paso, la generación de respuestas,
-% tiene distintos enfoques según el caso. 
-% En las siguientes secciones recorreremos ambos enfoques en conjunto, señalando las decisiones de dise\~no y los distintos módulos
-% utilizados, haciendo las distinciones pertinentes cuando sea necesario.
-
-% En las secciones subsiguiente comentaremos las implementaciones de los
-% distintos pasos, con sus decisiones de dise\~no y las tecnologías
-% utilizadas. 
-
-
-% \bigskip
-
-% \section{Base de conocimiento}
-% \bigskip
-
-
-% La creación de la base de conocimiento es el único que se ejecuta offline
-% y consiste en la obtención del corpus original y en la generación de índices
-% invertidos. Los índices invertidos, recordamos, son índices que permiten
-% buscar, para una serie de términos vinculados lógicamente, un conjunto
-% ponderado de documentos pertinentes. Por su naturaleza, este paso está 
-% separado de la ejecución del resto del código.
-
-
-% La base de conocimiento de los ejercicios de Clef '07 es mucho más sencilla 
-% porque no existe ningún modelo \emph{a priori} más allá del documento de lucene.
-% El formato de la entidad ``artículo", como señalamos antes, es: $(id, titulo, cuerpo)$. 
-% En este caso, el trabajo más fino no está en el modelado inicial del dominio 
-% sino la capacidad lingüística de extraer pasajes a partir de un artículo y recomponer información
-% estructurada a partir de estos pasajes. Mientras que para un modelo estructurado la base de conocimiento
-% debería permitirnos, para un cierto input, identificar univocamente una entidad y darnos pistas sobre un pedido de
-% información acerca de esa entidad, el objetivo sobre un corpus de documentos en 
-% traer todos los documentos en los que sea posible que exista un pasaje respondiendo a la pregunta o
-% evidencia relevante para apoyar una respuesta. Es decir, mientras una respuesta acotada es una virtud para
-% el manejador de una base de conocimientos estructurada, el manejador de una lista de documentos de texto debería devolver
-% una lista lo suficientemente grande para contener la respuesta dentro de los pasajes. La razón de esta política es que si
-% por ser demasiado estrictos a la hora de retornar documentos llegasemos a descartar un pasaje candidato válido esto
-% redundaría en una baja generar de efectividad, mientras que en pasos subsiguiente será trivial descartar toda información irrelevante
-% sin tanto costo. Por eso, el acceso a los indices de wikpedia consta simplemente de un generador de queries similar al recién comentado
-% accediendo y acumulando resultados (rankeados) a partir de un $LuceneIndexReader$ común (Ver \ref{sec:lucene} \nameref{sec:lucene} para más información).
-
-
-% \bigskip
-
-% \section{Análisis de la pregunta}
-% \label{sec:qprocess}
-% En este paso se realizan diferentes análisis lingüísticos de la pregunta.
-% El resultado son distintas características asociadas a la pregunta (anotaciones)
-% y distintas entidades semánticas reconocidas útiles para el proceso de generación de respuestas. 
-% Las herramientas de procesamiento de lenguaje natural que utilizamos en 
-% la implementación de este paso del pipeline 
-% incluyen: detección de lenguaje, extracción y verificación de entidades nombradas (NER), 
-% de verbos, sustantivos, qwords (qué, quién, cómo) (POS), análisis de n-gramas y categorización por tipo de pregunta (QC).
-
-% El proceso de análisis de la pregunta es bastante similar para ambos approachs (estructurado y no estructurado), por lo
-% que comentaremos ambos en simultaneo, mencionando diferencias cuando corresponda. 
-% Estructuraremos esta parte de la tesis en las siguientes secciones:
-
-% \begin{itemize}
-% \item Detección de idioma 
-% \item Detección y verificación de entidades nombradas
-% \item Análisis gramatical
-% \item Clasificación del tipo de pregunta
-% \end{itemize}
-
-% Si bien es cierto que el segundo item está basado principalmente en NER-tagging, el tercero en POS-tagging y el cuarto en Question Clasiffication, 
-% cada uno de estos pasos utiliza estas herramientas de diferentes maneras. Por ejemplo, para la detección y verificación de entidades del analisis estructurado, además del NER-tagger también utilizamos la base de conocimiento y el análisis gramatical y, para el español, la clasificación del tipo de pregunta se hace apoyandose en las qwords identificadas por el POS-tagger.
-
-
-
-% Los ejercicios de Clef '07 no evaluan detección de idiomas. Los archivos de preguntas están separadas por idioma y no se espera que el idioma se infiera a partir de los textos de las preguntas, sino que es un dato dado al sistema de QA.
-
-% \subsection{Entidades nombradas}
-% \label{subsec:impl-ner}
-
-% Para la detección de entidades utilizamos la clase simple de detección (NER) y clasificación (NEC) de entidades de Freeling y el NERC de Stanford (ver \allref{sec:freeling} y \allref{sec:stanford-ner}). Las herramientas de Stanford en general superan a las de Freeling -al igual que el detector de idiomas de Cybozu-, pero solo sirven para inglés. La clasificación utilizada por ambos es la más general de las comentadas en \allref{subsec:nerc}: persona, lugar, organización y otros. 
-
-% Veamos algunos ejemplos de funcionamiento de los módulos de detección de entidades. 
-
-% \begin{center}
-% \begin{tabular}{| p {8cm} | l | l | l |}
-% \hline
-% Texto & Freeling & Stanford & Resultado \\ \hline
-% ¿Dónde queda la Universidad de Buenos Aires? & es & es & es \\ \hline
-% Where is located the University of Buenos Aires? & en & en & en \\ \hline
-% Where is located the Univesidad de Buenos Aires? & en & en & en \\ \hline
-% Where is located Universidad de Buenos Aires? &  {\color{red}es} & en & en \\ \hline
-% Quién es Carolina Fernandez? & es & es & es \\ \hline
-% Who is Carolina Fernandez? &  {\color{red}none} & en & en \\ \hline
-% Quién es John McCain? & {\color{red}none} & es & es \\ \hline
-% Who is John McCain? & en & en & en \\ \hline
-% Dónde vive John McCain y por qué vive allí? & es & es & es \\ \hline
-% Where does Carolina Fernandez live and why does she lives there? & en & en & en \\ \hline
-% \end{tabular}
-% \end{center}
-
-% \medskip
-
-% Mientras la detección de entidades para los ejercicios de Clef se detiene en el reconocimiento de entidades nombradas a nivel lingüísitico, para el sistema estructurado el proceso es un poco más complejo. Esto se debe a que en este caso la detección de entidades es esencial. Si en el proceso de anotado de la pregunta no se logra identificar alguna entidad reconocida por el modelo de datos, entonces se está muy lejos de encontrar una respuesta. Por eso, además de utilizar los modulos NER recién mencionado, agregamos otros algoritmos de detección y, también, verificación de entidades. 
-
-% En principio, verificamos la o las entidades nombradas reconocidas contra la base de conocimiento. El $KnowledgeManager$ ofrece diferentes servicios de verificación de entidades. Para una cadena de tokens cualquiera, este módulo puede decidir, con un cierto grado de confianza, si:
-
-% \begin{itemize}
-%   \item La cadena de tokens es una entidad dentro del modelo de datos. Esto incluye:
-%     \begin{itemize}
-%       \item Es una entidad del modelo de datos: una universidad, una empresa, un investigador, un proyecto, una publicacion o una tematica
-%       \item Es una entidad inferida: una ciudad, una provincia, un centro de investigación, un lugar de trabajo
-%     \end{itemize}
-%   \item La cadena es una colección del modelo de datos, es decir, si se están nombrando \dblquote{Investigadores} o \dblquote{Universidades} como clase de entidades.
-%   \item La cadena es un atributo o una relación de una clase. (nombre de investigador)
-% \end{itemize}
-
-% Parte importante del trabajo para este esquema es lograr identificar este tipo de entidades lingüísticas, por lo que además de verificar los resultados del proceso de NER-tagging, también generamos otras cadenas de input. Notar además que los nombres de clase y de atributos de clase no tendrían por que ser reconocidas por el NER-tagger. Por ejemplo, para ``¿Qué investigadores trabajan en Córdoba?", \dblquote{investigadores} está haciendo referencia al nombre de una clase pero no es el tipo de entidades lingüísticas que detecta un NER-tagger. 
-
-% Por estas razones, generamos más entidades lingüísticas posibles además de las entidades detectadas por los NER-taggers. Una vez que todas las entidades nombradas fueron verificadas, generamos n-gramas sobre el resto de la pregunta para chequear por más tokens reconocibles. Configuramos la generación de n-gramas de 1 a 3, con ciertos filtros para no verificar construcciones que no representan entidades de manera trivial. Por ejemplo: dejamos sólo los unigramas que cumplan el rol de sustantivos, eliminamos bigramas que sean un sustantivo y una acción, salteamos NERs ya reconocidas, etre otros.
-
-
-% \subsection{Análisis gramatical}
-
-% De las diferentes etiquetas que generan los POS-taggers, en nuestro sistema distinguimos los verbos, los sustantivos, las qwords y las palabras triviales. 
-% Las palabras etiquetadas cumplen distintos roles a lo largo del proceso de generación de respuestas. Como señalamos recién, los n-gramas que se verifican contra la base de datos están filtrados por los roles gramaticales de sus tokens. Por otro lado, a la hora de generar el tipo de pregunta para una pregunta en español, utilizamos, como mecanismo ad-hoc, las qwords. 
-
-% \begin{center}
-% \begin{tabular}{| l | l |}
-% \hline
-% Clase & Ejemplos\\ \hline
-% qword  & qué, quién, cómo, dónde, cuándo\\ \hline
-% verbo & trabaja, trabajar, trabajando \\ \hline
-% trivial  & lo, a, de, y \\ \hline
-% sustantivos  & universidad, impresora, álgebra \\ \hline
-% \end{tabular}
-% \end{center}
-
-% Los usos más intensivos de estas etiquetas son el filtrado de n-gramas que describimos en la sección anterior para el caso estructurado (\allref{subsec:impl-ner}), un algoritmo ad-hoc de etiquetado de Q-Type para el caso español (es el próximo tema a discutir en \allref{subsec:qtype}) y, para la generación de respuestas, las ponderaciones de pasajes en los scorers de los ejercicios de Clef (\allref{subsec:scorers}), y finalmente, sirven para desempatar por atributos o relaciones preguntadas en algunos casos del modelo estructurado.
-
-% \subsection{Clasificación}
-% \label{subsec:qtype}
-% Para clasificar la pregunta según su tipo de respuesta esperada utilizamos el Question Classiffier de Stanford, tomando la configuración de Qanus. Este clasificador arroja una clase y una subclase (ver \allref{sec:stanford-qc} para una lista detallada de las posibles clases) y un grado de confianza para esta asignación. A continuación presentamos algunos ejemplos que ilustran estos resultados.
-
-% \begin{center}
-% \begin{tabular}{| l | l | l |}
-% \hline
-% Pregunta & Clase y Subclase & Confianza\\ \hline 
-% What's his name? & HUM:ind & 0.74 \\ \hline 
-% Where do you come from? & DESC:desc & 0.62 \\ \hline 
-% What's your phone number? & NUM:code & 0.63 \\ \hline 
-% How old are you? & NUM:period & 0.78 \\ \hline 
-% When were you born? & NUM:date & 0.99 \\ \hline 
-% What does he look like? & DESC:desc & 0.82 \\ \hline 
-% \end{tabular}
-% \end{center}
-
-% Sin embargo, como ya señalamos oportunamente (ver \allref{subsec:qc}), no existen herramientas de clasificación de preguntas para el idioma español. Esto nos llevó a tomar diferentes medidas para aproximar un tipo de pregunta y no tener distintos casos de código para el inglés y el español. Para las preguntas de Clef formuladas en español, utilizamos su versión en inglés para obtener el tipo.
-% Así, el tipo de respuesta esperada de \dblquote{¿En qué colegio estudia Harry Potter?} es el mismo que el tipo de respuesta esperada de ``In what school does Harry Potter study?" (ENTY:cremat con 0.22 de confianza). Además, utilizamos reglas escritas a mano sobre QWords. Las qwords son palabras clave de las preguntas que señalan el tipo de respuesta. Por ejemplo: una pregunta que comienza con `Cuándo' tendrá como tipo de respuesta una fecha, un tiempo, etc. En el modelo estructurado, definimos una serie acotada de categorías de tipo de respuesta esperadas y unificamos los resultados del clasificador de Stanford y nuestras reglas sobre qwords para español para unificar el código. Estas categorías son:  Who, Whom, Where, Which,  When,  What y Other. Es decir: Quién, Quiénes, Dónde, Cuál, Cuándo, Qué y otros. Las clases y subclases del clasificador de Stanford se mapearon a estas categorías que coinciden con los resultados de las reglas escritas a mano para el español. 
-
-
-% \subsection{Entidad de Grupo}
-% \label{subsec:entidad-de-grupo}
-
-% El formato de las preguntas para los ejercicios Clef que elegimos es un xml para cada idioma. En particular, nosotros resolvimos los ejercicios en español y inglés que podían responderse en base a wikipedia. Contar del tema de los grupos. Poner algún ejemplo.
-
-% \subsection{Analisis de las preguntas de Clef}
-
-% De las respuestas goldstandard, discriminamos las soportadas por wikipedia, las soportadas por el corpora para miembros registrados y las que no tienen respuesta (NIL):
-
-% \begin{center}
-% \begin{tabular}{| l | l | l | l | l |}
-% \hline
-% Idioma & Wiki & News & NIL & Total \\ \hline
-% es & 155 & 37 & 8 & 200 \\ \hline
-% pt & 130 & 59 & 11 & 200 \\ \hline
-% \end{tabular}
-% \end{center}
-
-
-% Los resultados positivos esperamos que sean en wiki (news seguro no y nil no sé). 
-
-
-% Por QTYPe
-% \begin{center}
-% \begin{tabular}{| l | l | l | l | l | l |}
-% \hline
-% Subset & Idioma & Factoid & Definition & List & Total \\ \hline
-% \multirow{2}{*}{Todo} & es & 158 & 32 & 10 & 200 \\ \cline{2-6}
-%  & pt & 159 & 31 & 10 & 200 \\ \hline
-%  \multirow{2}{*}{Wiki} & es & 122 & 24 & 9 & 155 \\ \cline{2-6}
-%  & pt & 104 & 18 & 8 & 130 \\ \hline
-% \end{tabular}
-% \end{center}
-
-% Analisis por tipo de respuesta esperada:
-% \begin{center}
-% \begin{tabular}{| l | l | l | l | l | l |l |l|l|}
-% \hline
-% Tipo & pt & es & pt-factoid & es-factoid & pt-def & es-def & pt-list & es-list \\ \hline
-% COUNT & 21 & 22 & 21 & 22 & 0 & 0 & 0  & 0\\ \hline
-% OBJECT & 11 & 27 & 6  & 18 & 5 & 9 & 0  & 0\\ \hline
-% MEASURE & 15 & 20 & 15 & 20 & 0 & 0 & 0  & 0\\ \hline
-% PERSON & 33  & 35 & 21 & 24 & 9 & 8 & 3 & 3\\ \hline
-% TIME & 19 & 16 & 18 & 16 & 0 & 0 & 1 & 0\\ \hline
-% LOCATION & 33 & 18  & 30 & 18 & 0 & 0 & 3 & 0 \\ \hline
-% ORGANIZATION & 31 & 32 & 24 & 22 & 6 & 8 & 1 & 2\\ \hline
-% OTHER & 37 & 30 & 24 & 18 & 11 & 7 & 2 & 5 \\ \hline
-% Total & 200 & 200 & 159 & 158 & 31 & 32  & 10 & 10\\ \hline
-% \end{tabular}
-% \end{center}
-
-
-% \section{Generación de Respuestas}
-
-% El proceso de generación de respuestas difiere sustancialmente entre ambos modelos de dominio. Para el sistema basado en datos estructurados, el approach es determinan en casos de código las distintas posibilidades, acotadas, de las cosas que se pueden responder. Nuestro dominio es tal que solo se pueden responder entidades, atributos de entidades o relaciones entre entidades. De ese modo, si no es posible redirigir el flujo de la pregunta hacia alguna respuesta conocida, no hay posibilidad de articular una respuesta significativa. Para el caso de los ejericicios de Clef sobre wikipedia, el enfoque es muy distinto. En primer lugar, no hay un modelo de los datos del dominio, hay textos con pasajes (u oraciones). Si bien es posible una cierta jerarquización de los datos (por ejemplo, utilizando los nombres de los articulos como verificación de la existencia de una entidad), un enfoque estructurado resulta imposible. En este contexto se utiliza la técnica de rankeo semántico de pasajes en base a features (características). Estas dimensiones de valoración de los pasajes son llamados Scorers (ver \allref{subsec:scorers}). Los Scorers, como veremos, pueden ser tan sencillos como preferir minimamente una cierta longitud sobre otra y también pueden incorporar dimensiones de análisis lingüístico (por ejemplo, la presencia de cierta entidad en un cierto rol semántico). El algoritmo de generación de respuestas consiste, en el caso no estructurado, en encontrar features útiles, significativos y en establecer mecanismo inteligentes de priorización de estos features. 
-
-% \subsection{Estructurado}
-
-% Una vez etiquetados todos los tokens de la pregunta, se procede a marcar como procesadas las ``palabras triviales". Estas son palabras que si no formaron parte de alguna otra construcción, entonces no haberlas procesado no debería considerarse un problema. Ejemplos de ellas son las proposiciones, los pronombres y algunos conectores. Si al etiquetar la pregunta no se logró identificar ninguna entidad del modelo, entonces será dificil avanzar. Como vimos recién, la fase de procesamiento de la pregunta para el caso estructurado excede por mucho la mera anotación lingüística: al finalizar el etiquetado deberíamos disponer de alguna entidad reconocida por el modelo. Por otro lado, durante la fase de etiquetado cada palabra se marca como procesada. Como acabamos de señalar, al finalizar este proceso se marcan también como procesados ciertos tokens triviales. En este punto, el sistema debe tomar una decisión. Si no ha logrado etiquetar una cierta cantidad de tokens (más del 80\%), entonces se considera que no tiene sentido dar por ``comprendida" la pregunta y se procede a un segundo análisis, computacionalmente más costoso y además más inexacto, en el que se intenta encontrar alguna entidad con otros métodos que enunciaremos en breve. En caso de encontrarse una entidad, entonces el flujo del programa retorna al curso de análisis estructurado. Si esto no ocurre, se devuelve la lista de entidades (documentos) que el índice lucene general devuelve para la pregunta original interpretada como una query normal de information retrieval. Este caso, si bien retorna información, es un caso de falla de procesamiento. Esta lista de documentos viene acompañada de un mensaje del tipo: \dblquote{No se logró interpretar su pregunta} y, en un trabajo futuro, podría incorporar un sistema de recomendaciones e idas y vueltas con el usuario (¿Quizo decir...?).
-
-% Si, en cambio, el threshold de tokens es alcanzado, entonces se pasa a otro switch. En este caso el código se bifurca de acuerdo a la cantidad de entidades del modelo reconocidas. Por entidades del modelo entenderemos, aquí, entidades internas, objetos, no nombres de clase o de atributos. Distinguimos estos tres casos: `ninguna entidad reconocida', `una entidad reconocida', `más de una entidad reconocida'.
-
-
-% \begin{figure}[H]
-%   \centering
-%     \includegraphics[scale=0.5]{graficos/AnswerRetrievalFlowEstructurado}
-%   \caption{Flow para la Generación de Respuestas - Estructurado}
-%   \label{fig:AnswerRetrievalFlowEstructurado}
-% \end{figure}
-
-% \subsubsection*{Ninguna o más de una entidad}
-% En el caso en el que no se haya identificado ninguna entidad del modelo quedan diferentes posibilidades, que se verifican en orden secuencial en base a nombres de colección, nombres de atributos, tipo de respuesta esperada y verbos. Los casos contemplados son: la pregunta por un campo de una colección (por ejemplo: direcciones de empresas en buenos aires) o por listas de entidades de una colección (investigadores de capital federal). Los diferentes casos son reglas de código escritas a mano. En todos los casos, si no se dan las condiciones para seguir especificando la dirección de la respuesta, se genera un respuesta ad-hoc con datos rankeados según el índice invertido, especificando de modo estructurado el camino recorrido hasta el momento. Por ejemplo, si se identifica que se pregunta por `investigadores' pero no es posible decidir ninguna especificación más (de capital federal, que hayan publicado en 2008, etc) entonces se retorna una lista de investigadores rankeada según el índice invertido `investigadores' con el resto de los datos de la pregunta. 
-
-% Por otro lado, si hay más de una entidad reconocida entonces hay sólo algunos casos posibles de relaciones entre ellas que pueden ser respuestas, que también se reflejan como caso de código. Finalmente, si no es posible identificar ninguno de estos caso, se toma un camino similar al mecanismo ad-hoc basado en information retrieval.
-
-
-% \subsubsection*{Una entidad}
-% El mejor caso es aquél en el que se reconocío una entidad y otros datos lingüisticos que permitan especificar qué se está preguntando. Al especificar acerca de qué/quién resulta mucho más sencillo canalizar qué se está preguntando. Los modelos que representan objetos (ver \allref{subsec:modelos-db}) son subclases de $NodoBase$, el cual representa una entidad en abstracto. Una entidad sabe responder preguntas acerca de ella. Para esto, utiliza las anotaciones de verbos, atributos nombrados y qwords para identificar qué se está preguntando. La pregunta puede responderse con un atributo o con una relación. Los distintos atributos de las distintas entidades se corresponden con verbos y con tipos de respuesta esperada. 
-
-% [[Detalle de casos y combinaciones de verbos + tipo de respuesta esperada + atributo]]
-% [[Ejemplos]]
 
 % \subsection{No Estructurado}
 

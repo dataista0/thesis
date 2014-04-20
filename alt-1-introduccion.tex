@@ -1,14 +1,6 @@
 
 \chapter{Introducción}
 \label{chap:intro}
-La tesis se articula así: En la Introducción explico como se articula la tesis, introduciendo el concepto general de lo que significa el question answering, con un cierto grado de detalle (categorías de datos y corpus), enfasis en multilenguaje. 
-El QA está parado sobre dos ramas más amplias: Information retrieval y procesamiento de lenguajes. En el capitulo II - Marco Teórico, se introducen los conceptos básicos de estas dos ramas. Acá cuento muy a vuelo de pajaro de que se habla ahí.
-En el capitulo III, "Estado de Arte", paso revista del estado de arte del área, comentando el nucleamiento de la investigación en torno a las competencias TREC y CLEF, también señalando a IBM y comentando el devenir de las evaluaciones. En "Literatura científica y sistemas" hago una reseña explicita del "Survey". Además, menciono a OpenEphyra, Just.Ask y el estado deplorable del entorno. También hago una reseña explícita del paper de Interfaz a DB y "Structured Data in IBM-Watson". 
-En el capitulo IV, "Implementación de datos estructurados" comento el inicio del proyecto, la motivación de este tipo de sistemas y presento un modelo final, simple, pero elegante y funcionado. Hachando todo lo que se deba y pueda hachar. 
-En el capitulo V, "Implementación sobre QANUS" viene toda la papota. Presento los ejercicios seleccionados de la CLEF 07 y hago un análisis de las wikipedias y de las preguntas. Explico qué me quedo y qué saco. Explico la adaptación a Freeling y lo copado de que sea multilingüe. Presento los datos de una manera más o menos vistosa.
-En el capitulo VI, "Conclusiones y trabajo futuro" comentos las virtudes y las limitaciones del experimento y hablo de estado del campo con más descriptividad que optimismo. Sobre trabajo futuro puedo sugerir muchas mejoras técnicas. 
-En el Apéndice presento librerías y datos de implementación muy burdos
-En la bibliografía van los textos que leí.
 
 
 \section{Qué es Question Answering}
@@ -33,28 +25,8 @@ información semántica los datos {\textquotedblleft}planos{\textquotedblright} 
 también escribir sistemas capaces de manejar nociones semánticas al tratar con estos datos. 
 
 
-
-\subsection{Information Retrieval}
-\label{subsec:intro-information-retrieval}
-
-El problema conocido como\textbf{ }\textbf{\textit{information
-retrieval}} consiste, formalmente, en retornar \textit{información
-relevante} para una \textit{consult}a (\textit{information need}) a
-partir de una \textit{base de conocimiento}. El caso de uso típico,
-ilustrado por los motores de búsqueda web, consiste en devolver una
-lista de documentos relevantes, en orden de relevancia, para una
-consulta del usuario. En estos sistemas, las consultas se interpretan
-como una serie de tokens concatenados con distintos operadores
-lógicos binarios, donde la barra espaciadora funciona como or
-inclusivo. El core del sistema es un\textit{ índice} \textit{de
-búsqueda} de los documentos de la base de conocimiento, que podemos pensar como 
-un diccionario indexado de palabras en documentos (más adelante tocaremos este tema). El
-proceso de creación y mantenimiento de estos índices depende del
-tipo y del dinamismo de la base de conocimiento, y oscila entre un
-modesto setup a mano de una lista de documentos estáticos hasta el
-ejército de \textit{spiders} de google indexando la web en tiempo
-real. 
-
+\subsection{Infromation Retrieval}
+\label{sec:information-retrieval}
 
 \bigskip
 
@@ -81,7 +53,9 @@ conocimiento.
 
 \bigskip
 
-\subsection{Distintos problemas}
+\subsection{Question Answering como disciplina}
+
+\subsubsection{Distintos problemas}
 
 Los sistemas de QA suelen ser sistemas complejos que abordan distintas
 problemáticas: por un lado deben definir y optimizar la base de
@@ -120,10 +94,7 @@ pero en general una base de conocimiento closed domain está asociada
 a un tipo de datos estructurado o semi-estructurado, mientras que las bases open domain
 suelen ser no estructuradas.
 
-
-\subsection{Question Answering como disciplina}
-
-\section{Estructura de la tesis}
+\section{Proyecto de la tesis}
 
 En este proyectos nos proponemos investigar y evaluar herramientas de procesamiento de lenguaje y diferentes enfoques existentes al problema
 de Question-Answering. Para esto implementamos un modelo simple de QA estructurado de dominio cerrado sobre una base de datos (ver \allref{subsec:mitic})y otro 
@@ -198,4 +169,15 @@ las preguntas son preguntas simples. Más adelante haremos un análisis de las m
 
 \subsection*{Estructura}
 
-El trabajo se estructura de la siguiente manera. En el capítulo \allref{chap:teorico} se hará una breve introducción terminológica y conceptual algunas de las  herramientas principales de information retrieval y procesamiento de lenguaje natural utilizadas en esta tesis, complementada por el detalle técnico más concreto expuesto en \allref{chap:herramientas}. En el capítulo \allref{chap:estado-de-arte} pasamos revista de varias implementaciones de sistemas de question answering, haciendo especial foco en el sistema de IBM -Watson- y de su arquitectura DeepQA como ejemplo de un proyecto exitoso de question answering, mientras también comentamos otros sistemas -Qanus, OpenEphyra, Aranea y Just.Ask-, haciendo énfasis en Qanus, debido a que su uso en un modelo inicial del proyecto. Finalmente, en el capítulo \allref{chap:implementacion} describiremos nuestra implementación de los modelos closed y open domain para la base de datos de Mitic y para los ejercicios de la competencia CLEF '07.
+La tesis se articula así: En la Introducción explico como se articula la tesis, introduciendo el concepto general de lo que significa el question answering, con un cierto grado de detalle (categorías de datos y corpus), enfasis en multilenguaje. 
+El QA está parado sobre dos ramas más amplias: Information retrieval y procesamiento de lenguajes. En el capitulo II - Marco Teórico, se introducen los conceptos básicos de estas dos ramas. Acá cuento muy a vuelo de pajaro de que se habla ahí.
+En el capitulo III, \dq{Estado de Arte}, paso revista del estado de arte del área, comentando el nucleamiento de la investigación en torno a las competencias TREC y CLEF, también señalando a IBM y comentando el devenir de las evaluaciones. En "Literatura científica y sistemas" hago una reseña explicita del "Survey". Además, menciono a OpenEphyra, Just.Ask y el estado deplorable del entorno. También hago una reseña explícita del paper de Interfaz a DB y "Structured Data in IBM-Watson". 
+En el capitulo IV presento algunas conclusiones del estado de arte y ejemplos de juguete de las librerias que uso.
+En el capitulo V, "Implementación de datos estructurados" comento el inicio del proyecto, la motivación de este tipo de sistemas y presento un modelo final, simple, pero elegante y funcionado. Hachando todo lo que se deba y pueda hachar. 
+En el capitulo VI, "Implementación sobre QANUS" viene toda la papota. Presento los ejercicios seleccionados de la CLEF 07 y hago un análisis de las wikipedias y de las preguntas. Explico qué me quedo y qué saco. Explico la adaptación a Freeling y lo copado de que sea multilingüe. Presento los datos de una manera más o menos vistosa.
+En el capitulo VII, "Conclusiones y trabajo futuro" comentos las virtudes y las limitaciones del experimento y hablo de estado del campo con más descriptividad que optimismo. Sobre trabajo futuro puedo sugerir muchas mejoras técnicas. 
+En el Apéndice presento librerías y datos de implementación muy burdos
+En la bibliografía van los textos que leí.
+
+
+% El trabajo se estructura de la siguiente manera. En el capítulo \allref{chap:teorico} se hará una breve introducción terminológica y conceptual algunas de las  herramientas principales de information retrieval y procesamiento de lenguaje natural utilizadas en esta tesis, complementada por el detalle técnico más concreto expuesto en \allref{chap:herramientas}. En el capítulo \allref{chap:estado-de-arte} pasamos revista de varias implementaciones de sistemas de question answering, haciendo especial foco en el sistema de IBM -Watson- y de su arquitectura DeepQA como ejemplo de un proyecto exitoso de question answering, mientras también comentamos otros sistemas -Qanus, OpenEphyra, Aranea y Just.Ask-, haciendo énfasis en Qanus, debido a que su uso en un modelo inicial del proyecto. Finalmente, en el capítulo \allref{chap:implementacion} describiremos nuestra implementación de los modelos closed y open domain para la base de datos de Mitic y para los ejercicios de la competencia CLEF '07.
