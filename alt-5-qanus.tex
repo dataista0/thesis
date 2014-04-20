@@ -799,51 +799,7 @@ Métricas de medición: definición de documento relevante.
 % Si bien es cierto que el segundo item está basado principalmente en NER-tagging, el tercero en POS-tagging y el cuarto en Question Clasiffication, 
 % cada uno de estos pasos utiliza estas herramientas de diferentes maneras. Por ejemplo, para la detección y verificación de entidades del analisis estructurado, además del NER-tagger también utilizamos la base de conocimiento y el análisis gramatical y, para el español, la clasificación del tipo de pregunta se hace apoyandose en las qwords identificadas por el POS-tagger.
 
-% \subsection{Idioma}
 
-% \begin{figure}
-%   \centering
-%     \includegraphics[scale=0.5]{graficos/LangDetect}
-%   \caption{Módulo de Detección de Idiomas}
-%   \label{fig:LangDetect}
-% \end{figure}
-
-% El módulo de detección de idiomas de nuestro sistema utiliza dos librerías distintas.
-% El módulo de detección de idiomas de Freeling y una librería especializada de Cybozu Labs. (Ver apéndices \allref{sec:freeling} y \allref{sec:cybozu} para más información)
-
-% Ambos permiten priorizar la detección de ciertos idiomas sobre otros desde su configuración.
-% De esta manera podemos forzarlos a identificar sólo los idiomas esperados en nuestro dominio. 
-% Ambos fueron configurados para detectar inglés y español para mejorar la confiabilidad,
-% pero pueden habilitarse más idiomas de ser necesario y funcionan correctamente. 
-
-% El módulo de detección simplemente evalua ambos algoritmos y 
-% decide el resultado con un cierto grado de confianza. En caso de existir un empate, se 
-% prioriza la opción de Cybozu labs que en la práctica dió resultados más exactos.
-
-% De todos modos, el problema "detección de idioma" no introduce mayores complicaciones y parece un problema bien resulto.
-% Es decir, la mayoría de las veces ambos módulos responden lo mismo y de modo correcto.
-% Sin embargo, para ciertos casos bordes molestos (pero lamentablemente frecuentes)
-% el detector de Cybozu resultó funcionar mejor. Por ejemplo, está el caso de la pregunta formulada en inglés pero acerca de una entidad nombrada en español: 
-% ``Where is located the Universidad de Buenos Aires?". Este problema está particularmente presente en el procesamiento de preguntas -nuestra tarea-, dado que son textos cortos en los que una construcción sustantivada en otro idioma puede desequilibrar erróneamente la balanza. 
-
-% A continuación presentamos algunos ejemplos que ilustran el funcionamiento de ambas librerías y el resultado final de nuestro módulo en estos casos:
-
-% \begin{center}
-% \begin{tabular}{| p {8cm} | l | l | l |}
-% \hline
-% Texto & Freeling & Cybozu & Resultado \\ \hline
-% ¿Dónde queda la Universidad de Buenos Aires? & es & es & es \\ \hline
-% Where is located the University of Buenos Aires? & en & en & en \\ \hline
-% Where is located the Univesidad de Buenos Aires? & en & en & en \\ \hline
-% Where is located Universidad de Buenos Aires? &  {\color{red}es} & en & en \\ \hline
-% Quién es Carolina Fernandez? & es & es & es \\ \hline
-% Who is Carolina Fernandez? &  {\color{red}none} & en & en \\ \hline
-% Quién es John McCain? & {\color{red}none} & es & es \\ \hline
-% Who is John McCain? & en & en & en \\ \hline
-% Dónde vive John McCain y por qué vive allí? & es & es & es \\ \hline
-% Where does Carolina Fernandez live and why does she lives there? & en & en & en \\ \hline
-% \end{tabular}
-% \end{center}
 
 % Los ejercicios de Clef '07 no evaluan detección de idiomas. Los archivos de preguntas están separadas por idioma y no se espera que el idioma se infiera a partir de los textos de las preguntas, sino que es un dato dado al sistema de QA.
 
