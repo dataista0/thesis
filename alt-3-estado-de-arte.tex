@@ -80,7 +80,7 @@ computadora. En el transcurso de esta tesis, IBM lanzó el programa
 de tecnología de punta para aplicaciones creadas por la comunidad\footnote{
 Announcing the IBM Watson Ecosystem Program: \url{http://www-03.ibm.com/innovation/us/watson/}}.
 
-\subsubsection{El problema}
+\subsubsection*{El problema}
 
 Watson debe realizar tareas como parsing, question classification,
 question descomposition, automatic source adquisition and evaluation,
@@ -176,7 +176,7 @@ de pistas. Esto implica que un approach estructurado (orientado por el
 tipo de respuesta), si bien resulta útil para algunos tipos, no es
 suficiente para abordar el problema completo.
 
-\subsubsection{Métricas}
+\subsubsection*{Métricas}
 
 Las métricas de resultados, además del tiempo de respuesta, son la
 \textit{precisión} (preguntas contestadas correctamente / preguntas
@@ -211,7 +211,7 @@ exigente en lo que respecta a QA.
 
 \bigskip
 
-\subsubsection{Baseline}
+\subsubsection*{Baseline}
 
 El equipo de IBM intentó utilizar dos sistemas consolidados en QA y
 adaptarlos al problema \ de Jeopardy. \ El primero fue PIQUANT
@@ -261,7 +261,7 @@ los casos en que efectivamente logra identificar entidades. De aquí
 se infiere que cada enfoque tiene sus ventajas, en el dominio de
 problemas apropiado.
 
-\subsubsection{La arquitectura DeepQA}
+\subsubsection*{La arquitectura DeepQA}
 \label{subsec:deep-qa}
 Los intentos de adaptación iniciales, como vimos, no dieron
 resultados, así como tampoco sirvieron las adaptaciones de algoritmos
@@ -303,7 +303,7 @@ hipótesis, que luego son sintetizados.
 A continuación, enumeraremos la lista de pasos que sigue el sistema
 para obtener la respuesta a una pregunta:
 
-\subsubsection{Adquisición de contenidos}
+\subsubsection*{Adquisición de contenidos}
 
 El primer paso de DeepQA es la adquisición de contenidos. Este paso es
 el único que no se realiza en tiempo de ejecución y consiste en
@@ -327,7 +327,7 @@ contenidos semi-estructurados \ y estructurados, incorporando bases de
 datos, taxonomías y ontologías como dbPedia, Wordnet y las
 ontologías de Yago. 
 
-\subsubsection{Análisis de la pregunta}
+\subsubsection*{Análisis de la pregunta}
 
 El primer paso en run-time es el análisis de la pregunta. En este paso
 el sistema intenta entender qué es lo que la pregunta está
@@ -385,7 +385,7 @@ genera distintas particiones y resuelve todas en paralelo, sintetizando
 las respuesta de cada partición generada mediante algoritmos ad-hoc
 de ponderación de confiabilidad y otras características.
 
-\subsubsection{Generación de hipótesis}
+\subsubsection*{Generación de hipótesis}
 
 El tercer paso (segundo en run-time) es la generación de hipótesis:
 tomando como input el resultado del paso anterior se generan respuestas
@@ -429,7 +429,7 @@ un análisis más exhaustivo.
 
 \bigskip
 
-\subsubsection{Recuperación de evidencias y scoring de pasajes}
+\subsubsection*{Recuperación de evidencias y scoring de pasajes}
 
 Para recuperar evidencias se utilizan varios algoritmos. Uno
 particularmente útil es buscar la hipótesis candidata junto con las
@@ -475,7 +475,7 @@ resultados intermedios.
 
 \bigskip
 
-\subsubsection{Tiempos y escala}
+\subsubsection*{Tiempos y escala}
 
 DeepQA utiliza Apache UIMA, un framework que implementa UIMA
 (Unestructured Information Management Architecture): todos los
@@ -498,7 +498,7 @@ PIQUANT y OpenEphyra
 
 \bigskip
 
-\subsubsection{Conclusiones sobre IBM-Watson}
+\subsubsection*{Conclusiones sobre IBM-Watson}
 
 System level approach.
 
@@ -538,7 +538,7 @@ la performance de OpenEphyra.
 (Freeling \ + Cambio de Base + Rigidez)
 
 
-\chapter{Herramientas y enfoque}
+\chapter{Herramientas y marco de trabajo}
 
 \section{Modelo}
 
@@ -725,5 +725,4 @@ Para este caso, el tipo de respuesta esperada de \dblquote{¿En qué colegio est
 \section{Generación de Respuestas}
 
 El proceso de generación de respuestas difiere sustancialmente entre ambos modelos de dominio. Para el sistema basado en datos estructurados, el approach es determinan en casos de código las distintas posibilidades, acotadas, de las cosas que se pueden responder. Nuestro dominio es tal que solo se pueden responder entidades, atributos de entidades o relaciones entre entidades. De ese modo, si no es posible redirigir el flujo de la pregunta hacia alguna respuesta conocida, no hay posibilidad de articular una respuesta significativa. Para el caso de los ejericicios de Clef sobre wikipedia, el enfoque es muy distinto. En primer lugar, no hay un modelo de los datos del dominio, hay textos con pasajes (u oraciones). Si bien es posible una cierta jerarquización de los datos (por ejemplo, utilizando los nombres de los articulos como verificación de la existencia de una entidad), un enfoque estructurado resulta imposible. En este contexto se utiliza la técnica de rankeo semántico de pasajes en base a features (características). Estas dimensiones de valoración de los pasajes son llamados Scorers (ver \allref{subsec:scorers}). Los Scorers, como veremos, pueden ser tan sencillos como preferir minimamente una cierta longitud sobre otra y también pueden incorporar dimensiones de análisis lingüístico (por ejemplo, la presencia de cierta entidad en un cierto rol semántico). El algoritmo de generación de respuestas consiste, en el caso no estructurado, en encontrar features útiles, significativos y en establecer mecanismo inteligentes de priorización de estos features. 
-
 

@@ -1,4 +1,4 @@
-\chapter{Marco teórico y Herramientas}
+\chapter{Marco teórico}
 \label{chap:teorico}
 
 En este capítulo vamos a recorrer algunos términos básicos y problemas de procesamiento de lenguaje e information retrieval que deben conocerse para atravesar mejor los siguientes capítulos. En la primer sección vamos a introducir terminología básica como $token$, \textit{n-grama}, \textit{ontología} y $feature$, mientras que en la segunda veremos algunos problemas o áreas de procesamiento de lenguajes y recuperación de la información en los que los sistemas de question answering suelen apoyarse. Primero comentaremos qué es information retrieval, cuales son las métricas de evaluación del área y qué es un índice invertido de búsqueda, luego comentaremos los principales problemas propios de procesamiento de lenguajes relacionados con QA (POS tagging o etiquetado gramatical, NE tagging o reconocimiento de entidades y clasificación de preguntas) y finalmente, mencionamos algunas otras herramientas y conceptos de uso frecuente. 
@@ -124,6 +124,7 @@ Features & Ejemplo \\ \hline
 
 \section{Information Retrieval}
 \label{sec:information-retrieval}
+\label{subsec:information-retrieval}
 
 El problema conocido como recuperación de la información (o \textit{information retrieval}) consiste, formalmente, en retornar \textit{información relevante} para una \textit{consulta} (\textit{information need}) a partir de una \textit{base de conocimiento}. 
 
@@ -189,11 +190,33 @@ Un índice invertido contendría las siguientes entradas (dónde el número \tex
 	``gran" & :& \{2\} \\
 \end{tabular}
 \medskip
+{\color{red} Mencionar un ejemplo de IR completo}
 
 {\color{red} Mencionar otras estructuras de IR y quizas índices basados en LSA (link a LASSO?)}
 
 
-\section{Natural Language Processing}
+
+\section{Procesamiento de Lenguaje Natural}
+
+
+El problema de question answering puede pensarse como un problema de information
+retrieval, pero en realidad excede este dominio: su objetivo no es devolver una lista de documentos para
+una serie de palabras, sino una respuesta puntual a una pregunta
+puntual. Para esto incorpora una dimensión semántica, esto es, toda
+una serie de problemas de procesamiento de lenguaje natural que se
+abordan con varias herramientas, que aportan distintos modelos de
+análisis lingüístico a nivel \textit{oración}, tanto de la
+consulta del usuario, como de los documentos indexados. Por ejemplo: el
+pos-tagger es un analizador que genera la estructura gramatical de la
+oración, mientras que \ el reconocimiento de entidades nombradas
+(NER) identifica entidades como {\textquotedblleft}Buenos
+Aires{\textquotedblright}, {\textquotedblleft}José
+Pérez{\textquotedblright}, etc- y las clasifica (como \textit{lugar}
+y \textit{persona}, respectivamente) . Los sistemas de QA utilizan
+distintas herramientas para modelar la consulta y para buscarla, con
+algún grado de comprensión semántica, dentro de su base de
+conocimiento.
+En lo que sigue de esta sección comentaremos algunas herramientas de procesamiento de lenguajes relevantes para question answering en general, y para nuestra tesis en particular.
 
 \subsection{Part-of-speech (POS) tagging}
 \label{subsec:pos}
@@ -344,7 +367,7 @@ The &DT & Determiner \\ \hline
 En el scope de este proyecto, utilizamos pos-tagging para filtrar clases de palabras inútiles y para seleccionar tres tipos: las qwords, los verbos y los sustantivos (Las qwords son los pronombres interrogativos: qué, quién, cómo, etc. y en inglés, who, when, where...). \newline
 
 
-\subsection{Named Entity Recognition (NER)}
+\subsection{Reconocimiento de Entidades Nombradas (NER)}
 \label{subsec:nerc}
 
 El reconocimiento de entidades nombradas (NER, de Named Entity
@@ -384,7 +407,7 @@ Finalmente, existen algortimos de reconocimiento de entidades basados en aprendi
 En nuestro trabajo utilizamos los NER taggers de Stanford\cite{NER2} y de Freeling, el primero implementando un algoritmo CRF, es decir, de aprendizaje supervisado (ver \allref{sec:stanford-both}) mientras que el segundo es un algoritmo trivial basado en Autómatas Finitos (ver \allref{subsec:freeling-mods}). Para descripciones y referencias de diferentes implementaciones de algoritmos de NERC ver \cite{NER1}.
 
 
-\subsection{Question Classification}
+\subsection{Clasificación de Preguntas (QC)}
 \label{subsec:qc}
 Question Classification es la tarea de categorizar preguntas en diferentes 
 clases semánticas que impongan restricciones significativas a las respuestas potenciales 
@@ -420,7 +443,7 @@ Finalmente, cabe mencionar que no existen clasificadores de preguntas para el es
 Actualmente, un tesista del grupo GALLI está trabajando en la construcción de un corpus para alimentar un clasificador de preguntas basado en machine learning para el español, pero lamentablemente por cuestiones de tiempos no pudimos hacer uso del mismo en esta tesis.
 
 
-\subsection{Other common nlp tasks}
+\subsection{Otras tareas}
 Hacer
 \begin{itemize}
 \item Detecci\'on de idioma
@@ -437,3 +460,34 @@ Hacer
 \item Word Sense Disambiguation
 \item Coreference resolution
 \end{itemize}
+
+Esta sección es un placeholder para las siguientes posibles tecnologías que podría describirse como última sección en \allref{chap:teorico}
+\begin{itemize}
+  \item Coreference Resolution \\
+  Ejemplos de resolución de Freeling.
+  \item Word sense disambiguation \\
+  Hablar algo de wordnet?
+  \item Relation Extraction \\
+  La detección y extracción de relaciones es una tarea de procesamiento
+de lenguaje natural que consiste en extraer entidades y relaciones semánticas
+entre entidades a partir de un texto no estructurado. 
+
+[[Escribir sobre distintos algoritmos conocidos basado en el paper RE1]]
+  \item Machine Translation \\
+    Hablar de los problemas con Google y otros y de las memorias de traducción. 
+  \item Detección de idiomas \\
+  La detección o identificación de idioma es la tarea de reconocer el
+idioma de un cierto contenido. Esta tarea puede pensarse como una
+tarea de clasificación donde las clases son los distintos
+idiomas que el detector puede reconocer. 
+  \item Shallow parsing (also chunking, "light parsing") \\
+  is an analysis of a sentence which identifies the constituents (noun groups, verbs, verb groups, etc.), but does not specify their internal structure, nor their role in the main sentence.
+It is a technique widely used in natural language processing. It is similar to the concept of lexical analysis for computer languages.
+[[Expandir con detalles técnicos de wikipedia]]
+\end{itemize}
+
+ReVerb is a program that automatically identifies and extracts binary relationships from English sentences. ReVerb is designed for Web-scale information extraction, where the target relations cannot be specified in advance and speed is important.
+
+ReVerb takes raw text as input, and outputs (argument1, relation phrase, argument2) triples. For example, given the sentence "Bananas are an excellent source of potassium," ReVerb will extract the triple (bananas, be source of, potassium).
+
+

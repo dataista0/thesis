@@ -61,34 +61,21 @@ no de otros documentos (imagenes, discusión, categoría, template, histórico d
 
 Los links a páginas de wikipedia en español y en portugués no estaban más disponibles (ambos respondieron 404), mientras que el formato
 preprocesado pedido para el inglés resultaba realmente complejo de instalar y parecía una linea muerta. Por estos motivos,
-seguimos la sugerencia sobre el uso responsable de otras wikipedias y utilizamos las siguientes snapshots encontrados en Wikidumps\footnote{link a wikidumps}.
-
+seguimos la sugerencia sobre el uso responsable de otras wikipedias y utilizamos las siguientes snapshots de Wikidumps\footnote{Ver \url{http://dumps.wikimedia.org/} y \url{http://en.wikipedia.org/wiki/Wikipedia:Database_download\#Other_languages}}.
 
 \begin{center}
 \begin{tabular}{ | l | l | l | l |}
     \hline
-    Idioma & Fecha & Tamaño & Cantidad de archivos\\ \hline
-    Español \footnote{\url{http://dump-español-1}} & 7 de julio de 2006 & 558M & archivos \\ \hline
-    Portugués \footnote{\url{http://dump-español-1}} & fecha & peso & archivos \\ \hline
+    Idioma & Fecha & Tamaño & \# Entradas \\ \hline
+    Español & 5 de Julio de 2006 & 558M  & 233750  \\ \hline
+    Portugués & 1 de Febrero de 2007 & 776M  & 498039  \\ \hline
+    Inglés Simple & 4 de Julio de 2006 & 26M   & 18273   \\ \hline
+    Inglés & 4 de Noviembre de 2006 & 7,6G  &   \\ \hline
+    Español & 26 de Enero de 2007 & 902M  &   \\ \hline
+    Español & 14 de Junio de 2013 & 7,3G  &   \\ \hline
+    Inglés Simple & 24 de Julio de 2013 & 406M  &   \\ \hline
 \end{tabular}  
 \end{center}
-
-
-% Durante el desarrollo y las pruebas utilizamos otras imagenes de wikipedia:
-
-% \medskip
-
-% \begin{center}
-% \begin{tabular}{ | l | l | l |}
-%     \hline
-%     Idioma & Fecha & Tamaño\\ \hline
-%     Inglés \footnote{\url{http://dump-ingles-1}} & 4 de noviembre de 2006 & 7,6G \\ \hline
-%     Español & 26 de enero de 2007 & 902M \\ \hline
-%     Español & 14 de junio de 2013 & 7,3G \\ \hline
-%     Inglés simple & 4 de julio de 2006 & 26M \\ \hline
-%     Inglés simple & 24 de julio de 2013 & 406M \\ \hline
-%  \end{tabular}
-% \end{center}
 
 Utilizando la información disponible en los archivos de respuestas esperadas, discriminamos las preguntas con respuestas con soporte de wikipedia, las soportadas por el corpora de noticias de la organización y las que no tienen respuesta (NIL):
 
@@ -335,7 +322,7 @@ En las siguientes secciones de la tesis describiremos la implementación de nues
 
 \subsection{Procesamiento de la base de información}
 
-El módulo de procesamiento de la base de información de la implementación QA-sys está desarrollada para correr sobre el tipo de datos de las evaluaciones Trec 2007, un formato XML conocido como ``Aquaint". Por otro lado, el mismo framework esta atado al procesador de XMLs SAX, una entre varias implementaciones disponibles en el entorno de java. En nuestra adaptación, incorporamos la librería gwtwiki (Ver Apéndice~\ref{sec:gwtwiki}) para procesar los xml dumps de wikipedia. Como esta librería no utiliza SAX, nos vimos obligados a modificar el framework. 
+El módulo de procesamiento de la base de información de la implementación QA-sys está desarrollada para correr sobre el tipo de datos de las evaluaciones Trec 2007, un formato XML conocido como ``Aquaint". Por otro lado, el mismo framework esta atado al procesador de XMLs SAX, una entre varias implementaciones disponibles en el entorno de java. En nuestra adaptación, incorporamos la librería gwtwiki\footnote{Java Wikipedia API (Bliki engine): \url{http://code.google.com/p/gwtwiki/}} para procesar los xml dumps de wikipedia. Como esta librería no utiliza SAX, nos vimos obligados a modificar el framework. 
 
 En este proceso descartamos artículos mal formados y entradas representado imágenes o discusiones, tal como se sugiere en la guía. 
 Los artículos se indexan en índices Lucene como documentos con los siguiente campos: \emph{id, title, body y all}. 
@@ -343,18 +330,19 @@ La tabla \ref{table:creacion-indices} muestra algunos datos del proceso de gener
 
 \begin{table}
 \begin{center}
-\begin{tabular}{| l | l | l | l |}
+\begin{tabular}{| l | l | l | l | l | l| l|l|}
 \hline
-Idioma & Tamaño & \# Entradas & Tiempo \\ \hline
-es & 50M & \# 16 millones & 2.5min \\ \hline
-es & 50M & \# 16 millones & 2.5min \\ \hline
-es & 50M & \# 16 millones & 2.5min \\ \hline
-es & 50M & \# 16 millones & 2.5min \\ \hline
+Wikipedia & \# Entradas & Nulas & Redirects & Filtradas & Validas & Tamaño & Tiempo \\ \hline
+simple-06 & 18273 & 22 & 2983 & 5244 & 10024 & 26M & 14 secs \\ \hline 
+es-06 & 233750 & 52 & 55976 & 34993 & 142729 & 558M & 242 secs\\ \hline 
+pt-07 & 498039 & 80 & 199825 & 43698 & 254436 & 776M & 294 secs\\ \hline 
 \end{tabular}
 \caption{Datos de procesamiento sobre las diferentes versiones de wikipedia analizadas. Los tiempos de procesamiento están tomados en una Pentium tanto con tanto de RAM y tal OS.}
 \label{table:creacion-indices}
 \end{center}
 \end{table}
+
+La categoría filtradas contiene artículos con alguno de los siguientes prefijos en el título: WP, wp, Biografias, Wikipedia, Wikiproyecto, Imagen, Plantilla, MediaWiki, Template, Category, Help, Image, Ayuda, Portal, Ajuda, Categoria, Categoría, Imagem, Predefinição.
 
 \begin{figure}[H]
   \centering
