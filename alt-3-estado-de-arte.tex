@@ -88,6 +88,15 @@ Finalmente, se procede a ordenar los parágrafos / documentos filtrados. Una imp
 
 
 \subsubsection*{Módulo de procesamiento de la respuesta}
+Finalmente, el modulo de procesamiento de respuestas es el encargado de generar una respuesta a partir del output de los otros dos módulos. Para ello debe identificar la respuesta dentro de los parágrafos, extraer la fracción de texto que responde puntual y concretamente a la pregunta y, finalmente, validar su corrección. 
+
+Para identificar la respuesta se utilizan distintas heurísticas, utilizando el tipo de respuesta esperado cuando es posible. Sin embargo, el tipo de respuesta esperado no siempre es explícito en la pregunta o en la respuesta, por lo que se utilizan diferentes reglas basadas en pos-tags, ners, en un parser específico para el reconocimiento de las respuestas candidatas.
+
+Para las respuestas candidatas se extrae luego el o los términos concretos de la respuesta final {\color{red} Por ejemplo: }. Existe sobre este punto heúristicas más o menos avaladas basadas en distancias entre keywords, número de keywords presentes y otras métricas similares (ver, por ejemplo, {\color{red} Qanus, scorers}. Típicamente, si no se encuentra ninguna coincidencia confiable, los sistemas de QA productivos recaen en la devolución de los primeros $n$ parágrafos mejor rankeados por el módulo de documentos. 
+
+Como señalamos anteriormente, en las competencias TREC hasta 2001 se permitía devolver una lista de 5 respuestas, mientras que desde el 2002 se exige una única respuesta.
+
+Finalmente, hay distintas formas de validar la corrección o de estimar un grado de confianza en la corrección de una respuesta. En primer lugar, pueden usarse diferente corpus especificos {\color{red} INCONCLUSO}.
 
 \subsection{QA como interfaz a una base de datos}
 \label{subsec:closed-domain}
