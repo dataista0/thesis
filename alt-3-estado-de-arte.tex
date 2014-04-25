@@ -1,49 +1,92 @@
 \chapter{Estado de Arte}
 \label{chap:estado-de-arte}
-En este capítulo se busca pasar revista de diferentes investigaciones sobre question answering para poder ilustrarnos acerca del dominio de problemas y su estado de arte, las distintas formas de encararlos que existen. 
-En primer lugar presentaremos 
-Discutiremos {\color{red}primero} una serie de investigaciones académicas pequeñas, presentadas en general en congresos y competencias del área, para definir un modelo más o menos estándar del dominio de problemas y los acercamientos típicos. Luego, comentaremos el sistema de IBM -Watson- para ver, más allá de los enfoques usuales, un enfoque exitoso. Finalmente pasaremos revista de una serie de sistemas disponibles para facilitar la creación de modelos de question answering, haciendo foco en Qanus (el framework que utilizamos para una parte nuestra investigación) y mencionando algunos sistemas que evaluamos teóricamente pero que, lamentablemente, no estaban disponibles \textit{out of the box}, principalmente debido a restricciones y modificaciones en el acceso programático que implementaron los buscadores populares en los últimos años\footnote{Ver por ejemplo, Google Search API, deprecado el 1ero de noviembre de 2010 aquí: https://developers.google.com/web-search/}. 
+% En este capítulo se busca pasar r. 
+% En primer lugar presentaremos 
+% Discutiremos {\color{red}primero} una serie de investigaciones académicas pequeñas, presentadas en general en congresos y competencias del área, para definir un modelo más o menos estándar del dominio de problemas y los acercamientos típicos. Luego, comentaremos el sistema de IBM -Watson- para ver, más allá de los enfoques usuales, un enfoque exitoso. Finalmente pasaremos revista de una serie de sistemas disponibles para facilitar la creación de modelos de question answering, haciendo foco en Qanus (el framework que utilizamos para una parte nuestra investigación) y mencionando algunos sistemas que evaluamos teóricamente pero que, lamentablemente, no estaban disponibles \textit{out of the box}, principalmente debido a restricciones y modificaciones en el acceso programático que implementaron los buscadores populares en los últimos años\footnote{Ver por ejemplo, Google Search API, deprecado el 1ero de noviembre de 2010 aquí: https://developers.google.com/web-search/}. 
 
-\section{Competencias y métricas de evaluación}
-\label{sec:competencias}
+\section{Introducción general}
+\label{sec:intro-general-qa}
 
+Como vimos brevemente en la introducción, QA es un área de investigación de ciencias de la computación que busca generar respuesta concretas a preguntas expresadas en algún lenguaje natural. Es, por esto mismo, un problema complejo que involucra herramientas y modelos de otras áreas de existencia autónoma, como information retrieval (IR), procesamiento del lenguaje natural (PLN, NLP) e information extraction (IE). 
+
+También señalamos algunos ejes de subclasificación de problemas de QA. Con respecto al dominio de hechos y conocimientos sobre los que se espera que el sistema sepa responder los sistemas se clasifican como de dominio abierto (\textit{open domain}) o de dominio cerrado (\textit{closed domain}): mientras de los primeros se espera que sepan responder pregunta acerca cualquier tema o dominio, de los segundos solo se espera que sepan responder preguntas acerca de un dominio acotado particular. A su vez, los datos pueden ser estructurados, semi estructurados o no estructurados. El ejemplo típico de una base de conocimientos estructurada es una base de datos relacional, un tipo de datos semi estructurados puede ser un documento xml no normalizado, mientras que el tipo de datos no estructurado por antonomasia es un corpus de documentos en texto plano. 
+
+Las bases de conocimiento de los sistemas de QA pueden tener uno o más tipos de datos, pero cada unos de estos tipos determina un enfoque algorítmico diferente. Por ejemplo, si la base de conocimientos es una DB relacional con un lengueja formal de consultas similar al SQL, el problema de QA típico consiste en encontrar un mappeo desde la pregunta en lenguaje natural a una consulta SQL. Esto implica que el foco de trabajo está en la generación de esta consulta y no en el trabajo posterior sobre los resultados de ejecutarla. Por otro lado, un corpus no estructurado no permite una consulta formal, por lo que el enfoque usual es obtener una lista de documentos relevantes para luego aplicar distintas técnicas de procesamiento de textos para extraer la respuesta buscada.
+
+Cabe agregar que estos dos ejes de clasificación (dominio abierto / dominio cerrado y grado de estructuración de los datos) suelen tener una correlación, a saber: los dominios cerrados suelen disponer (o permitir la construcción sencilla de) una base de conocimientos estructurada, mientras que los dominios abiertos suelen forzar datos no estructurados. Esta correlación no es una asociación. Existen grandes ontologías y diccionarios estructurados que podríamos considerar de dominio abierto, por ejemplo, {\color{red} Yago , dbPedia, Freebase. Mejorar. Linkear}.
+
+Por otro lado, muchos sistemas open domain utilizan métodos de pln sobre corpora no estructurados que luego combinan con verificaciones del tipo de resultado obtenido contra bases de datos estrucutradas. {\color{red} Por ejemplo, IBM-Watson utiliza XXX y Qa-sys utiliza XXX}.
+
+Las siguiente secciones siguen el siguiente formato: presentaremos primero (\ref{sec:intro-general-qa}) una introducción general a la disciplina, repasando su historia (\ref{subsec:historia}), las competencias en torno a las cuales se estructuró en el tiempo y las diferentes métricas utilizadas por estas competencias a la hora de evaluar la performance de los sistemas (\ref{subsec:competencias}), luego (\ref{sec:literatura}) pasaremos revista de diferentes investigaciones sobre question answering para definir un modelo más o menos estándar del dominio de problemas y los acercamientos típicos, discutiendo diferentes investigaciones sobre QA open-domain (\ref{subsec:open-domain}), un enfoque estructurado para dominios cerrados (\ref{subsec:closed-domain}) y, finalmente analizaremos el caso de IBM-Watson (\ref{subsec:ibm-watson}) y otros sistemas (\ref{subsec:otros-sistemas}).
+
+
+\subsection{Historia de la disciplina}
+\label{subsec:historia}
+{\color{red}Historia: primeros enfoques, BASEBALL y LUNAR.}
+
+\subsection{Competencias y métricas de evaluación}
+\label{subsec:competencias}
+{\color{red}Historia de las competencias}
 Por ejemplo, la competencia ya finalizada del año 2013, QA4MRE@CLEF2013, (Question Answering for Machine Reading Evaluation) se enfoca principalmente en Machine Reading, tarea que incluye un grado de razonamiento elevado para la computadora\footnote{\url{http://celct.fbk.eu/QA4MRE/}}.
 
 Existen distintas conferencias de evaluación de sistemas QA o de subtareas asociadas (por ejemplo TREC - Text Retrieval Conference \footnote{\url{http://trec.nist.gov/}}-, TAC - Text Analysis Conference \footnote{\url{http://www.nist.gov/tac/}}) - y, a su vez, estas distintas competencias ofrecen distinos llamados a competencias.
 
-
-\section{Dominio de problemas}
-QA, NLP, IR, Open domain y closed domain. Historia: primeros enfoques, BASEBALL y LUNAR. 
-En esta sección comentaremos algunos enfoques conocidos para resolver los problemas de question answering open domain y closed domain. 
-\subsection{Enfoques sobre open domain}
 La investigación, la producción de software y la formación de una comunidad de i+d vinculada con el question answering estuvo impulsada fuertemente por la competencia TREC. Esta competencia duró de tal año a tal año, momento en el que se suspendió. CLEF. NCTIC. 
-Los diferentes autores coiniciden en un modelo general de tres módulos principales: 
-\begin{itemize}
-\item Interfaz a una base de conocimientos
-\item Procesamiento lingüístico de la pregunta
-\item Búsqueda, extracción y retorno de la respuesta
-\end{itemize}
-El primer módulo consiste, por lo general, en algún soporte de documentos de information retrieval, como por ejemplo, un indice Lucene o IRQI[x]. 
-El segundo piripipí. El tercero piripipí. Por su parte, cada módulo define una serie de problemas y enfoques distintos. Subproblemas de cada problema y enfoques típicos. 
 
-\section{Literatura científica y sistemas}
+\section{Literatura y sistemas}
 \label{sec:literatura}
-\subsection{Algunos ejemplos académicos}
-\begin{itemize}
-\item Watson: \cite{WATSON1} y \cite{WATSON2}
-\item Qanus: \cite{QANUS1}
+\subsection{Enfoques sobre open domain}
+\label{subsec:open-domain}
 
-\item Ephyra: \cite{EPHYRA1}
-\item Varios de QA: Yago \cite{YAGO-QA1}, sobre una teoria de QA como interfaz a DBs: \cite{QADB1}. Corpus: \cite{TRAIN-QA1}, qall-me: \cite{QALL-ME1}, practical QA: \cite{QAS1}, simple QA: \cite{QAS2} y Surface de Ravishandran: \cite{SURF1}. Introducción a QA: \cite{QA1} y \cite{QA2} y \cite{QA3}
-\item Aranea: \cite{ARANEA1} (no leido)
-\item Passage retrieval evaluation: \cite{PASSAGE1}
-\item Evaluacion de las TREC8 (metrica de \cite{QA3} LASSO): \cite{TREC8}
+Existe un consenso general a la ahora de definir el modelo de software más abstracto o de arquitectura para encarar la construcción de un sistema de question answering open domain. Esta arquitectura consiste en un pipeline con al menos tres módulos o compotentes bien diferenciados:
+\begin{itemize}
+\item Módulo de procesamiento de la pregunta
+\item Módulo de procesamiento de documentos
+\item Módulo de procesamiento de la respuesta
 \end{itemize}
+
+Cada uno de estos módulos cuenta a su vez con subcomponentes sobre los cuales hay mayor o menor consenso, que determinan, en definitiva, la performance del sistema concreto implementado. 
+
+El módulo de procesamiento de la pregunta tiene como subcomponente principal un Clasificador de Preguntas (Ver \allref{subsec:qc} y \allref{sec:stanford-qc}) y puede incorporar otros componente como identificadores del \sq{foco} (\textit{focus}) y del tipo esperado de la respuesta (\textit{answer type}), y también puede incluirse en este módulo un componente encargado de expandir o reformular la pregunta para optimizar los resultados del módulo de procesamiento de documentos ( este subcomponente también se suele considerar como parte del módulo de procesamiento de respuestas). Este último subcomponente tiene diferentes nombres en la literatura (\textit{query reformulation}, \textit{query generation}, \textit{query expansion}, etc).
+
+En el núcleo del módulo de procesamiento de documentos, por lo general, hay uno o más índices invertidos (como Lucene o {\color{red} XXX}) como el descripto en \allref{subsec:indice-invertido}, o bien accesos a un buscador web, o, más en general, estructuras de information retrieval. Como vimos (\ref{subsec:metricas-ir}, existen dos métricas fundamentales a la hora de evaluar el funcionamiento de un módulo de information retrieval: precisión y recall. La precisión es la proporción de documentos relevantes devueltos sobre el total documentos devueltos por el módulo, mientras que el recall es la proporción de documentos relevantes devueltos sobre el total de documentos relevantes existentes en la base de conocimientos. Estas dos métricas suelen comportarse una con la otra como un trade-off, es decir: suelen aparecer escenarios de diseño en los que se deberá optar por priorizar una o bien la otra. Considerando esto, existe una tercera métrica extendida, la medida $F$, que busca parametrizar este compromiso. 
+
+En el contexto de uso de los sistemas de QA, la métrica que se busca maximizar para el módulo de procesamiento de documentos es el recall, es decir, no interesa que el módulo no recupere documentos no relevantes siempre y cuando recupere todos los documentos relevantes existentes que pueda. El motivo es simple: se espera que el análisis lingüístico fino del módulo de procesamiento de la respuesta sea capaz de eliminar texto irrelevante en la misma o en mejor medida que el sistema de information retrieval subyacente al módulo de documentos. Por otro lado, si al recuperar los documentos se filtra una respuesta válida como irrelevante, entonces el resto del pipeline vera sus probabilidades de éxito mermadas (sino directamente anuladas).  La expansión/reformulación de la pregunta del paso anterior apunta, justamente, a generar una query que priorice el recall sobre la precisión. O
+
+Otras tareas que se realizan en el módulo de procesamiento de documentos es la división de los documentos en parágrafos, el filtrado de documentos o parágrafos irrelevantes y el ranking de los resultados. Si bien los sistemas de information retrieval suelen rankear sus resultados, este ranking puede resultar no del todo adecuado para la tarea en cuestión y mejorable teniendo en cuenta la información disponible. 
+
+Finalmente, el módulo de procesamiento de respuestas introduce el valor agregado que distingue un sistema de IR típico y un sistema de QA propiamente dicho. Este módulo es el menos estandarizado de los tres y tiene diferentes enfoques más o menos elaborados en la literatura, pero el grado de consenso sobre la viabilidad del uso de un grupo de técnicas fijas sobre otras no ocurre como, por ejemplo, en el uso de un clasificador de preguntas en el módulo de procesamiento de preguntas o de un índice de búsquedas en el módulo de procesamiento de documentos. Típicamente, el módulo consta de tres momentos: a partir de los parágrafos o documentos rankeados generados por el módulo de documentos se busca identificar oraciones o respuestas candidatas mediante distintas técnicas. Para estas respuestas candidatas identificadas, se extrae la información concreta que responde a la pregunta utilizando heurísticas basadas en las etiquetas obtenidas para la pregunta (clase de pregunta, foco, tipo de respuesta, etc). Finalmente, se implementa algún mecanismo de corroboración o de validación de respuestas, generando una respuesta final.
+
+A continuación nos extenderemos con más detalle sobre los tres módulos propuestos señalando algunos enfoques usuales, usando como guía los papers \cite{QA-survey}, \cite{QA1}, \cite{QA2}, \cite{QA3} y \cite{PASSAGE1}.
+
+\subsubsection*{Módulo de procesamiento de la pregunta}
+Este módulo recibe como input una pregunta formulada en algún lenguaje natural y genera como output una representación de la misma que resulte útil para los módulos siguientes. Esto suele realizarse agregando labels o etiquetas (ver Features, en \allref{sec:terminologia}) a la pregunta completa y a sus distintos términos.
+
+La etiqueta principal generada es el tipo de pregunta (\textit{question type}) y para obtenerlo se utiliza un clasificador como el que describimos en (\ref|{subsec:qc})· Lamentablemente, la clasificación de preguntas no está desarrollada para otros idiomas que el inglés, al menos, no con el mismo grado de precisión y visibilidad que, por ejemplo, el clasificador de Stanford \cite{QC1} \cite{QC2}. Como vimos anteriormente, el principal problema a la hora de clasificar una pregunta es la ambigüedad intrinseca de ciertas clases de preguntas. 
+
+A partir del tipo de pregunta se define el tipo de respuesta esperada (\textit{answer type}). No existe un algoritmo automático estándar difundido para generar el tipo de respuesta esperado. El enfoque general encontrado es la aplicación de un mappeo simple basado en reglas, desde el tipo de pregunta generado por el clasificador a una serie de tipos de respuestas predefinido para el dominio de problema.
+
+Otro análisis interesante pero, según nuestra investigación, no sistematizado, es el análisis del \dq{foco} (\textit{question focus}). En \cite{QA3} se define el foco como una palabra o secuencia de palabras que indican qué se está preguntando. Por ejemplo, para la pregunta \dq{¿Quién fue nombrado presidente de Argentina en  1983?} el foco sería \dq{presidente}). {\color{red} VER MI RESUMEN DE QA-SURVER, COMENTARIO PERSONAL}. El concepto aparece también en \cite{WATSON1} pero no encontramos detalles sobre los mecanismos técnicos implicados en la extracción y todo parece señalar a una serie de heurísticas de procesamiento lingüístico escritas a mano. 
+
+Otros análisis que se realizan sobre la pregunta son el POS-tagging (Ver \allref{subsec:pos}), el reconocimiento de entidades nombradas (NER, ver \allref{subsec:ner}) y la búsqueda de dígitos u otros patrones útiles para el contexto. 
+
+Finalmente, se ejecuta la reformulación o expansión de la pregunta para genera un input para el módulo de information retrieval tal que maximice el recall. 
+La idea guía es la extracción de keywords relevantes y existen diferentes enfoques, usando los pos-tags y el resultado del ner. También pueden utilizarse recursos léxicos como Wordnet para generar sinónimos de términos importante. 
+
+En \cite{QA1} y \cite{QA3} se propone una heurística basada en 8 reglas para implementar este paso. Las reglas propuestas son:
+
+\begin{itemize}
+\item {\color{red} Fill me neddy}
+\end{itemize}
+
+\subsubsection*{Módulo de procesamiento de documentos}
+\subsubsection*{Módulo de procesamiento de la respuesta}
 
 \subsection{QA como interfaz a una base de datos}
+\label{subsec:closed-domain}
 
 \subsection{IBM-Watson}
-
+\label{subsec:ibm-watson}
 Watson\cite{WATSON1}\cite{WATSON2} es un sistema diseñado por IBM con el objetivo de competir en
 tiempo real en el programa de televisión estadounidense Jeopardy,
 logrando resultados del nivel de los campeones humanos de este
@@ -506,14 +549,15 @@ System level approach.
 \bigskip
 
 
-\subsection{No incorporado a QANUS}
+\subsection{Otros sistemas de QA: OpenEphyra, Aranea y Just.Ask}
+\label{subsec:otros-sistemas}
+\bigskip
+
+\subsubsection{No incorporado a QANUS}
 En efecto, la arquitectura DeepQA no está disponible para la comunidad, el ya mencionado OpenEphyra, como veremos en breve, no funciona, mientras que otros sistemas resultan igualmente inaccesibles (Aranea, Qanda) mientras que QA-sys es un sistema de QA out of the box. Mencionaremos los logros y los límites de estos objetivos cuando hablemos de nuestro intento por montar nuestro propio sistema sobre Qanus. 
 
 \bigskip
 
-\subsubsection{Otros sistemas de QA: OpenEphyra, Aranea y Just.Ask}
-
-\bigskip
 
 El paper describe las arquitecturas de todos los sistemas, si sirve
 meter más info
@@ -536,6 +580,9 @@ entre Just.Ask y Open Ephyra son interesantes y concluyentes a favor de
 la performance de OpenEphyra. 
 
 (Freeling \ + Cambio de Base + Rigidez)
+
+
+
 
 
 \chapter{Herramientas y marco de trabajo}
@@ -725,4 +772,3 @@ Para este caso, el tipo de respuesta esperada de \dblquote{¿En qué colegio est
 \section{Generación de Respuestas}
 
 El proceso de generación de respuestas difiere sustancialmente entre ambos modelos de dominio. Para el sistema basado en datos estructurados, el approach es determinan en casos de código las distintas posibilidades, acotadas, de las cosas que se pueden responder. Nuestro dominio es tal que solo se pueden responder entidades, atributos de entidades o relaciones entre entidades. De ese modo, si no es posible redirigir el flujo de la pregunta hacia alguna respuesta conocida, no hay posibilidad de articular una respuesta significativa. Para el caso de los ejericicios de Clef sobre wikipedia, el enfoque es muy distinto. En primer lugar, no hay un modelo de los datos del dominio, hay textos con pasajes (u oraciones). Si bien es posible una cierta jerarquización de los datos (por ejemplo, utilizando los nombres de los articulos como verificación de la existencia de una entidad), un enfoque estructurado resulta imposible. En este contexto se utiliza la técnica de rankeo semántico de pasajes en base a features (características). Estas dimensiones de valoración de los pasajes son llamados Scorers (ver \allref{subsec:scorers}). Los Scorers, como veremos, pueden ser tan sencillos como preferir minimamente una cierta longitud sobre otra y también pueden incorporar dimensiones de análisis lingüístico (por ejemplo, la presencia de cierta entidad en un cierto rol semántico). El algoritmo de generación de respuestas consiste, en el caso no estructurado, en encontrar features útiles, significativos y en establecer mecanismo inteligentes de priorización de estos features. 
-
