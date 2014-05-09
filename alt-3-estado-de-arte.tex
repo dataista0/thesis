@@ -20,18 +20,208 @@ Por otro lado, muchos sistemas open domain utilizan métodos de pln sobre corpor
 Las siguiente secciones siguen el siguiente formato: presentaremos primero (\ref{sec:intro-general-qa}) una introducción general a la disciplina, repasando su historia (\ref{subsec:historia}), las competencias en torno a las cuales se estructuró en el tiempo y las diferentes métricas utilizadas por estas competencias a la hora de evaluar la performance de los sistemas (\ref{subsec:competencias}), luego (\ref{sec:literatura}) pasaremos revista de diferentes investigaciones sobre question answering para definir un modelo más o menos estándar del dominio de problemas y los acercamientos típicos, discutiendo diferentes investigaciones sobre QA open-domain (\ref{subsec:open-domain}), un enfoque estructurado para dominios cerrados (\ref{subsec:closed-domain}) y, finalmente analizaremos el caso de IBM-Watson (\ref{subsec:ibm-watson}) y otros sistemas (\ref{subsec:otros-sistemas}).
 
 
-\subsection{Historia de la disciplina}
+\subsection{Historia y Competencias}
 \label{subsec:historia}
+\label{subsec:competencias}
 {\color{red}Historia: primeros enfoques, BASEBALL y LUNAR.}
 
-\subsection{Competencias y métricas de evaluación}
-\label{subsec:competencias}
-{\color{red}Historia de las competencias}
-Por ejemplo, la competencia ya finalizada del año 2013, QA4MRE@CLEF2013, (Question Answering for Machine Reading Evaluation) se enfoca principalmente en Machine Reading, tarea que incluye un grado de razonamiento elevado para la computadora\footnote{\url{http://celct.fbk.eu/QA4MRE/}}.
+La investigación, la producción de software y la formación de una comunidad de desarrollo e investigación vinculada con el question answering estuvo impulsada fuertemente por el lanzamiento de los ejercicios de QA en la competencia TREC\footnote{\url{http://trec.nist.gov/}} (Text Retrieval Conference) del año 1999, la TREC-8 (Vorhees, 1999). TREC se convirtió en una referencia obligada y centro de nucleamiento de la investigación en QA. Esta primera competencia monolengua (para inglés), consistía en retornar un fragmento de texto de entre 50 y 250 bytes conteniendo la respuesta a preguntas fácticas (factoids). La evaluación, que marcó la historia futura de la evaluación de QA en competencias, consideraba el sistema de QA como un todo, es decir, no se evaluaron los subcomponentes. La organización permitía dar una lista con 5 respuestas posibles por cada pregunta, y esto siguió así hasta la TREC-2002, cuando se comenzó a exigir una sola respuesta por pregunta. TREC siguió lanzando un track de QA en todas sus competencias anuales, variando la forma y la complejidad de los ejercicios propuestos, por ejemplo: incorporando preguntas largas, con un formato realista y corpora de mayor tamaño, también introduciendo preguntas sin respuesta (NIL answers) y preguntas de tipo Lista (por ejemplo: \sq{¿Qué libros escribió Friedrich Nietzsche entre 1870 y 1896?}), pregunta de definiciones (por ejemplo: \sq{¿Quién es el General Paz?}), en TREC 2003, preguntas agrupadas por un tema (target), explícito o implícito y de diferentes tipos -como personas, organizaciones, cosas, eventos, etc-, restricciones temporales (por ejemplo: antes, durante y después de una fecha, evento o período), anáforas y co-referencias entre preguntas (por ejemplo: ¿Quién es George Bush?. ¿Y quién es \textit{su} esposa?), etc.
 
-Existen distintas conferencias de evaluación de sistemas QA o de subtareas asociadas (por ejemplo TREC - Text Retrieval Conference \footnote{\url{http://trec.nist.gov/}}-, TAC - Text Analysis Conference \footnote{\url{http://www.nist.gov/tac/}}) - y, a su vez, estas distintas competencias ofrecen distinos llamados a competencias.
+Por otro lado, en 2003 la CLEF lanzó su primer tarea de QA (Magnini et al, 2003) centrada en idiomas europeos y proponiendo ejercicios monolingües para francés, español, alemán, italiano y neerlandés y ejercicios multilingües con corpora en inglés y preguntas en otros idiomas europeos. En este año, se exigían respuesta de hasta 50 bytes, se permitía una lista de 3 respuestas por pregunta y los ejercicios podían incluir preguntas sin respuesta en los corpora. En la CLEF 2004, la tarea de QA principal incorporó 9 lenguas de origen (lengua de la pregunta) y 7 de destino (lengua del corpus), habilitando 55 ejercicios mono y bilingües. La cantidad de respuesta se redujo a 1 y se incorporaron preguntas de tipo "¿Cómo...?", de definiciones, de listas y también se agregaron restricciones temporales (antes, durante y después de una fecha, evento o período). En 2005 se incrementaron la cantidad de idiomas. En 2007.
 
-La investigación, la producción de software y la formación de una comunidad de i+d vinculada con el question answering estuvo impulsada fuertemente por la competencia TREC. Esta competencia duró de tal año a tal año, momento en el que se suspendió. CLEF. NCTIC. 
+Otra conferencia de prestigio en el área es NTCIR, que puede considerarse el equivalente a TREC y CLEF pero para idiomas asiáticos, incorporando tareas monoligües y bilingües entre inglés, japonés y chino. También son conocidas y están cercanas al área las conferencias Text Analysis Conference \footnote{\url{http://www.nist.gov/tac/}}) y DUC. 
+
+
+\subsection{Métricas de evaluación}
+\label{subsec:metricas}
+
+
+Con respecto a la métricas de evaluación para sistemas de QA, es necesario mencionar, al menos, las siguientes:
+
+{\color{red}Mencionar límites}
+\subsubsection*{Precisión y Recall}
+They have been long used in Information Retrieval as soon as a relevant set of objects can 
+be related to a need (as relevant documents to a user query). Precision is a measure of the accuracy whereas Recall is a 
+measure of its exhaustivity. They may be both combined in a  weighted harmonic mean called F-Measure, which could then 
+be averaged to a Mean F-Measure.  Actually evaluating Recall is a difficult task in QA as it  supposes to be able to consistently enumerate all the correct  answers available in a collection for each question! Most of times, it is approximated by the R-set. 
+
+\subsubsection*{Mean Reciprocal Rank}
+ 
+
+Mean Reciprocal Rank (MRR) measures the ability of a QAS to answer a set (factoid) 
+questions (Q). Score of an individual question is its Reciprocal Rank (RR), defined as the inverse of the order of 
+the first correct answer or zero is no correct answer is given (five ordered candidate answers were commonly allowed per 
+question). The whole set is then scored with the mean of reciprocal ranks as follows: 
+\begin{equation}\label{eq:precision}
+ \mbox{Precisión}=\frac{|\{\mbox{documentos relevantes}\}\cap\{\mbox{documentos recuperados}\}|}{|\{\mbox{documentos recuperados}\}|} 
+\end{equation}
+
+\begin{equation}\label{eq:recall}
+  \mbox{Recall}=\frac{|\{\mbox{documentos relevantes}\}\cap\{\mbox{documentos recuperados}\}|}{|\{\mbox{documentos relevantes}\}|} 
+\end{equation}
+
+
+% 1
+% 1
+% ( )
+% Q
+% i
+% i
+% MRR RR q
+% Q =
+% = ∑
+ 
+% 1
+% ( ) rank of first Correct answer for , up to N
+% or 0, if no Correct answer for in N first
+% i i
+% i
+% RR q q
+% q
+% 
+% 
+% = 
+% 
+% 
+ 
+MRR was first used during TREC-8 (N=5). As stated by 
+(Voorhees, 1999) advantages of RR are: its closeness to 
+average precision measure used to evaluate Document 
+Retrieval systems; its inclusive bounds between 0 and 1; its 
+good average capacity; and “not retrieving any correct 
+answer for a question is penalizing but not unduly so”. 
+Drawbacks are: the finite values a score can take (for up to 
+five answers: 0, .2, .25, .33, .5 and 1) and the fact that no 
+1134credit is provided “for retrieving multiple (different) correct 
+answers” or “realizing it did not know” it. 
+
+
+\subsubsection*{“Confidence Weighted” Score}
+“Confidence Weighted” Score, (CWS, also known as 
+Average Precision) was defined for TREC-11 and is inspired 
+from Document Retrieval’s uninterpolated average precision. 
+Assuming exactly one possible answer by question (from a Q 
+set), and that all these answers must be ordered by system’s 
+confidence in its response, CWS rewards correct answers 
+placed earlier more than later one. It is defined as: 
+% 1
+% 1
+% (number correct in first ranks)
+% Q
+% i
+% CWS i
+% Q =
+% = ∑
+ 
+CWS ranges between 0 (no correct at all) and 1 (perfect 
+score). It was abandoned because it was inappropriate due to 
+changes in the TREC-12 track definition, but also because, it 
+could reward QAS ordering answers strategies rather than 
+their correctness to answer. 
+
+\subsubsection*{K-Measure}
+K-Measure was designed at CLEF 2004’s Pilot Task 
+(Herrera et al., 2004) for rewarding systems “that return as 
+many different correct answers as possible to each question, 
+but at the same time, punishing incorrect answers”. It needs 
+as a prerequisite a “self” confidence score, between 0 and 1, 
+for each answer candidates. K-Measure is defined as follows: 
+% 1 { }
+% ( ) ( ) 1
+% max ,
+% i
+% Q
+% a sysAnswers
+% i i i
+% confidence a judgement a
+% K
+% Q R sysAnswers
+% ∈
+% =
+% ⋅
+% =
+% ∑
+% ∑
+ 
+where, for a question i: Ri 
+is the set of correct answers; 
+sysAnswersi
+ is the set of answer candidates (a); confidence(a) 
+is the confidence score given by QAS to an answer; and 
+judgement(a) is the judgment given by an human assessor 
+valued between {1, 0, -1} respectively for an answer judged 
+correct, for an answer already judged, and for an incorrect 
+one. K-Measure is ranged between 0 (no evidence of 
+correctness) and 1 (certainty of correctness). As authors 
+pointed out, the main difficulty is still determining an 
+exhaustive Ri
+ set for each question. So, they propose an 
+alternative, called K1-Measure, when only one single answer 
+is admitted per question. It assumes Ri
+ can be approximated 
+by the Known set of correct answers. K1 is defined like 
+K-measure without the recall part (the “maximum” 
+denominator). Also, to have better clues on correlation 
+between self-scoring confidence and assessors judgment 
+correctness, they defined a correlation coefficient called r. 
+
+\subsubsection*{Otros}
+List Questions or measuring many answers at the same 
+time: Expected answers (instances) to List questions 
+constituted a closed set usually assembled from many 
+documents. It can be evaluated using Accuracy, i.e. the ratio 
+of distinct correct answers to target number of instances; or 
+even with Recall, Precision and F-Measure since the R-set is 
+actually exhaustive for these questions. Last possibility is to 
+adapt the Non-Interpolated Average Precision (NIAP) 
+measure borrowed to Document Retrieval community and 
+defined as: 
+% 1 { ' | ' , ( ') ( )}
+% ( )
+% i
+% i
+% i a R
+% a a R rank a rank a
+% NIAP
+% R rank a ∈
+% ∈ ≤
+% = ∑
+ 
+where, for a question i: Ri 
+is the set of correct answers; 
+and rank(a) is the rank of an answer in the (ordered) answer 
+candidates to evaluate. 
+
+
+Measures for Definition Questions. Such questions pose 
+a problem: they accept many possible correct answers, but all 
+will not be accurate or interesting, from a user’s point of 
+view (profiled as “an adult, a native speaker of English, and 
+an average readers of ‘US’ newspapers”). Therefore, since 
+recent evaluations, assessors built a by pipelining many 
+processing list of vital nuggets of information, a QAS should 
+return to a Definition question (Voorhees, 2003). Using this 
+list, questions can be manually evaluated at a conceptual 
+level (to abstract vocabulary, syntactic and others paraphrases 
+mismatches). Recall, Precision (depending on an allowance 
+length score to penalize verbosity) and F-measures are then 
+computed. 
+(Lin and Demner-Fushman, 2005) and recently (Marton, 
+2006) proposed automatic metrics to replace this final 
+manual evaluation. First authors, presented a measure, traced 
+from ROUGE measure - (Chin-Yew and Hovy, 2003) used in 
+automatic document summarization - which made the same 
+assumption that the term co-occurrence statistics (unigrams) 
+can replace the manual semantic matching process. They 
+showed that their metrics highly correlate with TREC 
+assessors’ evaluation. Marton, echoed and investigated 
+further to better approximate assessment score. His method 
+used binary classifiers, based on up to trigrams, using 
+function of an idf-based weight, an informativeness score and 
+a recall threshold. He showed many improvements such as 
+interpretable score, a confidence interval, exactly reproducing 
+already done human assessments, better accuracy through 
+additional annotation and support for using judgment data.
 
 \section{Literatura y sistemas}
 \label{sec:literatura}
