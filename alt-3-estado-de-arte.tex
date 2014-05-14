@@ -35,10 +35,10 @@ La evaluación de respuestas puede ser estricta (strict) o \textit{indulgente} (
 
 Con respecto a la métricas de evaluación para sistemas como un todo, veremos a continuación las métricas másconocidas: MRR (Mean reciprocal rank, o promedio de rankings recíprocos), CWS (Confidence Weighted Score, Puntaje ponderado por confiabilidad) y K-Measure (Medida K).
 
-\subsubsection*{MRR Mean Reciprocal Rank}
+\subsubsection*{MRR - Mean Reciprocal Rank}
 El MRR mide la habilidad de un sistema para responder un conjunto de pregunta $Q$. Asume que el sistema devuelve una o más respuestas por pregunta, en orden de "confiabilidad". El puntaje de cada pregunta individual ($RR(q_i)$) se define como la inversa de la posición de la primera respuesta correcta en la lista de respuestas dada, o cero si no hay ninguna.
 
-\begin{equation}\label{eq:precision}
+\begin{equation}\label{eq:mrr}
  \text{MRR} = \frac{1}{|Q|} \sum_{i=1}^{|Q|} \frac{1}{RR(q_i)}. \!
 \end{equation}
 
@@ -52,35 +52,15 @@ El MRR mide la habilidad de un sistema para responder un conjunto de pregunta $Q
 MRR puede tomar valores entre 0 y 1 inclusive, aunque el RR de cada pregunta tiene un espectro finito de valores (por ejemplo, para 5 respuestas puede valer 0, 0.2, 0.25, 0.33, 0.5 o 1). La primera vez que se usó MRR fue en la competencia TREC-8. En esa competencia se permitía una lista de 5 respuestas ordenadas para cada pregunta.  
 
 
-\subsubsection*{“Confidence Weighted” Score}
-“Confidence Weighted” Score, (CWS, also known as 
-Average Precision) was defined for TREC-11 and is inspired 
-from Document Retrieval’s uninterpolated average precision. 
-Assuming exactly one possible answer by question (from a Q 
-set), and that all these answers must be ordered by system’s 
-confidence in its response, CWS rewards correct answers 
-placed earlier more than later one. It is defined as: 
+\subsubsection*{CWS - Confidence Weighted Score}
+CWS (de Confidence Weighted Score, Puntaje de confiabilidad ponderada, también conocido como Precisión promedio) asume que el sistema devuelve una respuesta única por pregunta pero que estas respuestas a las diferentes preguntas están ordenadas por grado de confiabilidad descendente. 
+CWS recompensa respuestas correctas colocadas primero. CWS toma valores entre 0 y 1.  Uno de los principales problemas de esta métrica es que puede juzgar no la capacidad para responder preguntas sino la de ordenarlas por confiabilidad.
 
-
-\begin{equation}\label{eq:recall}
-  \mbox{Recall}=\frac{|\{\mbox{documentos relevantes}\}\cap\{\mbox{documentos recuperados}\}|}{|\{\mbox{documentos relevantes}\}|} 
+\begin{equation}\label{eq:cws}
+ \text{CWS} = \frac{1}{|Q|} \sum_{i=1}^{|Q|} \frac{\text{Cantidad de rtas correctas en las primeras $i$ posiciones}}{i}. \!
 \end{equation}
 
-% 1
-% 1
-% (number correct in first ranks)
-% Q
-% i
-% CWS i
-% Q =
-% = ∑
  
-CWS ranges between 0 (no correct at all) and 1 (perfect 
-score). It was abandoned because it was inappropriate due to 
-changes in the TREC-12 track definition, but also because, it 
-could reward QAS ordering answers strategies rather than 
-their correctness to answer. 
-
 \subsubsection*{K-Measure}
 K-Measure was designed at CLEF 2004’s Pilot Task 
 (Herrera et al., 2004) for rewarding systems “that return as 
