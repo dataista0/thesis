@@ -28,7 +28,7 @@ En lo que respecta a los sistemas multi-idioma (y mono-idioma no centrados en in
 
 \subsection{Métricas de evaluación}
 \label{subsec:metricas}
-
+\cerrada
 En cuanto a las métricas de evaluación utilizadas por estas competencias respecta, es importante distinguir la evaluación de las respuestas a una pregunta y la evaluación general del sistema. Con respecto a la evaluación de respuestas, la clasificación usual de evaluación consiste en 4 valores asignados a cada respuesta: Correcta (C), si responde a la pregunta y el fragmento de soporte justifica esa respuesta; No soportada (U, de Unsupported), si responde a la pregunta pero el fragmento de soporte no está o no justifica la respuesta; Inexacta (X), si sobra o falta información en la respuesta (algunas campañas solo aceptan respuestas exactas) y, finalmente, Incorrecta (I), si ninguna de las condiciones anteriores se cumple. 
 
 La evaluación de respuestas puede ser estricta (strict) o \textit{indulgente} (lenient) dependiendo de si considera las respuestas no soportadas como válidas o como inválidas. Por otro lado, la evaluación puede ser manual -llevada a cabo por un jurado especial- o bien automática. En el caso de la evaluación automática, siempre es indulgente, ya no hay forma de decidir si un fragmento soporta o no una respuesta. Para este tipo de evaluaciones se suele utilizar un set de patrones de respuestas correctas que se deriva de un set de "respuestas conocidas" generadas por los organizadores y los mismos competidores, conocido como R-set, pero no es un proceso trivial: en principio, es dificil saber qué respuestas correctas puede esperarse, ya que por la naturaleza del problema es probable que diferentes sistemas devuelvan respuestas textualmente distintas. 
@@ -96,64 +96,6 @@ La dificultad principal de esta métrica es determinar un $R_i$ exhaustivo. Una 
 
 Nuevamente, vale que $K1 \in \mathbb{R} \wedge  K1 \in [-1,1]$ y $K1=0$ se condice con un sistema sin conocimiento.
 
-
-\subsubsection*{Otros}
-List Questions or measuring many answers at the same 
-time: Expected answers (instances) to List questions 
-constituted a closed set usually assembled from many 
-documents. It can be evaluated using Accuracy, i.e. the ratio 
-of distinct correct answers to target number of instances; or 
-even with Recall, Precision and F-Measure since the R-set is 
-actually exhaustive for these questions. Last possibility is to 
-adapt the Non-Interpolated Average Precision (NIAP) 
-measure borrowed to Document Retrieval community and 
-defined as: 
-% 1 { ' | ' , ( ') ( )}
-% ( )
-% i
-% i
-% i a R
-% a a R rank a rank a
-% NIAP
-% R rank a ∈
-% ∈ ≤
-% = ∑
- 
-where, for a question i: Ri 
-is the set of correct answers; 
-and rank(a) is the rank of an answer in the (ordered) answer 
-candidates to evaluate. 
-
-
-Measures for Definition Questions. Such questions pose 
-a problem: they accept many possible correct answers, but all 
-will not be accurate or interesting, from a user’s point of 
-view (profiled as “an adult, a native speaker of English, and 
-an average readers of ‘US’ newspapers”). Therefore, since 
-recent evaluations, assessors built a by pipelining many 
-processing list of vital nuggets of information, a QAS should 
-return to a Definition question (Voorhees, 2003). Using this 
-list, questions can be manually evaluated at a conceptual 
-level (to abstract vocabulary, syntactic and others paraphrases 
-mismatches). Recall, Precision (depending on an allowance 
-length score to penalize verbosity) and F-measures are then 
-computed. 
-(Lin and Demner-Fushman, 2005) and recently (Marton, 
-2006) proposed automatic metrics to replace this final 
-manual evaluation. First authors, presented a measure, traced 
-from ROUGE measure - (Chin-Yew and Hovy, 2003) used in 
-automatic document summarization - which made the same 
-assumption that the term co-occurrence statistics (unigrams) 
-can replace the manual semantic matching process. They 
-showed that their metrics highly correlate with TREC 
-assessors’ evaluation. Marton, echoed and investigated 
-further to better approximate assessment score. His method 
-used binary classifiers, based on up to trigrams, using 
-function of an idf-based weight, an informativeness score and 
-a recall threshold. He showed many improvements such as 
-interpretable score, a confidence interval, exactly reproducing 
-already done human assessments, better accuracy through 
-additional annotation and support for using judgment data.
 
 \section{Literatura y sistemas}
 \label{sec:literatura}
