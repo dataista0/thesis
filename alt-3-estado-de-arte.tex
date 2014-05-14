@@ -62,29 +62,13 @@ CWS recompensa respuestas correctas colocadas primero. CWS toma valores entre 0 
 
  
 \subsubsection*{K-Measure}
-K-Measure was designed at CLEF 2004’s Pilot Task 
-(Herrera et al., 2004) for rewarding systems “that return as 
-many different correct answers as possible to each question, 
-but at the same time, punishing incorrect answers”. It needs 
-as a prerequisite a “self” confidence score, between 0 and 1, 
-for each answer candidates. K-Measure is defined as follows: 
-% 1 { }
-% ( ) ( ) 1
-% max ,
-% i
-% Q
-% a sysAnswers
-% i i i
-% confidence a judgement a
-% K
-% Q R sysAnswers
-% ∈
-% =
-% ⋅
-% =
-% ∑
-% ∑
- 
+K-Measure pide a los sistemas una lista de respuestas por pregunta y un grado de confiabilidad para cada una de ellas, entre 0 y 1. 
+
+\begin{equation}\label{eq:k}
+ \text{K} = \frac{1}{|Q|} \sum_{i=1}^{|Q|} \frac{\sum_{a \in ANS_i} confiabilidad(a) \times juicio(a)}{\text{max}\{|R_i|, |ANS_i|\}}. \!
+\end{equation}
+
+Para una pregunt
 where, for a question i: Ri 
 is the set of correct answers; 
 sysAnswersi
