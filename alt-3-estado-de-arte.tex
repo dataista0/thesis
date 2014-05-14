@@ -62,34 +62,40 @@ CWS recompensa respuestas correctas colocadas primero. CWS toma valores entre 0 
 
  
 \subsubsection*{K-Measure}
-K-Measure pide a los sistemas una lista de respuestas por pregunta y un grado de confiabilidad para cada una de ellas, entre 0 y 1. 
+K-Measure fue propuesta en \cite{CLEF04}. Pide a los sistemas una lista de respuestas por pregunta y un grado de confiabilidad para cada una de ellas, entre 0 y 1. 
 
 \begin{equation}\label{eq:k}
- \text{K} = \frac{1}{|Q|} \sum_{i=1}^{|Q|} \frac{\sum_{a \in ANS_i} confiabilidad(a) \times juicio(a)}{\text{max}\{|R_i|, |ANS_i|\}}. \!
+ \text{K} = \frac{1}{|Q|} \sum_{i=1}^{|Q|} \frac{\sum_{r \in ANS_i} conf(r) \times eval(r)}{\text{max}\{|R_i|, |ANS_i|\}}. \!
 \end{equation}
 
-Para una pregunt
-where, for a question i: Ri 
-is the set of correct answers; 
-sysAnswersi
- is the set of answer candidates (a); confidence(a) 
-is the confidence score given by QAS to an answer; and 
-judgement(a) is the judgment given by an human assessor 
-valued between {1, 0, -1} respectively for an answer judged 
-correct, for an answer already judged, and for an incorrect 
-one. K-Measure is ranged between 0 (no evidence of 
-correctness) and 1 (certainty of correctness). As authors 
-pointed out, the main difficulty is still determining an 
-exhaustive Ri
- set for each question. So, they propose an 
-alternative, called K1-Measure, when only one single answer 
-is admitted per question. It assumes Ri
- can be approximated 
-by the Known set of correct answers. K1 is defined like 
-K-measure without the recall part (the “maximum” 
-denominator). Also, to have better clues on correlation 
-between self-scoring confidence and assessors judgment 
-correctness, they defined a correlation coefficient called r. 
+Para una pregunta $i$, $R(i)$ es el total de respuestas distintas conocidas, mientras que $ANS_i$ son las respuestas dadas por el sistema a evaluar para la pregunta $i$, $conf(r)$ es la confiabilidad entre 0 y 1 asignada por el sistema a la respuesta $r$ y $eval(r)$ es la evaluación hecha por la organización.
+
+
+\begin{equation*}
+    eval(r) = \begin{cases}
+               1  & \text{si $r$ es juzgada correcta}\\
+               0  & \text{si $r$ está repetida}\\
+               -1 & \text{si $r$ es incorrecta}\\
+           \end{cases}
+\end{equation*}
+
+Vale que $K \in \mathbb{R} \wedge  K \in [-1,1]$ , y $K=0$ se identifica con un sistema que asigna confiabilidad 0 a todas sus respuestas y, por lo tanto sirve como baseline. 
+
+La dificultad principal de esta métrica es determinar un $R_i$ exhaustivo. Una propuesta alternativa que tiene esto en cuenta, propuesta también en \cite{CLEF04} es $K1$, que elimina la ocurrencia de $R_i$, pero solo sirve para evaluar sistemas que retornan una sola respuesta por pregunta.
+
+\begin{equation}\label{eq:k1}
+ \text{K1} = \frac{\sum_{r \in ANS_i} conf(r) \times eval(r)}{|Q|}. \!
+\end{equation}
+
+\begin{equation*}
+    eval(r) = \begin{cases}
+               1  & \text{si $r$ es juzgada correcta}\\
+               -1 & \text{si $r$ es incorrecta}\\
+           \end{cases}
+\end{equation*}
+
+Nuevamente, vale que $K1 \in \mathbb{R} \wedge  K1 \in [-1,1]$ y $K1=0$ se condice con un sistema sin conocimiento.
+
 
 \subsubsection*{Otros}
 List Questions or measuring many answers at the same 
