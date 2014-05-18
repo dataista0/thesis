@@ -28,194 +28,74 @@ En lo que respecta a los sistemas multi-idioma (y mono-idioma no centrados en in
 
 \subsection{Métricas de evaluación}
 \label{subsec:metricas}
+\cerrada
+En cuanto a las métricas de evaluación utilizadas por estas competencias respecta, es importante distinguir la evaluación de las respuestas a una pregunta y la evaluación general del sistema. Con respecto a la evaluación de respuestas, la clasificación usual de evaluación consiste en 4 valores asignados a cada respuesta: Correcta (C), si responde a la pregunta y el fragmento de soporte justifica esa respuesta; No soportada (U, de Unsupported), si responde a la pregunta pero el fragmento de soporte no está o no justifica la respuesta; Inexacta (X), si sobra o falta información en la respuesta (algunas campañas solo aceptan respuestas exactas) y, finalmente, Incorrecta (I), si ninguna de las condiciones anteriores se cumple. 
 
+La evaluación de respuestas puede ser estricta (strict) o \textit{indulgente} (lenient) dependiendo de si considera las respuestas no soportadas como válidas o como inválidas. Por otro lado, la evaluación puede ser manual -llevada a cabo por un jurado especial- o bien automática. En el caso de la evaluación automática, siempre es indulgente, ya no hay forma de decidir si un fragmento soporta o no una respuesta. Para este tipo de evaluaciones se suele utilizar un set de patrones de respuestas correctas que se deriva de un set de "respuestas conocidas" generadas por los organizadores y los mismos competidores, conocido como R-set, pero no es un proceso trivial: en principio, es dificil saber qué respuestas correctas puede esperarse, ya que por la naturaleza del problema es probable que diferentes sistemas devuelvan respuestas textualmente distintas. 
 
-Con respecto a la métricas de evaluación para sistemas de QA, es necesario mencionar, al menos, las siguientes:
+Con respecto a la métricas de evaluación para sistemas como un todo, veremos a continuación las métricas másconocidas: MRR (Mean reciprocal rank, o promedio de rankings recíprocos), CWS (Confidence Weighted Score, Puntaje ponderado por confiabilidad) y K-Measure (Medida K).
 
-{\color{red}Mencionar límites}
-\subsubsection*{Precisión y Recall}
-They have been long used in Information Retrieval as soon as a relevant set of objects can 
-be related to a need (as relevant documents to a user query). Precision is a measure of the accuracy whereas Recall is a 
-measure of its exhaustivity. They may be both combined in a  weighted harmonic mean called F-Measure, which could then 
-be averaged to a Mean F-Measure.  Actually evaluating Recall is a difficult task in QA as it  supposes to be able to consistently enumerate all the correct  answers available in a collection for each question! Most of times, it is approximated by the R-set. 
+\subsubsection*{MRR - Mean Reciprocal Rank}
+El MRR mide la habilidad de un sistema para responder un conjunto de pregunta $Q$. Asume que el sistema devuelve una o más respuestas por pregunta, en orden de "confiabilidad". El puntaje de cada pregunta individual ($RR(q_i)$) se define como la inversa de la posición de la primera respuesta correcta en la lista de respuestas dada, o cero si no hay ninguna.
 
-\subsubsection*{Mean Reciprocal Rank}
- 
-
-Mean Reciprocal Rank (MRR) measures the ability of a QAS to answer a set (factoid) 
-questions (Q). Score of an individual question is its Reciprocal Rank (RR), defined as the inverse of the order of 
-the first correct answer or zero is no correct answer is given (five ordered candidate answers were commonly allowed per 
-question). The whole set is then scored with the mean of reciprocal ranks as follows: 
-\begin{equation}\label{eq:precision}
- \mbox{Precisión}=\frac{|\{\mbox{documentos relevantes}\}\cap\{\mbox{documentos recuperados}\}|}{|\{\mbox{documentos recuperados}\}|} 
+\begin{equation}\label{eq:mrr}
+ \text{MRR} = \frac{1}{|Q|} \sum_{i=1}^{|Q|} \frac{1}{RR(q_i)}. \!
 \end{equation}
 
-\begin{equation}\label{eq:recall}
-  \mbox{Recall}=\frac{|\{\mbox{documentos relevantes}\}\cap\{\mbox{documentos recuperados}\}|}{|\{\mbox{documentos relevantes}\}|} 
+\begin{equation*}
+    RR(q_i) = \begin{cases}
+               0     & \text{si existe al menos una respuesta correcta}\\
+               \frac{1}{\text{Posicion de }q_i} & \text{si }q_i\text{ es la primer respuesta correcta}\\
+           \end{cases}
+\end{equation*}
+
+MRR puede tomar valores entre 0 y 1 inclusive, aunque el RR de cada pregunta tiene un espectro finito de valores (por ejemplo, para 5 respuestas puede valer 0, 0.2, 0.25, 0.33, 0.5 o 1). La primera vez que se usó MRR fue en la competencia TREC-8. En esa competencia se permitía una lista de 5 respuestas ordenadas para cada pregunta.  
+
+
+\subsubsection*{CWS - Confidence Weighted Score}
+CWS (de Confidence Weighted Score, Puntaje de confiabilidad ponderada, también conocido como Precisión promedio) asume que el sistema devuelve una respuesta única por pregunta pero que estas respuestas a las diferentes preguntas están ordenadas por grado de confiabilidad descendente. 
+CWS recompensa respuestas correctas colocadas primero. CWS toma valores entre 0 y 1.  Uno de los principales problemas de esta métrica es que puede juzgar no la capacidad para responder preguntas sino la de ordenarlas por confiabilidad.
+
+\begin{equation}\label{eq:cws}
+ \text{CWS} = \frac{1}{|Q|} \sum_{i=1}^{|Q|} \frac{\text{Cantidad de rtas correctas en las primeras $i$ posiciones}}{i}. \!
 \end{equation}
 
-
-% 1
-% 1
-% ( )
-% Q
-% i
-% i
-% MRR RR q
-% Q =
-% = ∑
  
-% 1
-% ( ) rank of first Correct answer for , up to N
-% or 0, if no Correct answer for in N first
-% i i
-% i
-% RR q q
-% q
-% 
-% 
-% = 
-% 
-% 
- 
-MRR was first used during TREC-8 (N=5). As stated by 
-(Voorhees, 1999) advantages of RR are: its closeness to 
-average precision measure used to evaluate Document 
-Retrieval systems; its inclusive bounds between 0 and 1; its 
-good average capacity; and “not retrieving any correct 
-answer for a question is penalizing but not unduly so”. 
-Drawbacks are: the finite values a score can take (for up to 
-five answers: 0, .2, .25, .33, .5 and 1) and the fact that no 
-1134credit is provided “for retrieving multiple (different) correct 
-answers” or “realizing it did not know” it. 
-
-
-\subsubsection*{“Confidence Weighted” Score}
-“Confidence Weighted” Score, (CWS, also known as 
-Average Precision) was defined for TREC-11 and is inspired 
-from Document Retrieval’s uninterpolated average precision. 
-Assuming exactly one possible answer by question (from a Q 
-set), and that all these answers must be ordered by system’s 
-confidence in its response, CWS rewards correct answers 
-placed earlier more than later one. It is defined as: 
-% 1
-% 1
-% (number correct in first ranks)
-% Q
-% i
-% CWS i
-% Q =
-% = ∑
- 
-CWS ranges between 0 (no correct at all) and 1 (perfect 
-score). It was abandoned because it was inappropriate due to 
-changes in the TREC-12 track definition, but also because, it 
-could reward QAS ordering answers strategies rather than 
-their correctness to answer. 
-
 \subsubsection*{K-Measure}
-K-Measure was designed at CLEF 2004’s Pilot Task 
-(Herrera et al., 2004) for rewarding systems “that return as 
-many different correct answers as possible to each question, 
-but at the same time, punishing incorrect answers”. It needs 
-as a prerequisite a “self” confidence score, between 0 and 1, 
-for each answer candidates. K-Measure is defined as follows: 
-% 1 { }
-% ( ) ( ) 1
-% max ,
-% i
-% Q
-% a sysAnswers
-% i i i
-% confidence a judgement a
-% K
-% Q R sysAnswers
-% ∈
-% =
-% ⋅
-% =
-% ∑
-% ∑
- 
-where, for a question i: Ri 
-is the set of correct answers; 
-sysAnswersi
- is the set of answer candidates (a); confidence(a) 
-is the confidence score given by QAS to an answer; and 
-judgement(a) is the judgment given by an human assessor 
-valued between {1, 0, -1} respectively for an answer judged 
-correct, for an answer already judged, and for an incorrect 
-one. K-Measure is ranged between 0 (no evidence of 
-correctness) and 1 (certainty of correctness). As authors 
-pointed out, the main difficulty is still determining an 
-exhaustive Ri
- set for each question. So, they propose an 
-alternative, called K1-Measure, when only one single answer 
-is admitted per question. It assumes Ri
- can be approximated 
-by the Known set of correct answers. K1 is defined like 
-K-measure without the recall part (the “maximum” 
-denominator). Also, to have better clues on correlation 
-between self-scoring confidence and assessors judgment 
-correctness, they defined a correlation coefficient called r. 
+K-Measure fue propuesta en \cite{CLEF04}. Pide a los sistemas una lista de respuestas por pregunta y un grado de confiabilidad para cada una de ellas, entre 0 y 1. 
 
-\subsubsection*{Otros}
-List Questions or measuring many answers at the same 
-time: Expected answers (instances) to List questions 
-constituted a closed set usually assembled from many 
-documents. It can be evaluated using Accuracy, i.e. the ratio 
-of distinct correct answers to target number of instances; or 
-even with Recall, Precision and F-Measure since the R-set is 
-actually exhaustive for these questions. Last possibility is to 
-adapt the Non-Interpolated Average Precision (NIAP) 
-measure borrowed to Document Retrieval community and 
-defined as: 
-% 1 { ' | ' , ( ') ( )}
-% ( )
-% i
-% i
-% i a R
-% a a R rank a rank a
-% NIAP
-% R rank a ∈
-% ∈ ≤
-% = ∑
- 
-where, for a question i: Ri 
-is the set of correct answers; 
-and rank(a) is the rank of an answer in the (ordered) answer 
-candidates to evaluate. 
+\begin{equation}\label{eq:k}
+ \text{K} = \frac{1}{|Q|} \sum_{i=1}^{|Q|} \frac{\sum_{r \in ANS_i} conf(r) \times eval(r)}{\text{max}\{|R_i|, |ANS_i|\}}. \!
+\end{equation}
+
+Para una pregunta $i$, $R(i)$ es el total de respuestas distintas conocidas, mientras que $ANS_i$ son las respuestas dadas por el sistema a evaluar para la pregunta $i$, $conf(r)$ es la confiabilidad entre 0 y 1 asignada por el sistema a la respuesta $r$ y $eval(r)$ es la evaluación hecha por la organización.
 
 
-Measures for Definition Questions. Such questions pose 
-a problem: they accept many possible correct answers, but all 
-will not be accurate or interesting, from a user’s point of 
-view (profiled as “an adult, a native speaker of English, and 
-an average readers of ‘US’ newspapers”). Therefore, since 
-recent evaluations, assessors built a by pipelining many 
-processing list of vital nuggets of information, a QAS should 
-return to a Definition question (Voorhees, 2003). Using this 
-list, questions can be manually evaluated at a conceptual 
-level (to abstract vocabulary, syntactic and others paraphrases 
-mismatches). Recall, Precision (depending on an allowance 
-length score to penalize verbosity) and F-measures are then 
-computed. 
-(Lin and Demner-Fushman, 2005) and recently (Marton, 
-2006) proposed automatic metrics to replace this final 
-manual evaluation. First authors, presented a measure, traced 
-from ROUGE measure - (Chin-Yew and Hovy, 2003) used in 
-automatic document summarization - which made the same 
-assumption that the term co-occurrence statistics (unigrams) 
-can replace the manual semantic matching process. They 
-showed that their metrics highly correlate with TREC 
-assessors’ evaluation. Marton, echoed and investigated 
-further to better approximate assessment score. His method 
-used binary classifiers, based on up to trigrams, using 
-function of an idf-based weight, an informativeness score and 
-a recall threshold. He showed many improvements such as 
-interpretable score, a confidence interval, exactly reproducing 
-already done human assessments, better accuracy through 
-additional annotation and support for using judgment data.
+\begin{equation*}
+    eval(r) = \begin{cases}
+               1  & \text{si $r$ es juzgada correcta}\\
+               0  & \text{si $r$ está repetida}\\
+               -1 & \text{si $r$ es incorrecta}\\
+           \end{cases}
+\end{equation*}
+
+Vale que $K \in \mathbb{R} \wedge  K \in [-1,1]$ , y $K=0$ se identifica con un sistema que asigna confiabilidad 0 a todas sus respuestas y, por lo tanto sirve como baseline. 
+
+La dificultad principal de esta métrica es determinar un $R_i$ exhaustivo. Una propuesta alternativa que tiene esto en cuenta, propuesta también en \cite{CLEF04} es $K1$, que elimina la ocurrencia de $R_i$, pero solo sirve para evaluar sistemas que retornan una sola respuesta por pregunta.
+
+\begin{equation}\label{eq:k1}
+ \text{K1} = \frac{\sum_{r \in ANS_i} conf(r) \times eval(r)}{|Q|}. \!
+\end{equation}
+
+\begin{equation*}
+    eval(r) = \begin{cases}
+               1  & \text{si $r$ es juzgada correcta}\\
+               -1 & \text{si $r$ es incorrecta}\\
+           \end{cases}
+\end{equation*}
+
+Nuevamente, vale que $K1 \in \mathbb{R} \wedge  K1 \in [-1,1]$ y $K1=0$ se condice con un sistema sin conocimiento.
+
 
 \section{Literatura y sistemas}
 \label{sec:literatura}
@@ -233,9 +113,9 @@ Cada uno de estos módulos cuenta a su vez con subcomponentes sobre los cuales h
 
 El módulo de procesamiento de la pregunta tiene como subcomponente principal un Clasificador de Preguntas (Ver \allref{subsec:qc} y \allref{sec:stanford-qc}) y puede incorporar otros componente como identificadores del \sq{foco} (\textit{focus}) y del tipo esperado de la respuesta (\textit{answer type}), y también puede incluirse en este módulo un componente encargado de expandir o reformular la pregunta para optimizar los resultados del módulo de procesamiento de documentos ( este subcomponente también se suele considerar como parte del módulo de procesamiento de respuestas). Este último subcomponente tiene diferentes nombres en la literatura (\textit{query reformulation}, \textit{query generation}, \textit{query expansion}, etc).
 
-En el núcleo del módulo de procesamiento de documentos, por lo general, hay uno o más índices invertidos (como Lucene o {\color{red} XXX}) como el descripto en \allref{subsec:indice-invertido}, o bien accesos a un buscador web, o, más en general, estructuras de information retrieval. Como vimos (\ref{subsec:metricas-ir}, existen dos métricas fundamentales a la hora de evaluar el funcionamiento de un módulo de information retrieval: precisión y recall. La precisión es la proporción de documentos relevantes devueltos sobre el total documentos devueltos por el módulo, mientras que el recall es la proporción de documentos relevantes devueltos sobre el total de documentos relevantes existentes en la base de conocimientos. Estas dos métricas suelen comportarse una con la otra como un trade-off, es decir: suelen aparecer escenarios de diseño en los que se deberá optar por priorizar una o bien la otra. Considerando esto, existe una tercera métrica extendida, la medida $F$, que busca parametrizar este compromiso. 
+En el núcleo del módulo de procesamiento de documentos, por lo general, hay uno o más índices invertidos (como Lucene o Indri) como el descripto en \allref{subsec:indice-invertido}, o bien accesos a un buscador web, o, más en general, estructuras de information retrieval. Como vimos (\ref{subsec:metricas-ir}), existen dos métricas fundamentales a la hora de evaluar el funcionamiento de un módulo de information retrieval: precisión y recall. La precisión es la proporción de documentos relevantes devueltos sobre el total documentos devueltos por el módulo, mientras que el recall es la proporción de documentos relevantes devueltos sobre el total de documentos relevantes existentes en la base de conocimientos. Estas dos métricas suelen comportarse una con la otra como un trade-off, es decir: suelen aparecer escenarios de diseño en los que se deberá optar por priorizar una o bien la otra. Considerando esto, existe una tercera métrica extendida, la medida $F$, que busca parametrizar este compromiso. 
 
-En el contexto de uso de los sistemas de QA, la métrica que se busca maximizar para el módulo de procesamiento de documentos es el recall, es decir, no interesa que el módulo no recupere documentos no relevantes siempre y cuando recupere todos los documentos relevantes existentes que pueda. El motivo es simple: se espera que el análisis lingüístico fino del módulo de procesamiento de la respuesta sea capaz de eliminar texto irrelevante en la misma o en mejor medida que el sistema de information retrieval subyacente al módulo de documentos. Por otro lado, si al recuperar los documentos se filtra una respuesta válida como irrelevante, entonces el resto del pipeline vera sus probabilidades de éxito mermadas (sino directamente anuladas).  La expansión/reformulación de la pregunta del paso anterior apunta, justamente, a generar una query que priorice el recall sobre la precisión. O
+En el contexto de uso de los sistemas de QA, la métrica que se busca maximizar para el módulo de procesamiento de documentos es el recall, es decir, no interesa que el módulo no recupere documentos no relevantes siempre y cuando recupere todos los documentos relevantes existentes que pueda. El motivo es simple: se espera que el análisis lingüístico fino del módulo de procesamiento de la respuesta sea capaz de eliminar texto irrelevante en la misma o en mejor medida que el sistema de information retrieval subyacente al módulo de documentos. Por otro lado, si al recuperar los documentos se filtra una respuesta válida como irrelevante, entonces el resto del pipeline vera sus probabilidades de éxito mermadas (sino directamente anuladas).  La expansión/reformulación de la pregunta del paso anterior apunta, justamente, a generar una query que priorice el recall sobre la precisión. 
 
 Otras tareas que se realizan en el módulo de procesamiento de documentos es la división de los documentos en parágrafos, el filtrado de documentos o parágrafos irrelevantes y el ranking de los resultados. Si bien los sistemas de information retrieval suelen rankear sus resultados, este ranking puede resultar no del todo adecuado para la tarea en cuestión y mejorable teniendo en cuenta la información disponible. 
 
@@ -244,9 +124,9 @@ Finalmente, el módulo de procesamiento de respuestas introduce el valor agregad
 A continuación nos extenderemos con más detalle sobre los tres módulos propuestos señalando algunos enfoques usuales, usando como guía los papers \cite{QA-survey}, \cite{QA1}, \cite{QA2}, \cite{QA3} y \cite{PASSAGE1}.
 
 \subsubsection*{Módulo de procesamiento de la pregunta}
-Este módulo recibe como input una pregunta formulada en algún lenguaje natural y genera como output una representación de la misma que resulte útil para los módulos siguientes. Esto suele realizarse agregando labels o etiquetas (ver Features, en \allref{sec:terminologia}) a la pregunta completa y a sus distintos términos.
+Este módulo recibe como input una pregunta formulada en algún lenguaje natural y genera como output una representación de la misma que resulte útil para los módulos siguientes. Esto suele realizarse agregando labels o etiquetas (ver detalle de \dq{Features}, en \allref{sec:terminologia}) a la pregunta completa y a sus distintos términos.
 
-La etiqueta principal generada es el tipo de pregunta (\textit{question type}) y para obtenerlo se utiliza un clasificador como el que describimos en (\ref|{subsec:qc})· Lamentablemente, la clasificación de preguntas no está desarrollada para otros idiomas que el inglés, al menos, no con el mismo grado de precisión y visibilidad que, por ejemplo, el clasificador de Stanford \cite{QC1} \cite{QC2}. Como vimos anteriormente, el principal problema a la hora de clasificar una pregunta es la ambigüedad intrinseca de ciertas clases de preguntas. 
+La etiqueta principal generada es el tipo de pregunta (\textit{question type}) y para obtenerlo se utiliza un clasificador como el que describimos en (\ref{subsec:qc})· Lamentablemente, la clasificación de preguntas no está desarrollada para otros idiomas que el inglés, al menos, no con el mismo grado de precisión y visibilidad que, por ejemplo, el clasificador de Stanford \cite{QC1} \cite{QC2}. Como vimos anteriormente, el principal problema a la hora de clasificar una pregunta es la ambigüedad intrinseca de ciertas clases de preguntas. 
 
 A partir del tipo de pregunta se define el tipo de respuesta esperada (\textit{answer type}). No existe un algoritmo automático estándar difundido para generar el tipo de respuesta esperado. El enfoque general encontrado es la aplicación de un mappeo simple basado en reglas, desde el tipo de pregunta generado por el clasificador a una serie de tipos de respuestas predefinido para el dominio de problema.
 
