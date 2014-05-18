@@ -63,6 +63,34 @@ El análisis gramatical las ponderaciones de pasajes en los scorers de los ejerc
 \subsection{Generación de Respuestas}
 El proceso de generación de respuestas difiere sustancialmente entre ambos modelos de dominio. Para el sistema basado en datos estructurados, el approach es determinan en casos de código las distintas posibilidades, acotadas, de las cosas que se pueden responder. Nuestro dominio es tal que solo se pueden responder entidades, atributos de entidades o relaciones entre entidades. De ese modo, si no es posible redirigir el flujo de la pregunta hacia alguna respuesta conocida, no hay posibilidad de articular una respuesta significativa. Para el caso de los ejericicios de Clef sobre wikipedia, el enfoque es muy distinto. En primer lugar, no hay un modelo de los datos del dominio, hay textos con pasajes (u oraciones). Si bien es posible una cierta jerarquización de los datos (por ejemplo, utilizando los nombres de los articulos como verificación de la existencia de una entidad), un enfoque estructurado resulta imposible. En este contexto se utiliza la técnica de rankeo semántico de pasajes en base a features (características). Estas dimensiones de valoración de los pasajes son llamados Scorers (ver \allref{subsec:scorers}). Los Scorers, como veremos, pueden ser tan sencillos como preferir minimamente una cierta longitud sobre otra y también pueden incorporar dimensiones de análisis lingüístico (por ejemplo, la presencia de cierta entidad en un cierto rol semántico). El algoritmo de generación de respuestas consiste, en el caso no estructurado, en encontrar features útiles, significativos y en establecer mecanismo inteligentes de priorización de estos features.
 
+\subsection{Otros sistemas de QA: OpenEphyra, Aranea y Just.Ask}
+\label{subsec:otros-sistemas}
+\bigskip
+
+La arquitectura DeepQA no está disponible para la comunidad, el ya mencionado OpenEphyra, como veremos en breve, no funciona, mientras que otros sistemas resultan igualmente inaccesibles (Aranea, Qanda) mientras que QA-sys es un sistema de QA out of the box.
+\bigskip
+
+
+El paper describe las arquitecturas de todos los sistemas, si sirve
+meter más info
+
+El paper [EPHYRA1] \ busca crear un criterio cuantitativo para comparar
+la eficacia de distintos pasos de Just.Ask, Open Ephyra y Aranea
+basándose en la arquitectura \textit{pipeline de tres pasos}
+compartida por todos. Los tres sistemas, por lo demás, están
+basados en la web, utilizando distintas APIs de buscadores o bien
+analizando los resultados de la interfaz de usuario de los mismos. 
+
+El primer ítem importante a destacar de este trabajo, es que, al
+momento de la experimentación \textbf{Aranea no funcionaba más y
+estaba discontinuado}\footnote{\ (Resaltado en Sección 8, muy
+concluyente).\par }\textbf{. }El autor se comunicó con el responsable
+del proyecto que corroboró que las APIs de los buscadores en los que
+se basaba Aranea cambiaron y no había interés en readaptar el
+código para que vuelva a funcionar. Las comparaciones que logró
+entre Just.Ask y Open Ephyra son interesantes y concluyentes a favor de
+la performance de OpenEphyra. 
+
 
 \section{Citas a Textos trascriptos pero no usados}
 \begin{itemize}
