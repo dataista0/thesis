@@ -1,12 +1,13 @@
 \chapter{Implementación sobre Qanus}
 \label{chap:qanus}
-En este capitulo discutiremos la implementación de un sistema de question answering multilingüe y diferentes evaluaciones realizadas utilizando como guia dos tareas monolingual de la competencia QA@Clef '07, una para español y otra para portugués. El sistema está basado en un framework académico de código abierto llamado Qanus. Este framework está empaquetado con una sistema de QA simple, QA-sys, que resuelve ejercicios de la competencia Trec '07 con soporte para inglés. Nosotros adaptamos este sistema para utilizar como librería de procesamiento de lenguajes a Freeling, generando un sistema baseline multilingüe. A este sistema le agregamos features reseñados en \allref{sec:literatura} y realizamos diferente mediciones sobre las instancias en español y portugués sobre los ya mencionados ejercicios de Clef '07.
+\cerradaarg{Sin supervisar}
+En este capitulo discutiremos la implementación de un sistema de question answering multilingüe y diferentes evaluaciones realizadas utilizando como guia dos tareas monolingües de la competencia QA@Clef '07, una para español y otra para portugués. El sistema está basado en un framework académico de código abierto llamado Qanus. Este framework está empaquetado con una sistema de QA simple, QA-sys, que resuelve ejercicios de la competencia Trec '07 con soporte para inglés. Nosotros adaptamos este sistema para utilizar como librería de procesamiento de lenguajes a Freeling, generando un sistema baseline multilingüe. A este sistema le agregamos features reseñados en \allref{sec:literatura} y realizamos diferente mediciones sobre las instancias en español y portugués sobre los ya mencionados ejercicios de Clef '07.
 
 La estructura de este capitulo es la siguiente: en \allref{sec:ejecicio-de-clef} se describe con detalle el panorama general de tareas de question answering en la competencia Clef '07, haciendo énfasis en las tareas seleccionadas, en los corpus y las preguntas disponibles y en las decisiones tomadas a la hora de elegir estas tareas; en \allref{sec:sistema} se comenta la adaptación del sistema baseline y las modificaciones realizadas a los algoritmos, {\color{red}mientras que los resultados pueden observarse como apartados en las mismas secciones o como una sección aparte al final}.
 
 \section{Ejercicio de Clef}
 \label{sec:ejecicio-de-clef}
-
+\cerradaarg{Sin supervisar}
 Tras investigar distintas competencias y métodos de evaluación, optamos por utilizar como guía de trabajo dos ejercicios de la tarea principal de question answering de la competencia Clef de 2007. Principalmente por contar con un subconjunto de ejercicios bastante adecuados para nuestra tesis y disponer de un corpus de datos libre y disponible en el acto para evaluar una parte importante de las funcionalidades implementadas en nuestro proyecto. 
 
 Como mencionamos en \allref{sec:competencias}, Clef (de \textit{Cross-Language Evaluation Forum}) es una organización que busca fomentar la investigación en sistemas de information retrieval cross-language. En particular, una vez por año Clef lanza una competencia de Question Answering multilingüe, con diferentes corpus y diferentes tipos de ejercicios. Estas competencia permiten obtener un patrón estándar de comparación entre distintos desarrollos y una idea general del estado de arte alcanzado en los diferentes idiomas por la diferentes actores académicos o {\color{red}comerciales}. Por lo demás, Clef es el principal organizador de conferencias de question answering multilingüe para idiomas europeos y la tarea principal de '07 presentaba una complejidad adecuada para el scope de esta tesis.
@@ -18,7 +19,7 @@ La tarea estandar principal de question answering incorpora algunas particularid
 
 \subsection{Tareas}
 \label{subsec:tareas}
-
+\cerradaarg{Sin supervisar}
 Utilizamos como guia dos ejercicios de la tarea principal de question answering de '07  por varias razones (Ver \cite{GuidelineClef07} y \cite{OverviewClef07} para un detalle exhaustivo de la conferencia en cuestión). Para esta tarea estaban disponibles en acto corpus, inputs de prueba y resultados esperados para una experimentación multilingüe que abarque tanto inglés como español y portugués. Además, estos ejercicios incorporaban, por única vez, diferentes wikipedias como parte del corpus de datos, lo cual resulta de por si atractivo. 
 
 La tarea principal de QA de Clef '07 ofrece dos grandes grupos de ejercicios:
@@ -90,7 +91,7 @@ pt & 130 & 59 & 11 & 200 \\ \hline
 
 
 \subsection{Análisis de las preguntas}
-
+\cerradaarg{Sin supervisar}
 Las 200 preguntas del test set están agrupadas por tema, y cada tema tiene de una a cuatro preguntas. Los temas pueden ser entidades nombradas, evento o también categorías como objetos, fenómenos naturales, etc (por ejemplo: Bush, Juegos Olímpicos, notebooks, huracanes, etc). 
 Los temas no están dados en el set de test, pero pueden ser inferidos del primer par pregunta respuesta. La relación del tema con el grupo de preguntas respetaba las siguiente condiciones:
 
@@ -232,6 +233,7 @@ Total & 200 & 200 & 159 & 158 & 31 & 32  & 10 & 10\\ \hline
 
 \section{Sistema}
 \label{sec:sistema}
+\cerradaarg{Sin supervisar}
 Nuestra implementación está basada en Qanus como framework o arquitectura de diseño de QA y en Freeling como proveedor de servicios de procesamiento de lenguaje multilingue. Qanus (Question-Answering @ National University of Singapore) es un framework de question answering basado en information retrieval y también un sistema de QA funcional simple construido sobre este framework. El proyecto se actualizó por última vez en noviembre de 2012 y contiene herramientas actuales de nlp para inglés (el POS-tagger, el NER-tagger y el Question Classifier de Stanford) y también de information retrieval (índice de búsquedas lucene) bajo licencia de código abierto. El paquete cuenta con un framework (qanus), que cumple un rol equivalente a la arquitectura DeepQA en la organización del proyecto de IBM, y un sistema montado sobre este framework -QA-sys-, equivalente a Watson (Ver Figura ~\ref{fig:Quanus}). 
 
 % La motivación del proyecto es proveer a la comunidad científica un framework para ingresar al mundo de QA de una manera más sencilla y rápida, permitiendo construir nuevos sistemas de QA sobre esta arquitectura. 
@@ -283,7 +285,7 @@ correctamente.\newline
 En esta sección de la tesis adoptamos el framework Qanus y adaptamos el sistema QA-sys para 1) incorporar Freeling como librería de herramientas de procesamiento del lenguaje permitiendo un funcionamiento multilenguaje, 2) trabajar sobre el corpus de datos y preguntas de los ejercicios de CLEF '07 de español y portugués descriptos en \allref{sec:ejecicio-de-clef} y, finalmente, 3) incorporamos y evaluamos diferentes mejoras tomadas de la reseña a la literatura científica del apartado anterior \allref{sec:literatura}.
 
 \subsection{Implementación de Qanus y QA-sys}
-
+\cerradaarg{Sin supervisar}
 El código está escrito en java y mantiene una interfaz común a
 todos los pasos: un controller cuyas responsabilidades son cargar los
 componentes y un engine que utiliza los componentes para leer el input,
@@ -321,7 +323,7 @@ factoid y, a modo de comparación, el mejor sistema según la Trec
 En las siguientes secciones de la tesis describiremos la implementación de nuestro sistema de question answering tomando como base los tres pasos principales del pipeline de QA-sys. 
 
 \subsection{Procesamiento de la base de información}
-
+\cerradaarg{Sin supervisar}
 El módulo de procesamiento de la base de información de la implementación QA-sys está desarrollada para correr sobre el tipo de datos de las evaluaciones Trec 2007, un formato XML conocido como ``Aquaint". Por otro lado, el mismo framework esta atado al procesador de XMLs SAX, una entre varias implementaciones disponibles en el entorno de java. En nuestra adaptación, incorporamos la librería gwtwiki\footnote{Java Wikipedia API (Bliki engine): \url{http://code.google.com/p/gwtwiki/}} para procesar los xml dumps de wikipedia. Como esta librería no utiliza SAX, nos vimos obligados a modificar el framework. 
 
 En este proceso descartamos artículos mal formados y entradas representado imágenes o discusiones, tal como se sugiere en la guía. 
@@ -354,7 +356,7 @@ La categoría filtradas contiene artículos con alguno de los siguientes prefijo
 
 
 \subsection{Anotado de la pregunta}
-
+\cerradaarg{Sin supervisar}
 El módulo original de QA-sys de procesamiento de la pregunta espera preguntas en el formato Aquaint definido por Trec, al igual que el tipo de datos esperado sobre el corpus en el paso anterior. En el procesamiento lleva a cabo las tareas descriptas de modo general en \allref{subsec:impl-pos}, \allref{subsec:impl-ner} y \allref{subsec:qtype},  utiliza como librerías de procesamiento de lenguaje las el POS-Tagger, el NER-Tagger y el Question Classifier de la Universidad de Stanford, disponibles solo para inglés, descriptas en \allref{sec:stanford-both} y \allref{sec:stanford-qc} respectivamente.
 En nuestra adaptación incorporamos los módulos de POS y NERC multilingües de freeling. Con respecto a la clasificación de preguntas, ya mencionamos que no existen clasificadores para español {\color{red} y tampoco para el portugués}. Frente a esta situación podríamos haber implementado clasificadores heurísticos basados en reglas escritas a mano como en el caso del sistema estructurado (\allref{sec:qp-mitic}). Aprovechando la disponibilidad de una traducción confiable al inglés de las preguntas en archivos de datos (debido a la activación de los ejercicios cross-lingual en-es y en-pt), decidimos utilizar el clasificador de Stanford sobre la traducción inglesa de la pregunta.
 Las tablas \ref{table:x} y \ref{table:x} presentan la distribución de las 200 preguntas para español y para portugués según las cincos clases principales del esquema de Li \& Roth. Los niveles de confianza en la clasificación logradas oscilan entre tanto y tanto, dato dato dato.
@@ -362,6 +364,7 @@ Las tablas \ref{table:x} y \ref{table:x} presentan la distribución de las 200 p
 
 \subsection{Answer Retrieval}
 \subsubsection{Baseline}
+\falta
 Como baseline de desarrollo y pruebas, adaptamos los algoritmos de Qanus. 
 El procesamiento realizado por este módulo del paquete puede estructurarse así:
 \begin{itemize}
@@ -432,22 +435,32 @@ Ver \allref{chap:resultados-ingles-simple} para una tabla de los datos.
 
 \subsubsection{Group Entity extraction}
 \label{subsubsec:entidad-de-grupo}
+\falta
 Formas de extraer la entidad de grupo o tópico y de incorporarlo en la query.
 \subsubsection{Query Generation}
+\falta
 Baseline de Qanus.
 Resultados.
 \subsubsection{Passage Extraction}
+\falta
 \subsubsection{Lasso Heuristics}
 Métricas de medición: definición de documento relevante.
 \subsubsection{Qanus baseline}
+\falta
 \subsubsection{Heuristic 1}
+\falta
 \subsubsection{Heuristic 2}
+\falta
 \subsubsection{Heuristic 3}
+\falta
 \subsubsection{Experimentación de Answer Retrieval}
+\falta
 
 
 \section{Evaluación}
+\falta
 \subsection{Evaluación y resultados de Clef}
+\falta
 Como en años anteriores, la respuesta correcta pudo estar copiada y pegada exactamente desde el documento, aún cuando sea gramaticamente incorrecta (por ejemplo: el caso de inflexión no coincide con el requerido por la pregunta). De todos modos, este año se les permitió a los sistemas usar generación de lenguaje natural para corregir inconsistencias morfosintácticas. (Por ejemplo, en alemán cambiar “dem Presidenten” por “der President” si la pregunta implica que la respuesta está en caso nominativo) y para introducir cambios gramáticos y léxicos (por ejemplo: Pregunta: ¿De qué nacionalidad es X? Respuesta: X es de Holanda => Respuesta Exacta: Holandés).
 
 

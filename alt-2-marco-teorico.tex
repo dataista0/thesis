@@ -1,12 +1,12 @@
 \chapter{Marco teórico}
 \label{chap:teorico}
-
-En este capítulo vamos a recorrer algunos términos básicos y problemas de procesamiento de lenguaje e information retrieval que deben conocerse para atravesar mejor los siguientes capítulos. En la primer sección vamos a introducir terminología básica como $token$, \textit{n-grama}, \textit{ontología} y $feature$, mientras que en la segunda veremos algunos problemas o áreas de procesamiento de lenguajes y recuperación de la información en los que los sistemas de question answering suelen apoyarse. Primero comentaremos qué es information retrieval, cuales son las métricas de evaluación del área y qué es un índice invertido de búsqueda, luego comentaremos los principales problemas propios de procesamiento de lenguajes relacionados con QA (POS tagging o etiquetado gramatical, NE tagging o reconocimiento de entidades y clasificación de preguntas) y finalmente, mencionamos algunas otras herramientas y conceptos de uso frecuente. 
+\cerradaarg{Falta mejorar ref y allref}
+En este capítulo vamos a recorrer algunos términos básicos y problemas de procesamiento de lenguaje e information retrieval que deben conocerse para comprender mejor lo que discutiremos sobre question answering en los siguientes capítulos. En la primer sección vamos a introducir terminología básica como $token$, \textit{n-grama}, \textit{ontología} y $feature$, mientras que en la segunda veremos algunos problemas o áreas de procesamiento de lenguajes y recuperación de la información en los que los sistemas de question answering suelen apoyarse. Primero comentaremos qué es information retrieval, cuales son las métricas de evaluación del área y qué es un índice invertido de búsqueda, luego comentaremos los principales problemas propios de procesamiento de lenguajes relacionados con QA (POS tagging o etiquetado gramatical, NE tagging o reconocimiento de entidades y clasificación de preguntas) y finalmente, mencionamos algunas otras herramientas y conceptos de uso frecuente. 
 
 \section{Terminologia}
 \label{sec:terminologia}
 \subsection*{Tokens}
-
+\cerradaarg{Corta y endeble}
 Un token es una palabra o un signo de puntuación en el contexto de un
 texto.
 Por ejemplo, el texto {\textquotedblleft}El sol
@@ -21,7 +21,7 @@ Estos dos procesos suelen ser el primer paso de todos los análisis de procesami
 
 
 \subsection*{N-Gramas}
-
+\cerradaarg{Corta y endeble}
 Un n-grama es una subsecuencia continua de \textit{n} tokens de un string.
 
 Por ejemplo, la oración: {\textquotedblleft}Hoy está nublado{\textquotedblright}, tiene los siguientes n-gramas:
@@ -41,13 +41,14 @@ conocido, por ejemplo: buscando entidades nombradas que no fueron reconocidas po
 {\color{red} Bajar a tierra on Google N-grams y POS de HMM}
 
 \subsection*{Ontología}
-
+\horrible
 El término `ontología' es un término originalmente filosófico, que refiere al estudio de lo que hay, de lo que es, o, dicho de otro modo, a la definición y al estudio de los entes que existen en la realidad última y de sus cualidades esenciales y sus relaciones intrinsecas. Aplicado a ciencias informáticas, principalmente dentro áreas como inteligencia artificial y representación del conocimiento, esta noción original se sostiene, acotando la noción de realidad última a uno o varios dominios de problemas. Más concretamente, la noción de ontología en informática refiere a la definición formal y exhaustiva de un conjunto de conceptos que representan entidades, tipos o clases de entidades, propiedades y relaciones entre estas entidades relevantes para el modelado de un dominio de problemas dado. Esta ontología formal define un vocabulario inicial fijo que determina el tipo de problemas que se pueden plantear (y resolver) para el dominio.
 
 {\color{red} Mencionar linked data, RDF, SPARQL, YAGO, dbPedia y Freebase}
 
 \subsection*{Features}
 \label{subsec:features}
+\cerradaarg{Sí, creo que sí}
 En machine learning, un feature puede definirse como una propiedad medible de un fenómeno siendo observado. En las aplicaciones de procesamiento de lenguaje natural, el dominio de “fenómenos observados” está restringido a los fenómenos lingüísticos y las propiedades medibles también. Un ejemplo de feature es: un booleano indicando \dq{la palabra comienza con mayúscula}. En general, los features toman valores numéricos o booleanos, aunque también es posible utilizar features más complejos (como strings, o listas). Los features se agrupan en vectores. Durante un proceso de análisis, cada entidad procesada tiene un vector de features que la representa de manera tratable. Por ejemplo, podemos asignarle a cada palabra de una oración el siguiente vector de tres features:
 
 \begin{center}
@@ -63,8 +64,7 @@ Encontrar features (o “características”) discriminantes e independientes en
 
 Los features aparecen en muchos contextos, por ejemplo: en \allref{chap:implementacion} nosotros construimos una serie de features a mano en la sección de answer retrieval, para subir la posición de la respuesta esperada entre la lista de pasajes rankeados. En las herramientas lingüísticas que veremos a continuación (\allref{sec:herramientas}), los features son normalmente extraídos automáticamente de un corpus. En estos casos, el volumen de features suele ser relativamente alto (10.000, 100.000) y se incorporan patrones estadísticos complejos alejados de la simplicidad del vector de tres features de nuestro ejemplo. 
 
-A modo de ilustración, reproducimos los ejemplos que se pueden encontrar en \\ \cite{NER1} sobre dimensiones de features típicas para el proceso de reconocimiento de entidades.
-En este proceso, se está intentando encontrar entidades nombradas (Buenos Aires, Juán Perez, veremos de esto en muy poco tiempo). A continuación listamos 3 sets de ejemplos de tipos de features basados en propiedades de las palabras mismas, en diccionarios conocidos y en propiedadades de los documentos del corpus.
+A modo de ilustración, reproducimos los ejemplos que se pueden encontrar en \\ \cite{NER1} sobre dimensiones de features típicas para el proceso de reconocimiento de entidades. Veremos sobre reconocimiento de entidades en breve (\ref{subsec:nerc}), pero, brevemente, lo que se busca es encontrar entidades nombradas como \dq{Buenos Aires} o \dq{Juán Perez} en oraciones. En este proceso podrían usarse, por ejemplo, tres tipos de features basados en propiedades de las palabras mismas, en diccionarios conocidos y en propiedadades de los documentos del corpus.
 
 \begin{center}
 
@@ -126,7 +126,7 @@ Features & Ejemplo \\ \hline
 \section{Information Retrieval}
 \label{sec:information-retrieval}
 \label{subsec:information-retrieval}
-
+\cerradaarg{Sin revisar igual}
 El problema conocido como recuperación de la información (o \textit{information retrieval}) consiste, formalmente, en retornar \textit{información relevante} para una \textit{consulta} (\textit{information need}) a partir de una \textit{base de conocimiento}. 
 
 Como la generalidad de esta definición sugiere, information retrieval es un área de trabajo amplia que abarca disciplinas variadas y problemas diversos (como por ejemplo: el almacenamiento físico de la información y su calidad, la representación de la información en modelos formales, el modelado semántico de las nociones de ``similaridad`` y ``relevancia`` entre las consultas de usuarios y los diferentes documentos de la base de información). 
@@ -137,6 +137,7 @@ La consulta no es la necesidad de información del usuario sino lo que el usuari
 
 \subsection{Métricas}
 \label{subsec:metricas-ir}
+\cerrada{Sin revisar}
 Las métricas de rendimiento de los sistemas de information retrieval articulan de diferentes maneras los documentos totales devueltos por el sistema, la cantidad de documentos relevantes y la cantidad de documentos irrelevantes para una consulta dada. En la práctica existen diferentes maneras de adjudicar relevancia a un documento. 
 
 \begin{equation}\label{eq:precision}
@@ -170,6 +171,7 @@ La formula general \eqref{eq:fb} introduce el parámetro $\beta$ que podera reca
 
 \subsection{Indice invertido de búsqueda}
 \label{subsec:indice-invertido}
+\faltapoco
 Un índice invertido es la estructura de datos típica utilizada en problemas de information retrieval. Consiste en un mapeo de términos en documentos que los contienen. Es decir, para un término dado, un índice invertido devuelve una lista de los documentos cargados que lo contienen. Este tipo de estructuras invierte la relación normal en la cual a partir de un documento se accede a la lista de términos que este documento contiene (de allí el nombre invertido).
 Por ejemplo, para los textos:
 \medskip
@@ -200,7 +202,7 @@ Un índice invertido contendría las siguientes entradas (dónde el número \tex
 
 
 \section{Procesamiento de Lenguaje Natural}
-
+\cerradaarg{No seamos perfeccionistas}
 
 El problema de question answering puede pensarse como un problema de information
 retrieval, pero en realidad excede este dominio: su objetivo no es devolver una lista de documentos para
@@ -223,6 +225,7 @@ En lo que sigue de esta sección comentaremos algunas herramientas de procesamie
 
 \subsection{Part-of-speech (POS) tagging}
 \label{subsec:pos}
+\cerradaarg{No seamos perfeccionistas}
 El POS-tagging o \textit{etiquetado gramatical} consiste en asignar a los diferentes 
 tokens una etiqueta con el rol o categoría gramatical que cumplen en su contexto de emisión (por lo general, una oración o un párrafo). 
 El POS-tagging cumple un rol fundamental en áreas como el reconocimiento de voz, el procesamiento de lenguaje natural e information retrieval.
@@ -372,6 +375,7 @@ En el scope de este proyecto, utilizamos pos-tagging para filtrar clases de pala
 
 \subsection{Reconocimiento de Entidades Nombradas (NER)}
 \label{subsec:nerc}
+\faltapoco
 
 El reconocimiento de entidades nombradas (NER, de Named Entity
 Recognition) es una subtarea de Information Extraction. Information
@@ -412,6 +416,7 @@ En nuestro trabajo utilizamos los NER taggers de Stanford\cite{NER2} y de Freeli
 
 \subsection{Clasificación de Preguntas (QC)}
 \label{subsec:qc}
+\faltapoco
 Question Classification es la tarea de categorizar preguntas en diferentes 
 clases semánticas que impongan restricciones significativas a las respuestas potenciales 
 para utilizarlas en fases posteriores del proceso de QA.
@@ -447,7 +452,7 @@ Actualmente, un tesista del grupo GALLI está trabajando en la construcción de 
 
 
 \subsection{Otras tareas}
-Hacer
+\horriblearg{Volar?}
 \begin{itemize}
 \item Detecci\'on de idioma
 \item Tokenizer
