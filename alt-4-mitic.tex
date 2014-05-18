@@ -1,73 +1,60 @@
 \chapter{Implementación de datos estructurados}
 \horrible
-\section{QA como interfaz a una DB}
-\subsection{Integración en sistemas open domain}
-\section{Sistema}
-\subsection{Dominio de datos}
-\subsubsection{Grafo Mitic}
-Los datos originales del proyecto mitic constan de una serie de documentos 
-xml y de cinco colecciones de mongodb y relaciones entre ellas (una base de datos no relacional).
+En este capitulo veremos la implementación del modelo de question answering bilingüe de dominio cerrado para la base de datos del proyecto mitic. El sistema es muy sencillo y se basa en el marco teórico de \cite{QADB1} que vimos en \allref{sec:closed-domain}, adaptado a nuestro caso puntual. El código está disponible en \url{github.com/julian3833/} 
 
-Las cinco coleccciones son: universidades, investigadores, empresas,
-publicaciones, proyectos y temáticas.
+La estructura de este capitulo es la siguiente: en \allref{sec:grafo-mitic} describimos la base de datos original $D$ y el módulo $KnowledgeManager$, el cual es responsable de las reglas y la algoritmia de traducción de los tokens de una pregunta $q$ en elementos de $D$, en \allref{sec:qp-mitic} comentaremos los módulos lingüísticos utilizados para procesar las preguntas y los algoritmos que hacen uso de los servicios del $KnowledgeManager$ para definir la tratabilidad semántica de una pregunta y generar la respuesta final.
 
-Estas colecciones definen el dominio. Cada entidad 
-posee sus respectivos atributos y distintas relaciones con otras entidades.
-Estas relaciones contienen desde vínculos explicitos como "trabajar-en"
-pero también relaciones inferidas mediante distintos algoritmos durante el proyecto mitic.
-Las relaciones que incorporamos tienen distintos pesos según este tipo de caracteristicas
-y tejen un grafo de distancias más o menos "especulativas" entre todas las entidades.
+\section{Base de conomimiento}
+\label{sec:grafo-mitic}
+
+\subsection{Base de datos: grafo mitic}
+Los datos originales del proyecto mitic constan de cinco colecciones de mongodb y relaciones entre ellas. Las cinco coleccciones son: universidades, investigadores, empresas, publicaciones, proyectos y temáticas. Estas colecciones definen el dominio. Cada entidad posee sus respectivos atributos y distintas relaciones con otras entidades. Las relaciones son todas 1-n y, a en la implementación de nuestro modelo, no consideramos preguntas en las que las relaciones requieran mayor funcionalidad que la de un atributo (Por ejemplo, resulta semánticamente tratable la pregunta: \dq{¿En qué universidad trabaja Juan Perez?}, pero no es tratable la pregunta \dq{¿En qué ciudad está la universidad en la que trabaja Juan Perez?}. La red de relaciones del modelo de mitic contiene desde vínculos explicitos como "trabajar-en" a relaciones inferidas mediante distintos algoritmos durante proyectos anteriores relacionados con la construcción de este grafo. Las relaciones incorporadas tienen distintos pesos según este tipo de caracteristicas y tejen un grafo de distancias más o menos "especulativas" entre todas las entidades.
 
 Los atributos de cada entidad se pueden ver en el Anexo: [[HACER Y LINKEAR]].
 
-\subsubsection{Creación de Indices}
 
-\begin{figure}[H]
-  \centering
-    \includegraphics[scale=0.86]{graficos/LuceneWritersJuntos}
-  \caption{Creación de Indices}
-  \label{fig:LuceneIndexWriterBoth}
-\end{figure}
+% \begin{figure}[H]
+%   \centering
+%     \includegraphics[scale=0.86]{graficos/LuceneWritersJuntos}
+%   \caption{Creación de Indices}
+%   \label{fig:LuceneIndexWriterBoth}
+% \end{figure}
 
-A partir de esta base de datos de mongo y de los archivos xml fueron construidos cinco índices
+A partir de esta base de datos de mongo fueron construidos cinco índices
 de búsqueda lucene y un índice de búsqueda más, general, con la
 información normalizada de los otros cinco. 
+
+La creación offline de índices lucene tiene como finalidad optimizar
+la base de conocimiento para responder con mayor eficiencia 
+a búsquedas de resultados en un momento posterior. 
+
 Cada uno de los cinco índices por entidad mantiene la estructura del tipo como campos de los documentos.
 Esto quiere decir que el índice invertido para \emph{Investigadores} tiene los mismos campos
 del modelo de datos de nosql. Además, se agregó el campo ``all" que resulta de la concatenación de
 todos los campos. Este campo resulta útil a la hora de filtrar resultados. 
 El índice general posee un documento por cada entidad de las cinco colecciones, 
 manteniendo también un puntero a la entidad original y su tipo.
-%El proceso de creación de índices se ilustra en la Figura \ref{fig:LuceneIndexWriterEstructurado}%~\nameref{fig:LuceneIndexWriterEstructurado}.
+El proceso de creación de índices se ilustra en la Figura \ref{fig:LuceneIndexWriterEstructurado}%~\nameref{fig:LuceneIndexWriterEstructurado}.
 
-% \begin{figure}[H]
-%   \centering
-%     \includegraphics{graficos/LuceneIndexWriterEstructurado}
-%   \caption{Lucene Index Writer para datos del proyecto Mitic}
-%   \label{fig:LuceneIndexWriterEstructurado}
-% \end{figure}
+ \begin{figure}[H]
+   \centering
+     \includegraphics{graficos/LuceneIndexWriterEstructurado}
+   \caption{Lucene Index Writer para datos del proyecto Mitic}
+   \label{fig:LuceneIndexWriterEstructurado}
+ \end{figure}
 
 
 
-\subsubsection{Interfaz de servicios}
+\subsection{Interfaz de servicios}
 \label{subsec:modelos-db}
-La creación offline de índices lucene tiene como finalidad optimizar
-la base de conocimiento para responder con mayor eficiencia 
-a búsquedas de resultados en un momento posterior. 
 
 En esta sección vamos a ver la interfaz que presenta la base de conocimientos indexada 
 al resto de los módulos del sistema y qué dependencias existen con los módulos de
 análisis lingüístico.
 
-Para la base de conocimiento estructurada, reutilizamos un modelo de datos
-escrito en java  del grafo de entidades que obtuvimos de los investigadores del proyecto mitic (Ver \allref{sec:modelos-morphia}).
-A estos modelos se les agregó soporte para su representación como documento dentro de un índice.
-Por ejemplo, el modelo para la entidad ``Universidad de Buenos Aires", además de
-persistirse en la colección de universidades de la base de datos de mongo, también dispone de una representación como documento en 
-un índice lucene particular (el índice de universidades) y otra en el índice general.
-A nivel colecciones, cada entidad dispone de un representante que maneja el acceso a su colección en la base de datos y también a su índice. A partir de estos representantes por entidad que ofrecen acceso a una base de datos y a un índice creamos la interfaz \emph{KnowlegdeBase}. 
-Cada entidad tiene una interfaz de administración de sus dos motores de persistencia. Las responsabilidades de esta interfaz son las de un handler de conocimiento acerca de una cierta clase de entidades. 
-Además, esta interfaz permite la reificación de entidades implicitas en el modelo. Estas entidades son: Ciudad, Provincia, Centro de Investigación, etc \footnote{hacer y escribir bien}. Esta reificación significa abstraer las funciones directas contra la base de datos. Mientras el $KnowledgeBase$ de Investigadores habla directo contra la base mongo o contra lucene, el $KnowlegdeBase$ de Ciudades habla contra Investigadores, Universidades y Empresas verificando ciertos campos y recomponiendo la forma de la entidad, de modo abstracto y sin persistencia propia. 
+Para la implementación, reutilizamos un modelo de datos escrito en java del grafo de entidades que obtuvimos de los investigadores del proyecto mitic. A estos modelos se les agregó soporte para su representación como documento dentro de un índice. Por ejemplo, el modelo para la entidad ``Universidad de Buenos Aires", además de persistirse en la colección de universidades de la base de datos de mongo, también dispone de una representación como documento en su índice lucene particular (el índice de universidades) y otra en el índice general. A nivel colecciones, cada entidad dispone de un representante que maneja el acceso a su colección en la base de datos y también a su índice. A partir de estos manejadores de colecciones que ofrecen acceso a la base de datos y al índice creamos la interfaz \emph{KnowlegdeBase}. Existe una $KnowledgeBase$ por cada colección que responde a diferentes responsabilidades:
+
+[[definir en función de \tradqd]]
 
 [[Tablita con totales por entidad]]
 
@@ -102,10 +89,33 @@ La segunda y la tercera verificación utiliza estos mismos comparadores jerarqui
   \label{fig:KnowledgeManager}
 \end{figure}
 
-\bigskip
+El módulo $KnowlegdeManager$ controla entonces las compatibilidades entre relaciones, atributos, valores y qwords según los terminos de Popescu.
 
+\section{Anotado de la pregunta}
+\label{sec:qp-mitic}
 
-\subsection{Idioma}
+En este paso se realizan diferentes análisis lingüísticos de la pregunta. El resultado son distintas características asociadas a la pregunta (anotaciones) y distintas entidades semánticas reconocidas útiles para el proceso de generación de respuestas. 
+Las herramientas de procesamiento de lenguaje natural que utilizamos en nuestra implementación incluyen: detección de lenguaje, extracción y verificación de entidades nombradas (NER), de verbos, sustantivos, qwords (qué, quién, cómo) (POS), análisis de n-gramas y categorización por tipo de pregunta (QC).
+Con ellas implementamos diferentes módulos que anotan los tokens y la pregunta original y la dejan preparada para ser consumida por el módulo de generación de respuestas. En lo que sigue de esta sección, veremos los siguientes módulos:
+
+\begin{itemize}
+\item Detección de idioma 
+\item Detección y verificación de entidades nombradas
+\item Análisis gramatical
+\item Clasificación del tipo de pregunta
+\end{itemize}
+
+Si bien es cierto que el segundo item está basado principalmente en NER-tagging, el tercero en POS-tagging y el cuarto en Question Clasiffication, 
+cada uno de estos pasos utiliza estas herramientas de diferentes maneras. Por ejemplo, para la detección y verificación de entidades, además del NER-tagger también utilizamos la base de conocimiento y el análisis gramatical y, para el español, la clasificación del tipo de pregunta se hace apoyandose en las qwords identificadas por el POS-tagger.
+
+\subsection{Detección de idioma}
+
+Uno de los objetivos iniciales del sistema es que sea capaz de responder preguntas en inglés y en español. En el modelo que describiremos en el próximo capítulo, el módulo de detección de idiomas no es utilizado porque en los ejercicios no se evalua esta detección de idiomas. Los archivos de preguntas están separadas por idioma y no se espera que el idioma se infiera a partir de los textos de las preguntas, sino que es un dato dado al sistema participante. En este modelo, en cambio, no está disponible ninguna información sobre el idioma de la pregunta, por lo que es necesario detectarlo. El módulo de detección de idiomas de este sistema utiliza dos librerías distintas: el módulo de detección de idiomas de Freeling y una librería especializada de Cybozu Labs. (Ver apéndices \allref{sec:freeling} y \allref{sec:cybozu} para más información).
+
+Ambos permiten priorizar la detección de ciertos idiomas sobre otros desde su configuración.
+De esta manera podemos forzarlos a identificar sólo los idiomas esperados en nuestro dominio. 
+Ambos fueron configurados para detectar inglés y español para mejorar la confiabilidad,
+pero pueden habilitarse más idiomas de ser necesario y funcionan correctamente. 
 
 \begin{figure}
   \centering
@@ -114,23 +124,16 @@ La segunda y la tercera verificación utiliza estos mismos comparadores jerarqui
   \label{fig:LangDetect}
 \end{figure}
 
-El módulo de detección de idiomas de nuestro sistema utiliza dos librerías distintas.
-El módulo de detección de idiomas de Freeling y una librería especializada de Cybozu Labs. (Ver apéndices \allref{sec:freeling} y \allref{sec:cybozu} para más información)
-
-Ambos permiten priorizar la detección de ciertos idiomas sobre otros desde su configuración.
-De esta manera podemos forzarlos a identificar sólo los idiomas esperados en nuestro dominio. 
-Ambos fueron configurados para detectar inglés y español para mejorar la confiabilidad,
-pero pueden habilitarse más idiomas de ser necesario y funcionan correctamente. 
 
 El módulo de detección simplemente evalua ambos algoritmos y 
 decide el resultado con un cierto grado de confianza. En caso de existir un empate, se 
 prioriza la opción de Cybozu labs que en la práctica dió resultados más exactos.
 
-De todos modos, el problema "detección de idioma" no introduce mayores complicaciones y parece un problema bien resulto.
+De todos modos, el problema ``detección de idioma" no introduce mayores complicaciones y parece un problema bien resulto.
 Es decir, la mayoría de las veces ambos módulos responden lo mismo y de modo correcto.
 Sin embargo, para ciertos casos bordes molestos (pero lamentablemente frecuentes)
 el detector de Cybozu resultó funcionar mejor. Por ejemplo, está el caso de la pregunta formulada en inglés pero acerca de una entidad nombrada en español: 
-``Where is located the Universidad de Buenos Aires?". Este problema está particularmente presente en el procesamiento de preguntas -nuestra tarea-, dado que son textos cortos en los que una construcción sustantivada en otro idioma puede desequilibrar erróneamente la balanza. 
+``Where is located the Universidad de Buenos Aires?". Este problema está particularmente presente en el procesamiento de preguntas, dado que son textos cortos en los que una construcción sustantivada en otro idioma puede desequilibrar erróneamente la balanza. 
 
 A continuación presentamos algunos ejemplos que ilustran el funcionamiento de ambas librerías y el resultado final de nuestro módulo en estos casos:
 
@@ -151,18 +154,91 @@ Where does Carolina Fernandez live and why does she lives there? & en & en & en 
 \end{tabular}
 \end{center}
 
+\subsection{Entidades nombradas}
+\label{subsec:impl-ner}
 
-Los ejercicios de Clef '07 no evaluan detección de idiomas. Los archivos de preguntas están separadas por idioma y no se espera que el idioma se infiera a partir de los textos de las preguntas, sino que es un dato dado al sistema de QA.
+Para la detección de entidades utilizamos la clase simple de detección (NER) y clasificación (NEC) de entidades de Freeling y el NERC de Stanford (ver \allref{sec:freeling} y \allref{sec:stanford-ner}). Las herramientas de Stanford en general superan a las de Freeling -al igual que el detector de idiomas de Cybozu-, pero solo sirven para inglés. La clasificación utilizada por ambos es la más general de las comentadas en \allref{subsec:nerc}: persona, lugar, organización y otros. 
+
+Veamos algunos ejemplos de funcionamiento de los módulos de detección de entidades. 
+
+\begin{center}
+\begin{tabular}{| p {8cm} | l | l | l |}
+\hline
+Texto & Freeling & Stanford & Resultado \\ \hline
+¿Dónde queda la Universidad de Buenos Aires? & es & es & es \\ \hline
+Where is located the University of Buenos Aires? & en & en & en \\ \hline
+Where is located the Univesidad de Buenos Aires? & en & en & en \\ \hline
+Where is located Universidad de Buenos Aires? &  {\color{red}es} & en & en \\ \hline
+Quién es Carolina Fernandez? & es & es & es \\ \hline
+Who is Carolina Fernandez? &  {\color{red}none} & en & en \\ \hline
+Quién es John McCain? & {\color{red}none} & es & es \\ \hline
+Who is John McCain? & en & en & en \\ \hline
+Dónde vive John McCain y por qué vive allí? & es & es & es \\ \hline
+Where does Carolina Fernandez live and why does she lives there? & en & en & en \\ \hline
+\end{tabular}
+\end{center}
+
+\medskip
+
+Mientras la detección de entidades para el modelo que veremos en el capitulo siguiente se detiene en el reconocimiento de entidades nombradas a nivel lingüísitico, para el sistema estructurado el proceso es un poco más complejo. Esto se debe a que en este caso la detección de entidades es esencial. Si en el proceso de anotado de la pregunta no se logra identificar alguna entidad reconocida por el modelo de datos, entonces se está muy lejos de encontrar una respuesta. Por eso, además de utilizar los modulos NER recién mencionado, agregamos otros algoritmos de detección y, también, verificación de entidades. 
+
+En principio, verificamos la o las entidades nombradas reconocidas contra la base de conocimiento. El $KnowledgeManager$ ofrece diferentes servicios de verificación de entidades. Para una cadena de tokens cualquiera, este módulo puede decidir, con un cierto grado de confianza, si:
+
+\begin{itemize}
+  \item La cadena de tokens es una entidad dentro del modelo de datos. Esto incluye:
+    \begin{itemize}
+      \item Es una entidad del modelo de datos: una universidad, una empresa, un investigador, un proyecto, una publicacion o una tematica
+      \item Es una entidad inferida: una ciudad, una provincia, un centro de investigación, un lugar de trabajo
+    \end{itemize}
+  \item La cadena es una colección del modelo de datos, es decir, si se están nombrando \dblquote{Investigadores} o \dblquote{Universidades} como clase de entidades.
+  \item La cadena es un atributo o una relación de una clase. (nombre de investigador)
+\end{itemize}
+
+Parte importante del trabajo para este esquema es lograr identificar este tipo de entidades lingüísticas, por lo que además de verificar los resultados del proceso de NER-tagging, también generamos otras cadenas de input. Notar además que los nombres de clase y de atributos de clase no tendrían por que ser reconocidas por el NER-tagger. Por ejemplo, para ``¿Qué investigadores trabajan en Córdoba?", \dblquote{investigadores} está haciendo referencia al nombre de una clase pero no es el tipo de entidades lingüísticas que detecta un NER-tagger. 
+
+Por estas razones, generamos más entidades lingüísticas posibles además de las entidades detectadas por los NER-taggers. Una vez que todas las entidades nombradas fueron verificadas, generamos n-gramas sobre el resto de la pregunta para chequear por más tokens reconocibles. Configuramos la generación de n-gramas de 1 a 3, con ciertos filtros para no verificar construcciones que no representan entidades de manera trivial. Por ejemplo: dejamos sólo los unigramas que cumplan el rol de sustantivos, eliminamos bigramas que sean un sustantivo y una acción, salteamos NERs ya reconocidas, etre otros.
 
 
-\subsection{Modelo}
+\subsection{Análisis gramatical}
+\label{subsec:impl-pos}
+De las diferentes etiquetas que generan los POS-taggers, en nuestro sistema distinguimos los verbos, los sustantivos, las qwords y las palabras triviales. 
+Las palabras etiquetadas cumplen distintos roles a lo largo del proceso de generación de respuestas. Como señalamos recién, los n-gramas que se verifican contra la base de datos están filtrados por los roles gramaticales de sus tokens. Por otro lado, a la hora de generar el tipo de pregunta para una pregunta en español, utilizamos, como mecanismo ad-hoc, las qwords. 
+
+\begin{center}
+\begin{tabular}{| l | l |}
+\hline
+Clase & Ejemplos\\ \hline
+qword  & qué, quién, cómo, dónde, cuándo\\ \hline
+verbo & trabaja, trabajar, trabajando \\ \hline
+trivial  & lo, a, de, y \\ \hline
+sustantivos  & universidad, impresora, álgebra \\ \hline
+\end{tabular}
+\end{center}
+
+Los usos más intensivos de estas etiquetas son el filtrado de n-gramas que mencionamos recién (\allref{subsec:impl-ner}), y un algoritmo ad-hoc de etiquetado de Q-Type para el caso español (es el próximo tema a discutir en \allref{subsec:qtype}) y, finalmente, son utilizados en la generación de respuestas, a la hora de vincular tokens de la pregunta con elementos de la base de datos.
+
+\subsection{Clasificación}
+\label{subsec:qtype}
+Para clasificar la pregunta según su tipo de respuesta esperada utilizamos el Question Classiffier de Stanford, tomando la configuración de Qanus. Este clasificador arroja una clase y una subclase (ver \allref{sec:stanford-qc} para una lista detallada de las posibles clases) y un grado de confianza para esta asignación. A continuación presentamos algunos ejemplos que ilustran estos resultados.
+
+\begin{center}
+\begin{tabular}{| l | l | l |}
+\hline
+Pregunta & Clase y Subclase & Confianza\\ \hline 
+What's his name? & HUM:ind & 0.74 \\ \hline 
+Where do you come from? & DESC:desc & 0.62 \\ \hline 
+What's your phone number? & NUM:code & 0.63 \\ \hline 
+How old are you? & NUM:period & 0.78 \\ \hline 
+When were you born? & NUM:date & 0.99 \\ \hline 
+What does he look like? & DESC:desc & 0.82 \\ \hline 
+\end{tabular}
+\end{center}
+
+Sin embargo, como ya señalamos oportunamente (ver \allref{subsec:qc}), no existen herramientas de clasificación de preguntas para el idioma español. Por esta razón, escribimos un clasificador básico basado en reglas escritas a mano sobre qwords. Las qwords, como vimos, son palabras clave de las preguntas que señalan el tipo de respuesta. Por ejemplo: una pregunta que comienza con `Cuándo' tendrá como tipo de respuesta una fecha, un tiempo, etc. Para este modelo, definimos una serie acotada de categorías de tipo de respuesta esperadas y unificamos los resultados del clasificador de Stanford y nuestras reglas sobre qwords para español para unificar el código. Estas categorías son:  Who, Whom, Where, Which,  When,  What y Other. Es decir: Quién, Quiénes, Dónde, Cuál, Cuándo, Qué y otros. Las clases y subclases del clasificador de Stanford se mapearon a estas categorías que coinciden con los resultados de las reglas escritas a mano para el español. 
 
 
-\subsubsection{Parsing de la pregunta}
-\label{sec:qp-mitic}
-Para el caso estructurado, al no disponer de una traducción segura, escribimos un clasificador básico basado en reglas escritas a mano sobre QWords. Las qwords son palabras clave de las preguntas que señalan el tipo de respuesta. Por ejemplo: una pregunta que comienza con `Cuándo' tendrá como tipo de respuesta una fecha, un tiempo, etc. En el modelo estructurado, definimos una serie acotada de categorías de tipo de respuesta esperadas y unificamos los resultados del clasificador de Stanford y nuestras reglas sobre qwords para español para unificar el código. Estas categorías son:  Who, Whom, Where, Which,  When,  What y Other. Es decir: Quién, Quiénes, Dónde, Cuál, Cuándo, Qué y otros. Las clases y subclases del clasificador de Stanford se mapearon a estas categorías que coinciden con los resultados de las reglas escritas a mano para el español. 
-
-\subsubsection{Answer Retrieval}
+\section{Generación de Respuestas}
+\label{sec:ar-mitic}
 
 Una vez etiquetados todos los tokens de la pregunta, se procede a marcar como procesadas las ``palabras triviales". Estas son palabras que si no formaron parte de alguna otra construcción, entonces no haberlas procesado no debería considerarse un problema. Ejemplos de ellas son las proposiciones, los pronombres y algunos conectores. Si al etiquetar la pregunta no se logró identificar ninguna entidad del modelo, entonces será dificil avanzar. Como vimos recién, la fase de procesamiento de la pregunta para el caso estructurado excede por mucho la mera anotación lingüística: al finalizar el etiquetado deberíamos disponer de alguna entidad reconocida por el modelo. Por otro lado, durante la fase de etiquetado cada palabra se marca como procesada. Como acabamos de señalar, al finalizar este proceso se marcan también como procesados ciertos tokens triviales. En este punto, el sistema debe tomar una decisión. Si no ha logrado etiquetar una cierta cantidad de tokens (más del 80\%), entonces se considera que no tiene sentido dar por ``comprendida" la pregunta y se procede a un segundo análisis, computacionalmente más costoso y además más inexacto, en el que se intenta encontrar alguna entidad con otros métodos que enunciaremos en breve. En caso de encontrarse una entidad, entonces el flujo del programa retorna al curso de análisis estructurado. Si esto no ocurre, se devuelve la lista de entidades (documentos) que el índice lucene general devuelve para la pregunta original interpretada como una query normal de information retrieval. Este caso, si bien retorna información, es un caso de falla de procesamiento. Esta lista de documentos viene acompañada de un mensaje del tipo: \dblquote{No se logró interpretar su pregunta} y, en un trabajo futuro, podría incorporar un sistema de recomendaciones e idas y vueltas con el usuario (¿Quizo decir...?).
 
