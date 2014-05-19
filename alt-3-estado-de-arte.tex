@@ -175,44 +175,44 @@ Para ambos casos de uso de los modelos de dominio cerrado (sistemas híbridos y 
 
 En \cite{QADB1} los investigadores proponen un modelo teórico simplificado para enfocar este problema que les permite definir, para una pregunta cualquiera $q$, su \textit{tratabilidad semántica} en el contexto de una base de datos estructurada. A continuación introduciremos una serie de definiciones que forman este modelo  para ilustrar el enfoque general al problema. 
 
-En el contexto de una base de datos relacional, podemos distinguir los siguientes tres tipos de elementos: las \textbf{relaciones}, los \textbf{atributos} y los \textbf{valores}. Por relación nos referimos, en principio, a colecciones (como universidades, películas, actores, inventarios, etc), por atributo a una propiedad de los elementos de esa colección (dirección de una universidad, año de estreno de una película) por valor a los datos concretos (\dq{Figueroa Alcorta 2263}, \dq{2005}). 
+En el contexto de una base de datos relacional, podemos distinguir los siguientes tres tipos de elementos: las \textbf{relaciones}, los \textbf{atributos} y los \textbf{valores}. Por relación nos referimos, en principio, a colecciones (como universidades, películas, actores, inventarios, etc), por atributo a una propiedad de los elementos de esa colección (dirección de una universidad, año de estreno de una película) por valor a los datos concretos (\dq{Figueroa Alcorta 2263}, \dq{2005}). Para evitar confusiones con el uso técnico de teoría de bases de datos del término \dq{relación} y las relaciones entre entidades (por ejemplo: la relación \textit{trabajar-en} entre docentes y universidades), a partir de aquí utilizaremos el término \textit{colección}.
 
-Sobre estos elementos, formalizamos la noción de \textbf{compatibilidad}: 
+Sobre estos tres tipos de elementos que puede tener una base de datos, se formaliza la noción de \textbf{compatibilidad} como sigue: 
 \begin{itemize}
   \item Un valor es compatible con su atributo. Por ejemplo, \dq{Figueroa Alcorta 2263} es compatible con \textit{dirección}. 
-  \item Un valor es compatible con su relación. Por ejemplo, \dq{Figueroa Alcorta 2263} es compatible con \textit{universidades}.
-  \item Un atributo es compatible con su relación. Por ejemplo, \textit{dirección} es compatible con \textit{universidades}.
+  \item Un valor es compatible con su colección. Por ejemplo, \dq{Figueroa Alcorta 2263} es compatible con \textit{universidades}.
+  \item Un atributo es compatible con su colección. Por ejemplo, \textit{dirección} es compatible con \textit{universidades}.
   \item Cada atributo dispone de un conjunto de qwords compatibles.
 \end{itemize}
 
-Con respecto al cuarto bullet, recordemos que las \textbf{qwords} son las palabras típicas con las que comienza una oración (quién, qué, cómo, cuándo, dónde, etc para el castellano, why, where, who, which, etc para el inglés). Mientras que las primeras tres cláusulas son formales, la compatibilidad de un atributo con ciertas qwords debe ser definido. Un ejemplo de compatibilidad entre una qword y un atributo es \textit{dónde} con \textit{dirección}.
+Con respecto al cuarto bullet, recordemos que las \textbf{qwords} son las palabras típicas con las que comienza una pregunta (quién, qué, cómo, cuándo, dónde, etc para el castellano, why, where, who, which, etc para el inglés). Mientras que las primeras tres cláusulas son formales, la compatibilidad de un atributo con ciertas qwords debe ser definida. Un ejemplo de compatibilidad entre una qword y un atributo es \textit{dónde} con \textit{dirección}. En la definición de tratabilidad semántica que expondremos en breve, se pide que en la pregunta exista una qword, para limitar el espectro de preguntas tratables. 
 
 
+A la hora de procesar la pregunta, de los tokens de $q$ se distinguen, primero, los \textbf{marcadores sintácticos}, que son palabras funcionales que no aportan información semántica (por lo general, stopwords como \sq{a} y \sq{de}, etc). Al resto de los tokens se los busca relacionar con elementos de la una base de datos genérica $D$ mediante una función de traducción definida para el caso específico. Por ejemplo, se espera de una función de traducción de tokens en elementos que los pares de tokens \{experiencia, requerida\} y \{experiencia, exigida\} coincidan con el atributo \sq{Experiencia Requerida}. 
 
-A la hora de procesar la pregunta, de los tokens de $q$ se distinguen, primero, los \textbf{marcadores sintácticos}, que son palabras funcionales que no aportan información semántica (por lo general, stopwords como \sq{a} y \sq{de}, etc). Al resto de los tokens se los busca relacionar con elementos de la una base de datos genérica $D$ mediante una función de traducción definida para el caso específico. Por ejemplo, se espera de una función de traducción de tokens en elementos que los pares de tokens \{experiencia, requerida\} y \{experiencia, exigida\} coincidan con el atributo \sq{Experiencia Requerida}. Para construir la tratabilidad semántica de $q$ en $D$ utilizaremos el concepto de \textbf{conjunto de traducción de tokens}, \tradqd, como un cualquier conjunto de tokens de $q$ que mapee con un elemento $E$ de la $D$ según la función de traducción \footnote{Popescu llama a esta este conjunto de tokens -en realidad, stems- como \textit{token}, palabra que tenemos tomada y nos forzó a cambiar el nombre}. Los tres diferentes tipos de elementos determinan tres tipos de traducciones distintas (traducciones de relaciones, de atributos y de valores). Una \textbf{traducción completa} de $q$ es un conjunto de \tradqd en los que cada token de $q$ aparece una y solo una vez. 
-
-Ilustremos todos estos conceptos con un ejemplo: consideremos una base de datos $D$ con información sobre universidades y la siguiente pregunta $q$: \dq{¿Cuántos años tienen de docentes en estado activo que trabajan en la UBA}, una traducción completa es la siguiente: $\{\{\text{cuántos}, \text{años}, \text{tienen}\}_{attr=edad}, \{\text{docentes}\}_{rel=profesores}, \newline \{estado\}_{attr}, \{activo\}_{val}, \{trabajan\}_{attr=universidad}, \{UBA\}_{val=\text{Universidad de Buenos Aires}}\}$. En esta traducción, quedan de lado las stopwords \{de, en, que, en, la\}, y se agrupan los tres primero tokens en el \tradqd $\{\{\text{cuántos}, \text{años}, \text{tienen}\}$ que mapea al atributo de $D$ \textit{edad}, y se mapea el \tradqd unitaria \{\dq{docentes}\} con la tabla \textit{profesores}, etc. 
+Para construir la tratabilidad semántica de $q$ en $D$ utilizaremos el concepto de \textbf{conjunto de traducción de tokens}, al cual notaremos como \tradqd \footnote{Popescu llama a esta este conjunto de tokens -en realidad, stems- como \textit{token} , palabra que tenemos tomada y nos forzó a cambiar el nombre}, como cualquier conjunto de tokens de $q$ que mapee con un elemento $E$ de la $D$ según la función de traducción. Los tres diferentes tipos de elementos determinan tres tipos de \tradqd s distintas (traducciones de relaciones, de atributos y de valores). Una \textbf{traducción completa} de $q$ es un conjunto de \tradqd s en los que cada token de $q$ aparece una y solo una vez. Ilustremos todos estos conceptos con un ejemplo: consideremos una base de datos $D$ con información sobre universidades y la siguiente pregunta $q$: \dq{¿Cuántos años tienen de docentes en estado activo que trabajan en la UBA}, una traducción completa es la siguiente: $\{\{\text{cuántos}, \text{años}, \text{tienen}\}_{attr=edad}, \{\text{docentes}\}_{rel=profesores}, \newline \{estado\}_{attr}, \{activo\}_{val}, \{trabajan\}_{attr=universidad}, \{UBA\}_{val=\text{Universidad de Buenos Aires}}\}$. En esta traducción, quedan de lado las stopwords \{de, en, que, en, la\}, y se agrupan los tres primero tokens en el \tradqd  $\{\{\text{cuántos}, \text{años}, \text{tienen}\}$ que mapea al atributo de $D$ \textit{edad}, y se mapea el \tradqd  unitario \{\dq{docentes}\} con la tabla \textit{profesores}, etc. 
 
 Una traducción completa de $q$ se considera una \textbf{traducción válida} en el contexto de una base de datos $D$ si cumple las siguientes tres condiciones:
 \begin{enumerate}
-  \item Cada \tradqd $t_i$ mapea con un único elemento $E$ de $D$
-  \item Cada \tradqd mapeada a un atributo $t_a$ corresponde a una única \tradqd mapeada a un valor $t_v$. Esto significa:
+  \item Cada \tradqd  $t_i$ mapea con un único elemento $E$ de $D$
+  \item Cada \tradqd  mapeada a un atributo $t_a$ corresponde a una única \tradqd  mapeada a un valor $t_v$. Esto significa:
     \begin{itemize}
       \item El atributo en $D$ al que mapea $t_a$ y el valor en $D$ al que mapea $t_v$ son compatibles.
       \item $t_a$ y $t_v$ están sintácticamente relacionados en el parse-tree de $q$
     \end{itemize}
-  \item Cada \tradqd mapeada a una relación en $D$ ($t_r$) corresponde con una \tradqd de atributo ($t_a$) o bien con una \tradqd de valor ($t_v$). Esto significa:
+  \item Cada \tradqd  mapeada a una colección en $D$ ($t_r$) corresponde con una \tradqd  de atributo ($t_a$) o bien con una \tradqd  de valor ($t_v$). Esto significa:
       \begin{itemize}
-      \item La relación en $D$ a la que mapea $t_r$ y el elemento en $D$ al que mapea $t_a$ (o $t_v$) son compatibles 
+      \item La colección en $D$ a la que mapea $t_r$ y el elemento en $D$ al que mapea $t_a$ (o $t_v$) son compatibles 
       \item $t_r$ y $t_a$ (o $t_v$) están sintácticamente relacionados en el parse-tree de $q$
     \end{itemize}
 \end{enumerate}
 
-Finalmente, una pregunta $q$ se dice \textbf{semánticamente tratable} en el contexto de una base de datos $D$ si existe un mapeo válido con qtokens distintos y en el que al menos uno de sus qtokens incluye una qword.
+Finalmente, una pregunta $q$ se dice \textbf{semánticamente tratable} en el contexto de una base de datos $D$ si existe un mapeo válido con qtokens distintos y en el que al menos uno de sus \tradqd  incluye una qword.
 
-{\color{red} Falta cerrar mejor, ejemplificar más y señalar los límites}.
-Esta definición asumede tratabilidad semántica a la que llegaremos en breve se basa en la observación de que muchas preguntas expresadas en lenguaje natural especifican pares de atributos y valores o especifican solo valores, dejando el atributo implícito.
+En los casos de uso de un sistema de question answering de dominio cerrado resulta fundamental decidir si una pregunta puede o no responderse. El costo de rechazar una pregunta o bien pedir una re-especificación al usuario es mucho menor que el de mal interpretar activamente una pregunta y generar una respuesta inválida. En este contexto, una definición operacional de tratabilidad semántica de una pregunta en el contexto de una base de datos como la enunciada recién resulta esencial. Por otro lado, es importante notar las limitaciones del modelo teórico recién expuesto. En principio, la navegación a través del modelo de datos no está contemplada y el manejo de relaciones se limita a relaciones de un grado. Esta noción de tratabilidad semántica se basa en la observación cierta de que muchas preguntas expresadas en lenguaje natural especifican pares de atributo/valor o especifican solo valores, dejando el atributo implícito. Si bien es cierto que existen formulaciones de preguntas complejas de preguntas simples y también preguntas esencialmente complejas de formular, una gran cantidad de ellas tiene un formato muy sencillo como:
+\dq{¿Dónde está X?}, \dq{¿Quién está relacionado con X (de alguna manera)?}, \dq{¿Cuál es el X con atributos Y relacionado con Z?}, etc. 
 
+En la proxima sección veremos un caso de éxito de un proyecto de question answering híbrido implementado por IBM y en el próximo capítulo describiremos la implementación de un modelo de question answering de dominio cerrado en el que utilizamos este marco como orientación. 
 
 
 \subsection{IBM-Watson}
@@ -678,6 +678,5 @@ System level approach.
 
 
 \bigskip
-
 
 
