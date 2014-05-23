@@ -3,14 +3,11 @@
 %\end{center}
 %\vspace{1cm}
 \chapter*{\runtitulo}
-\horrible
+\cerrada
 Question answering es un área de ciencias de la computación que busca generar respuestas concretas a preguntas expresadas en algún lenguaje natural. Es un área compleja que combina herramientas de búsqueda y recuperación de la información (\textit{information retrieval}), de procesamiento del lenguaje natural (\textit{nlp}) y de extracción de información (\textit{information extraction}). Por poner un ejemplo: para el input \textit{\dq{?`Cuándo nació Noam Chomsky?}} un sistema de question answering debería devolver \dq{\textit{7 de diciembre de 1928}}.
+Este área representa el paso lógico posterior a los sistemas de recuperación de documentos y logró en los último años una serie de hitos impulsados por el proyecto general de la web semántica. Watson, el sistema desarrollado por IBM que derrotó a los mejores competidos de Jeropardy! sea el ejemplo más visible, pero incluso buscadores como Bing! y Google comienzan a incorporar este tipo de algoritmia.
 
-Existen varios sistemas de QA conocidos: quizás los más populares sean Wolfram Alpha e IBM-Watson, el sistema que venció a los campeones humanos del 
-programa de televisión estadounidense Jeopardy! en tiempo real. Desde hace un tiempo, el buscador de Google está implementado también, lentamente
-procesos de QA. El campo de investigación está muy lejos de cerrarse y los resultados son aún muy básicos debido a la complejidad inherente al problema. 
-
-En esta tesis investigamos diferentes soluciones y modelos de question answering, bajo el proyecto de la implementación de dos sistemas multilingües, uno closed domain estructurado y otro open domain, utilizando las wikipedias como corpus de cada idioma. 
+En esta tesis investigamos los distintos problemas que se subsumen bajo el concepto general de question answering y reseñamos diferentes soluciones y modelos aplicados para resolverlos, bajo el proyecto de la implementación de dos modelos de question answering: uno de dominio cerrado (específico) y datos estructurados vinculados con el proyecto Mitic y con adaptaciones bilingües y otro sistema multilingüe, de dominio abierto y que utiliza como corpus las wikipedias de diferentes idiomas. Para el primer modelo orientamos nuestro desarrollo de acuerdo al modelo teórico general y simplificado del paper \cite{QADB1} e implementamos soluciones para un conjunto restingido de preguntas, mientras que para el segundo modelo utilizamos nos orientamos con un subset de los ejercicios de la competencia CLEF '07 y desarrollamos el sistema utilizando como baseline el framework Qanus, adaptandolo para utilizar herramientas de procesamiento de lenguajes multilingües de la librería Freeling. 
 \bigskip
 
-\noindent\textbf{Palabras claves:} Question Answering, Closed Domain, Open Domain, Multilenguaje, Information Retrieval, Question processing, Procesamiento del lenguaje natural
+\noindent\textbf{Palabras claves:} Question Answering, Closed Domain, Open Domain, Multilenguaje, Information Retrieval, Question processing, Procesamiento del lenguaje natural, Freeling, Qanus
