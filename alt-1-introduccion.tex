@@ -37,15 +37,8 @@ Cada uno de estos módulos cuenta a su vez con subcomponentes sobre los cuales h
 
 En esta tesis investigamos los distintos problemas que se subsumen bajo el concepto general de question answering y reseñamos diferentes soluciones y modelos aplicados para resolverlos, bajo el proyecto de la implementación de dos modelos de question answering: uno de dominio cerrado (específico) y datos estructurados vinculados con el proyecto Mitic y con adaptaciones bilingües y otro sistema multilingüe, de dominio abierto y que utiliza como corpus las wikipedias de diferentes idiomas. Para el primer modelo orientamos nuestro desarrollo de acuerdo al modelo teórico general y simplificado del paper \cite{QADB1} e implementamos soluciones para un conjunto restingido de preguntas, mientras que para el segundo modelo utilizamos nos orientamos con un subset de los ejercicios de la competencia CLEF '07 y desarrollamos el sistema utilizando como baseline el framework Qanus, adaptandolo para utilizar herramientas de procesamiento de lenguajes multilingües de la librería Freeling. 
 
+Mientras el approach estructurado resulta imposible de evaluar debido a su dominio acotado, sí resulta posible realizar experimentos sobre las herramientas al utilizarlas en el modelo no estructurado, gracias a las distintas competencias cuya razón de ser es, justamente, la creación de criterios únicos de evaluación al nivel de la comunidad de investigadores del área. Los resultados tangibles de esta tesis son dos modelos de software con diferentes soportes para idiomas: un modelo básico de question answering como interfaz a la base de datos del proyecto mitic, con algunas funciones bilingües y un modelo no estructurado de dominio abierto, completamente multilingüe, que resuelve algunas subtareas de la competencia Clef '07.
 
-En este proyectos nos proponemos investigar y evaluar herramientas de procesamiento de lenguaje y diferentes enfoques existentes al problema
-de Question-Answering. Para esto implementamos un modelo simple de QA estructurado de dominio cerrado sobre una base de datos (ver \allref{subsec:mitic})y otro 
-no estructurado sobre diferentes versiones de wikipedia (ver \allref{subsec:clef07}). El foco principal es la capacidad de incorporar nuevas herramientas de procesamiento de lenguaje, en particular,
-herramientas para otros idiomas de los implementados. Así, utilizamos la librería freeling que permite la fácil adaptación del sistema a nuevos idiomas.
-Mientras el approach estructurado resulta imposible de evaluar debido a su dominio acotado, sí resulta posible evaluar estas herramientas al utilizarlas en el modelo no estructurado, gracias a las distintas competencias cuyo \textit{leitmotiv} es, justamente, la creación de criterios únicos de evaluación al nivel de la comunidad de investigadores del área\footnote{{\color{red} Mencionar un poco de historias de competencias de procesamiento multilingüe}}. El resultado de la tesis es un modelo básico de interfaz qa a la base de datos del proyecto mitic, cuya implementación está disponible online\footnote{{\color{red}\url{url del sistema}}} y un modelo no estructurado open domain que resuelve algunas subtareas de la competencia Clef '07.
-
-\subsection{Modelos}
-Nuestro sistema resuelve dos problemas de QA similares pero distintos. 
 
 Por un lado, disponemos de una base de datos estructurada, con datos del área de la investigación y la
 producción en TICs en Argentina, que requiere un enfoque estructurado con métodos basados en ontologías y en 
@@ -54,23 +47,17 @@ formal ``comprensible" según el modelo de dominio.
 
 Por otro lado, para evaluar métodos de QA 
 para datos no estructurados, resolvimos algunos ejercicios de la competencia CLEF del '07. La base de conocimientos para
-estos ejercicios son algunos snapshots de Wikipedia en Espa\~nol y en Inglés, anteriores al 2007. Sobre esta base de conocimiento,
-el enfoque no es ``traducir" la pregunta a un lenguaje estructurado sino interpretarla y ``compararla", mediante distintas métricas, 
+estos ejercicios son algunos snapshots de Wikipedia en español, inglés y portugués anteriores al 2007. Sobre esta base de conocimiento,
+el enfoque no es traducir la pregunta a un lenguaje estructurado sino interpretarla y compararla, mediante distintas métricas, 
 con documentos y pasajes, buscando medidas estádisticas y otras condiciones que permitan \textit{rankear} una respuesta candidata
 con un cierto grado de confianza, o bien determinar que no fue posible encontrar una respuesta para la pregunta. 
 
 
-Conceptualmente, el modelo consiste en los tres pasos típicos: la
-creación de la base de conocimientos optimizada, el análisis
-lingüístico de la pregunta y la generación de una respuesta desde
-la base de conocimientos optimizada a partir de la pregunta con sus
-anotaciones. 
-Los pasos 1 y 2, la generación de la base de conocimientos optimizada y el procesamiento de la pregunta son procesos
+Conceptualmente, los modelos consisten en tres pasos típicos: la creación de la base de conocimientos optimizada, el análisis
+lingüístico de la pregunta y la generación de una respuesta desde la base de conocimientos optimizada a partir de la pregunta con sus
+anotaciones. Los pasos 1 y 2, la generación de la base de conocimientos optimizada y el procesamiento de la pregunta son procesos
 esencialmente análogos para la base de conocimientos estructurada y para la no estructurada. El tercer paso, la generación de respuestas,
 tiene distintos enfoques según el caso. 
-En las siguientes secciones recorreremos ambos enfoques en conjunto, señalando las decisiones de dise\~no y los distintos módulos
-utilizados, haciendo las distinciones pertinentes cuando sea necesario.
-
 
 
 \subsection{Grafo Mitic}
