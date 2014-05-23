@@ -3,74 +3,41 @@
 \label{chap:intro}
 
 
-\section{Qué es Question Answering} 
-\horrible
-%{\begin{small}%
-%\begin{flushright}%
-%\it
-%A veces gano, a veces no
-%Soy sobre todo\\ un soñador. \\
-%--Mambrú
-%\end{flushright}%
-%\end{small}%
-%\vspace{.5cm}}
-\textbf{\textit{Question Answering}} es un área de ciencias de la computación que combina herramientas de búsqueda y recuperación
-de la información (\textit{information retrieval}) y de procesamiento del lenguaje natural (\textit{nlp}), buscando
-generar respuestas a preguntas formuladas en algún lenguaje humano.
-Por ejemplo, para el input \textit{\dq{?`Cuándo nació Noam Chomsky?}} un sistema de QA debe devolver \dq{\textit{7 de diciembre de 1928}}. 
-Existen varios sistemas de QA conocidos: quizás los más populares sean Wolfram Alpha e IBM-Watson, el sistema que venció a los campeones humanos del 
-programa de televisión estadounidense Jeopardy! en tiempo real\footnote{En esta url está disponible el programa en el que el sistema vence a sus competidores humanos: \url{http://www.youtube.com/watch?v=WFR3lOm_xhE}}. Desde hace un tiempo, el buscador de Google está implementado también, lentamente
-procesos de QA. El campo de investigación está muy lejos de \sq{cerrarse} y los resultados son aún muy básicos debido a la complejidad inherente al problema. 
-El dominio de problemas está  vinculado con la \textit{web semántica}, ya que en ambos lo que se busca es dotar de
-información semántica los datos {\textquotedblleft}planos{\textquotedblright} disponibles en un corpus y
-también escribir sistemas capaces de manejar nociones semánticas al tratar con estos datos. 
+\section{Qué es question answering} 
 
 
-%\subsection{Distintos problemas}
+Question answering es un área de ciencias de la computación que busca generar respuestas concretas a preguntas expresadas en algún lenguaje natural. Es un área compleja que combina herramientas de búsqueda y recuperación de la información (\textit{information retrieval}), de procesamiento del lenguaje natural (\textit{nlp}) y de extracción de información (\textit{information extraction}). Por poner un ejemplo: para el input \textit{\dq{?`Cuándo nació Noam Chomsky?}} un sistema de question answering debería devolver \dq{\textit{7 de diciembre de 1928}}.
+Este área representa el paso lógico posterior a los sistemas de recuperación de documentos y logró en los último años una serie de hitos impulsados por el proyecto general de la web semántica. Watson, el sistema desarrollado por IBM que derrotó a los mejores competidos de Jeropardy! en tiempo real\footnote{En esta url está disponible el programa en el que el sistema vence a sus competidores humanos: \url{http://www.youtube.com/watch?v=WFR3lOm_xhE}} sea el ejemplo más visible, pero incluso buscadores como Bing! y Google comienzan a incorporar este tipo de algoritmia.
 
-Los sistemas de QA suelen ser sistemas complejos que abordan distintas
-problemáticas: por un lado deben definir y optimizar la base de
-conocimiento para el dominio dado, por otro deben realizar un
-análisis de las preguntas en lenguaje natural a fin de volverlas
-tratables computacionalmente y, finalmente, deben poder buscar -o generar- y
-decidir la mejor respuesta para la pregunta ingresada, si es que esa
-respuesta existe.
+Los sistemas de question answering suelen ser sistemas complejos que abordan distintas problemáticas: por un lado deben definir y optimizar la base de conocimiento para el dominio dado, por otro deben realizar un análisis de las preguntas en lenguaje natural a fin de volverlas
+tratables computacionalmente y, finalmente, deben poder buscar -o generar- y decidir la mejor respuesta para la pregunta ingresada, si es que esa respuesta existe.
 
-
-\bigskip
-
-Algunos de estos subproblemas tienen nombre propio en la literatura y son, por así decirlo, toda un área aparte. Por
-ejemplo, dependiendo de la amplitud de la base de conocimiento, un
-sistema puede ser \textit{closed domain}, si la base es acotada a un dominio de la realidad específico, y
-\textit{open domain}, si no lo es, es decir, si se espera que sepa responder preguntar de cualquier dominio.
-Por su parte, dominios de conocimiento más pequeños, en general, requieren y permiten un modelado más exhaustivo
+Algunos de estos subproblemas tienen nombre propio en la literatura y son, por así decirlo, toda un área aparte. Por ejemplo, dependiendo de la amplitud de la base de conocimiento, un sistema puede ser de dominio cerrado (\textit{closed domain}), si la base es acotada a un dominio de la realidad específico, y de dominio abierto (\textit{open domain}), si no lo es, es decir, si se espera que sepa responder preguntar de cualquier dominio. Por su parte, dominios de conocimiento más pequeños, en general, requieren y permiten un modelado más exhaustivo
 de los datos y un análisis más estructurado, mientras que dominios de conocimiento más abiertos suelen
 tener un enfoque apoyado más fuertemente en el análisis lingüístico cuantitativo.
 
-
-\bigskip
-
-Otra distinción usual contempla el tipo de datos de la base de
-conocimiento: este puede ser estructurado, como en una base de datos
-relacional, semi estructurado, como los documentos xml, o también sin
-estructura, como el texto plano. Cada tipo de datos tiene su enfoque:
-los datos estructurados definen una ontología acotada que limita
-qué cosas se pueden preguntar y, en consecuencia, qué cosas se pueden responder: el
-problema en este caso consiste en traducir la pregunta formulada en un lenguaje humano a una query
-definida en el modelo de datos. Por otro lado, si los datos no
-tienen estructura, no es posible definir una ontología rígida y se
-hace necesario otro tipo de enfoque más difuso y basado en análisis
-lingüísticos del corpus de datos mismo contra la pregunta. No siempre, 
-pero en general una base de conocimiento closed domain está asociada
-a un tipo de datos estructurado o semi-estructurado, mientras que las bases open domain
+Otra distinción usual contempla el tipo de datos de la base de conocimiento: este puede ser estructurado, como en una base de datos
+relacional, semi estructurado, como los documentos xml, o también sin estructura, como el texto plano. Cada tipo de datos tiene su enfoque:
+los datos estructurados definen una ontología acotada que limita qué cosas se pueden preguntar y, en consecuencia, qué cosas se pueden responder: el problema en este caso consiste en traducir la pregunta formulada en un lenguaje humano a una query definida en el modelo de datos. Por otro lado, si los datos no tienen estructura, no es posible definir una ontología rígida y se hace necesario otro tipo de enfoque más difuso y basado en análisis lingüísticos del corpus de datos mismo contra la pregunta. No siempre,  pero en general una base de conocimiento closed domain está asociada a un tipo de datos estructurado o semi-estructurado, mientras que las bases open domain
 suelen ser no estructuradas.
 
-%\subsection{Question Answering como disciplina}
+Otro tipo de clasificación se centra en el tipo de preguntas que los sistemas saben responder. Los tipos más conocidos son las factoids -o fácticas-, que refieren a hechos fácticos (¿Cuándo ocurrió ...? ¿Cuántos hijos tiene...? ¿En dónde vivía Y en el año ...?), las listas (¿Qué libros escribió Nietzsche entre 1890 y 1900?)y las definiciones (¿Qué es un huracán?). Otros tipos usuales son las preguntas por un modo (¿Cómo...?), por una razón (¿Por qué...?) y, en general, pueden agregarse subclasificaciones como dependencias temporales explicitas o dependencias semánticas con otras preguntas.
+Existe un consenso general a la ahora de definir el modelo de software más abstracto o de arquitectura para encarar la construcción de un sistema de question answering. Esta arquitectura consiste en un pipeline con al menos tres módulos o compotentes bien diferenciados:
+\begin{itemize}
+\item Módulo de procesamiento de la pregunta
+\item Módulo de procesamiento de documentos
+\item Módulo de procesamiento de la respuesta
+\end{itemize}
+Cada uno de estos módulos cuenta a su vez con subcomponentes sobre los cuales hay mayor o menor consenso, que determinan, en definitiva, la performance del sistema concreto implementado. Típicamente, un sistema de question answering de dominio abierto dispondrá, mínimanente, de un clasificador de preguntas en su módulo de procesamiento de preguntas, de uno a más sistemas de recuperación y filtrado de información en su modulo de procesamiento de documentos y de diferentes heurísticas en su módulo de procesamiento de respuesta. En \allref{chap:estado-de-arte} veremos con detalle los enfoques arquitecturales usuales del área y los componentes típicos de cada módulo. 
 
-{\color{red} historia, competencias, ibm watson, logros y desafios}
 
 \section{Proyecto de la tesis}
 \horrible
+
+
+En esta tesis investigamos los distintos problemas que se subsumen bajo el concepto general de question answering y reseñamos diferentes soluciones y modelos aplicados para resolverlos, bajo el proyecto de la implementación de dos modelos de question answering: uno de dominio cerrado (específico) y datos estructurados vinculados con el proyecto Mitic y con adaptaciones bilingües y otro sistema multilingüe, de dominio abierto y que utiliza como corpus las wikipedias de diferentes idiomas. Para el primer modelo orientamos nuestro desarrollo de acuerdo al modelo teórico general y simplificado del paper \cite{QADB1} e implementamos soluciones para un conjunto restingido de preguntas, mientras que para el segundo modelo utilizamos nos orientamos con un subset de los ejercicios de la competencia CLEF '07 y desarrollamos el sistema utilizando como baseline el framework Qanus, adaptandolo para utilizar herramientas de procesamiento de lenguajes multilingües de la librería Freeling. 
+
+
 En este proyectos nos proponemos investigar y evaluar herramientas de procesamiento de lenguaje y diferentes enfoques existentes al problema
 de Question-Answering. Para esto implementamos un modelo simple de QA estructurado de dominio cerrado sobre una base de datos (ver \allref{subsec:mitic})y otro 
 no estructurado sobre diferentes versiones de wikipedia (ver \allref{subsec:clef07}). El foco principal es la capacidad de incorporar nuevas herramientas de procesamiento de lenguaje, en particular,
