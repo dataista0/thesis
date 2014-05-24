@@ -1,25 +1,23 @@
 \chapter{Implementación sobre Qanus}
 \label{chap:qanus} \label{chap:5}
-\cerradaarg{Sin supervisar}
+\faltadependiente
 En este capitulo veremos la implementación del modelo de question answering multilingüe y diferentes evaluaciones realizadas utilizando como guia dos tareas monolingües de la competencia QA@Clef '07, una para español y otra para portugués. El sistema está basado en un framework académico de código abierto llamado Qanus. Este framework está empaquetado con una sistema de QA simple, QA-sys, que resuelve ejercicios de la competencia Trec '07 con soporte para inglés. Nosotros adaptamos este sistema para utilizar como librería de procesamiento de lenguajes a Freeling, generando un sistema baseline multilingüe. A este sistema le agregamos features reseñados en \allref{sec:literatura} y realizamos diferente mediciones sobre las instancias en español y portugués sobre los ya mencionados ejercicios de Clef '07.
 
 La estructura de este capitulo es la siguiente: en \allref{sec:ejecicio-de-clef} se describe con detalle el panorama general de tareas de question answering en la competencia Clef '07, haciendo énfasis en las tareas seleccionadas, en los corpus y las preguntas disponibles y en las decisiones tomadas a la hora de elegir estas tareas; en \allref{sec:sistema} se comenta la adaptación del sistema baseline y las modificaciones realizadas a los algoritmos, {\color{red}mientras que los resultados pueden observarse como apartados en las mismas secciones o como una sección aparte al final}.
 
 \section{Ejercicio de Clef}
 \label{sec:ejecicio-de-clef}
-\cerradaarg{Sin supervisar}
 Tras investigar distintas competencias y métodos de evaluación, optamos por utilizar como guía de trabajo dos ejercicios de la tarea principal de question answering de la competencia Clef de 2007. Principalmente por contar con un subconjunto de ejercicios bastante adecuados para nuestra tesis y disponer de un corpus de datos libre y disponible en el acto para evaluar una parte importante de las funcionalidades implementadas en nuestro proyecto. 
 
-Como mencionamos en \allref{sec:competencias}, Clef (de \textit{Cross-Language Evaluation Forum}) es una organización que busca fomentar la investigación en sistemas de information retrieval cross-language. En particular, una vez por año Clef lanza una competencia de Question Answering multilingüe, con diferentes corpus y diferentes tipos de ejercicios. Estas competencia permiten obtener un patrón estándar de comparación entre distintos desarrollos y una idea general del estado de arte alcanzado en los diferentes idiomas por la diferentes actores académicos o {\color{red}comerciales}. Por lo demás, Clef es el principal organizador de conferencias de question answering multilingüe para idiomas europeos y la tarea principal de '07 presentaba una complejidad adecuada para el scope de esta tesis.
+Como mencionamos en \allref{subsec:competencias}, Clef (de \textit{Cross-Language Evaluation Forum}) es una organización que busca fomentar la investigación en sistemas de information retrieval cross-language. En particular, una vez por año Clef lanza una competencia de Question Answering multilingüe, con diferentes corpus y diferentes tipos de ejercicios. Estas competencia permiten obtener un patrón estándar de comparación entre distintos desarrollos y una idea general del estado de arte alcanzado en los diferentes idiomas por la diferentes actores académicos y comerciales. Por lo demás, Clef es el principal organizador de conferencias de question answering multilingüe para idiomas europeos y la tarea principal de '07 presentaba una complejidad adecuada para el scope de esta tesis.
 
-La competencia de 2007 es la quinta campaña de QA multilingüe de Clef, siendo la primera en 2003 {\color{red} tomando la posta dejada por las Trec multilingües}. 
+La competencia de 2007 es la quinta campaña de QA multilingüe de Clef, siendo la primera en 2003.
 
 La tarea estandar principal de question answering incorpora algunas particularidades que la diferencian de anteriores campañas: los temas o tópicos, la co-referencia y el uso de wikipedia como corpus de datos parcial. Además de la tarea principal se presentaron tres tareas más: Answer Validation Exercise (AVE) y QUAST, question answering in speech transcription y Question Answering Real Time, con métricas de performance temporales. Como nota general, es importante notar que las tareas fueron de una complejidad elevada y en comparación con los resultados del año anterior, la mejor precisión general bajó del 49\% al 41.75\% para tareas multi-lingües, mientras que, más significativamente, bajó de 68\% a 54\% en tareas monolingües.
 
 
 \subsection{Tareas}
 \label{subsec:tareas}
-\cerradaarg{Sin supervisar}
 Utilizamos como guia dos ejercicios de la tarea principal de question answering de '07  por varias razones (Ver \cite{GuidelineClef07} y \cite{OverviewClef07} para un detalle exhaustivo de la conferencia en cuestión). Para esta tarea estaban disponibles en acto corpus, inputs de prueba y resultados esperados para una experimentación multilingüe que abarque tanto inglés como español y portugués. Además, estos ejercicios incorporaban, por única vez, diferentes wikipedias como parte del corpus de datos, lo cual resulta de por si atractivo. 
 
 La tarea principal de QA de Clef '07 ofrece dos grandes grupos de ejercicios:
@@ -28,7 +26,7 @@ La tarea principal de QA de Clef '07 ofrece dos grandes grupos de ejercicios:
 \item Cross-lingual: donde el idioma de la pregunta y el idioma de la fuente de información difieren
 \end{itemize}
 
-En ambos grupos, los sistemas reciben un set de 200 preguntas - que pueden ser de hechos o eventos (FACTOID), definiciones de personas, cosas u organizaciones (DEFINITION), listas de personas, objetos o datos (LIST) - y se exige devolver una respuesta exacta, donde exacta significa sin más información de la mínima necesaria. Siguiendo el ejemplo de Trec, los ejercicios de este año contienen topics, i.e. clusters de preguntas relacionadas con un mismo tema y con posibilidad de co-referencia entre las preguntas del grupo. Ni el tipo de la pregunta ni el tópico es dado a los participantes.
+En ambos grupos, los sistemas reciben un set de 200 preguntas - que pueden ser de hechos o eventos (factoid), definiciones de personas, cosas u organizaciones (definition), listas de personas, objetos o datos (list) - y se exige devolver una respuesta exacta, donde exacta significa sin más información de la mínima necesaria. Siguiendo el ejemplo de Trec, los ejercicios de este año contienen topics, i.e. clusters de preguntas relacionadas con un mismo tema y con posibilidad de co-referencia entre las preguntas del grupo. Ni el tipo de la pregunta ni el tópico es dado a los participantes.
 
 La respuesta tiene que estar soportada por el id del documento del cual se extrajo y por la porción de texto que proveyó contexto suficiente para soportar la corrección de la respuesta. Los “textos de soporte” pueden venir de diferentes partes de documentos relevantes y deben sumar un máximo de 700 bytes. No hubo restricciones sobre la longitud del string de respuesta, pero fragmentos de información innecesaria fueron penalizados marcando la respuesta como ineXacta. 
 
@@ -91,7 +89,7 @@ pt & 130 & 59 & 11 & 200 \\ \hline
 
 
 \subsection{Análisis de las preguntas}
-\cerradaarg{Sin supervisar}
+
 Las 200 preguntas del test set están agrupadas por tema, y cada tema tiene de una a cuatro preguntas. Los temas pueden ser entidades nombradas, evento o también categorías como objetos, fenómenos naturales, etc (por ejemplo: Bush, Juegos Olímpicos, notebooks, huracanes, etc). 
 Los temas no están dados en el set de test, pero pueden ser inferidos del primer par pregunta respuesta. La relación del tema con el grupo de preguntas respetaba las siguiente condiciones:
 
@@ -109,8 +107,6 @@ Para ilustrar el punto consideremos el primer grupo de preguntas para el ejercic
 \item ¿Quién es el director del colegio?
 \end{itemize}
 
-
-{\color{red} El set de preguntas estaba numerado de 1 a 200, sin indicación de si pertenecian a un cluster del mismo tema o no} 
 
 Como ya mencionamos, algunas preguntas podían no tener respuesta en la colección de documentos, y en ese caso la respuesta exacta era “NIL” y la justificación y el docid vacíos. La organización definió como criterio de inexistencia de la respuesta que ni los asesores humanos ni los demás sistemas participantes pudieran encontrar alguna.
 
@@ -141,7 +137,8 @@ A: Labour Party Central Committee.\newline
 
 %Los calculos propios coinciden con el análisis presentado en \cite{OverviewClef07} en la siguiente discriminación del total de preguntas en función de las categorías recién señaladas:
 \begin{center}
-\begin{table}
+\begin{table}[H]
+\centering
 \begin{tabular}{| l | l | l | l | l | l |}
 \hline
 Subset & Idioma & Factoid & Definition & List & Total \\ \hline
@@ -159,7 +156,8 @@ Los tipos de preguntas disponen a su vez de subtipos. Las preguntas factoid disp
 Se consideraron los siguiente 8 tipos de Factoids: 
 
 \begin{center}
-\begin{table}
+\begin{table}[H]
+\centering
 \begin{tabular}{| l | p{12cm}|}
 \hline
 Tipo & Ejemplo \\ \hline
@@ -170,7 +168,7 @@ MEASURE &Q: How high is Kanchenjunga?\newline A: 8598m. \\ \hline
 COUNT & Q: How many people died during the Terror of Pol Pot? \newline A: 1 million.\\ \hline
 OBJECT & Q What does magma consist of?\newline A: Molten rock.\\ \hline
 TIME & Q: What year was Martin Luther King murdered?\newline A: 1968.\\ \hline
-OTHER & i.e. everything that does not fit into the other categories above.\newline Q: Which treaty was signed in 1979? \newline
+OTHER & i.e. todo lo que no encaja en las categorías anteriores.\newline Q: Which treaty was signed in 1979? \newline
 A: Israel-Egyptian peace treaty.\\ \hline
 \end{tabular}
 \caption{Tipos de respuesta esperada para preguntas Factoid}
@@ -188,20 +186,21 @@ Con respecto a las preguntas de tipo definition, también cuatro tipos, con otra
 
 
 \begin{center}
-\begin{table}
+\begin{table}[H]
+\centering
 \begin{tabular}{| l | p{12cm}|}
 \hline
 Tipo & Descripción y ejemplo \\ \hline
-PERSON & i.e. questions asking for the role/job/important information about someone, \newline
+PERSON & i.e. preguntas sobre el rol, el trabajo o información importante de alguien \newline
  Q: Who is Robert Altmann? \newline
  A: Film maker. \\ \hline
-ORGANIZATION & i.e. questions asking for the mission/full name/important information about an organization \newline
+ORGANIZATION & i.e. preguntas sobre la misión, el nombre completo o información relevante sobre una organización \newline
  Q: What is the Knesset? \newline
  A: Parliament of Israel. \\ \hline
-OBJECT & i.e. questions asking for the description/function of objects, e.g. \newline
+OBJECT & i.e. preguntas por la descripción o función de objetos \newline
 Q: What is Atlantis? \newline
 A: Space Shuttle. \\ \hline
-OTHER & i.e. question asking for the description of natural phenomena, technologies, legal procedures etc. \newline
+OTHER & i.e. preguntas por descripciones de fenómenos naturales, tecnologías, procedimientos legales, etc. \newline
 Q: What is Eurovision? \newline
 A: Song contest. \\ \hline
 \end{tabular}
@@ -211,7 +210,8 @@ A: Song contest. \\ \hline
 \end{center}
 
 \begin{center}
-\begin{table}
+\begin{table}[H]
+\centering
 \begin{tabular}{| l | l | l | l | l | l |l |l|l|}
 \hline
 Tipo & pt & es & pt-factoid & es-factoid & pt-def & es-def & pt-list & es-list \\ \hline
@@ -233,10 +233,9 @@ Total & 200 & 200 & 159 & 158 & 31 & 32  & 10 & 10\\ \hline
 
 \section{Sistema}
 \label{sec:sistema}
-\cerradaarg{Sin supervisar}
+
 Nuestra implementación está basada en Qanus como framework o arquitectura de diseño de QA y en Freeling como proveedor de servicios de procesamiento de lenguaje multilingue. Qanus (Question-Answering @ National University of Singapore) es un framework de question answering basado en information retrieval y también un sistema de QA funcional simple construido sobre este framework. El proyecto se actualizó por última vez en noviembre de 2012 y contiene herramientas actuales de nlp para inglés (el POS-tagger, el NER-tagger y el Question Classifier de Stanford) y también de information retrieval (índice de búsquedas lucene) bajo licencia de código abierto. El paquete cuenta con un framework (qanus), que cumple un rol equivalente a la arquitectura DeepQA en la organización del proyecto de IBM, y un sistema montado sobre este framework -QA-sys-, equivalente a Watson (Ver Figura ~\ref{fig:Quanus}). 
 
-% La motivación del proyecto es proveer a la comunidad científica un framework para ingresar al mundo de QA de una manera más sencilla y rápida, permitiendo construir nuevos sistemas de QA sobre esta arquitectura. 
 
 \begin{figure}
   \centering
@@ -247,9 +246,9 @@ Nuestra implementación está basada en Qanus como framework o arquitectura de d
 
 
 La arquitectura de Qanus mantiene la estructura de pipeline típica similar a las reseñadas en la sección \allref{chap:estado-de-arte}. 
-Consta de los siguientes pasos:
+Consta de los siguientes pasos: \newline
 
-\textbf{Preparación de la fuente de información: } El primer step del pipeline es preprocesar las fuentes de información para un acceso optimizado en pasos posteriores del proceso. La implementación QA-sys incorpora una base de conocimiento en formato XML de AQUAINT\footnote{\ } a un índice de
+\textbf{Preparación de la fuente de información: } El primer step del pipeline es preprocesar las fuentes de información para un acceso optimizado en pasos posteriores del proceso. La implementación QA-sys incorpora una base de conocimiento en formato XML de aquaint a un índice de
 búsquedas Lucene. En este paso se incorpora todo el conocimiento offline; bases de conocimiento dinámicas como la web se modelan en el pasos posteriores. \newline
 
 \textbf{Análisis de la pregunta: } Este paso, igualmente genérico, permite la incorporación de
@@ -285,7 +284,7 @@ correctamente.\newline
 En esta sección de la tesis adoptamos el framework Qanus y adaptamos el sistema QA-sys para 1) incorporar Freeling como librería de herramientas de procesamiento del lenguaje permitiendo un funcionamiento multilenguaje, 2) trabajar sobre el corpus de datos y preguntas de los ejercicios de CLEF '07 de español y portugués descriptos en \allref{sec:ejecicio-de-clef} y, finalmente, 3) incorporamos y evaluamos diferentes mejoras tomadas de la reseña a la literatura científica del apartado anterior \allref{sec:literatura}.
 
 \subsection{Implementación de Qanus y QA-sys}
-\cerradaarg{Sin supervisar}
+
 El código está escrito en java y mantiene una interfaz común a
 todos los pasos: un controller cuyas responsabilidades son cargar los
 componentes y un engine que utiliza los componentes para leer el input,
@@ -330,7 +329,11 @@ En este proceso descartamos artículos mal formados y entradas representado imá
 Los artículos se indexan en índices Lucene como documentos con los siguiente campos: \emph{id, title, body y all}. 
 La tabla \ref{table:creacion-indices} muestra algunos datos del proceso de generación de índices, mientra que la figura \ref{fig:LuceneIndexWriterWiki} ilustra el proceso.
 
+Las categorías filtradas contiene artículos con alguno de los siguientes prefijos en el título: WP, wp, Biografias, Wikipedia, Wikiproyecto, Imagen, Plantilla, MediaWiki, Template, Category, Help, Image, Ayuda, Portal, Ajuda, Categoria, Categoría, Imagem, Predefinição.
+
+
 \begin{table}
+\centering
 \begin{center}
 \begin{tabular}{| l | l | l | l | l | l| l|l|}
 \hline
@@ -338,14 +341,13 @@ Wikipedia & \# Entradas & Nulas & Redirects & Filtradas & Validas & Tamaño & Ti
 simple-06 & 18273 & 22 &  3452 & 5241 & 9558 & 26M & 14 secs \\ \hline 
 es-06 & 233750 & 52 & 62805 & 34947 & 135946 & 558M & 242 secs\\ \hline 
 pt-07 & 498039 & 80 & 210983 & 43390 & 243586 & 776M & 294 secs\\ \hline 
-simple-13 & 180067 & 8 & 35600 & 41902 & 102557 & XX & 133 secs\\ \hline 
+simple-13 & 180067 & 8 & 35600 & 41902 & 102557 & 406M & 133 secs\\ \hline 
 \end{tabular}
-\caption{Datos de procesamiento sobre las diferentes versiones de wikipedia analizadas. Los tiempos de procesamiento están tomados en una Pentium tanto con tanto de RAM y tal OS.}
+\caption{Datos de procesamiento sobre las diferentes versiones de wikipedia analizadas. Los tiempos de procesamiento están tomados en una Intel Core i3-2100 CPU @ 3.10GHz de dos cores con 8 GiB de RAM.}
 \label{table:creacion-indices}
 \end{center}
 \end{table}
 
-La categoría filtradas contiene artículos con alguno de los siguientes prefijos en el título: WP, wp, Biografias, Wikipedia, Wikiproyecto, Imagen, Plantilla, MediaWiki, Template, Category, Help, Image, Ayuda, Portal, Ajuda, Categoria, Categoría, Imagem, Predefinição.
 
 \begin{figure}[H]
   \centering
@@ -358,8 +360,46 @@ La categoría filtradas contiene artículos con alguno de los siguientes prefijo
 \subsection{Anotado de la pregunta}
 \cerradaarg{Sin supervisar}
 El módulo original de QA-sys de procesamiento de la pregunta espera preguntas en el formato Aquaint definido por Trec, al igual que el tipo de datos esperado sobre el corpus en el paso anterior. En el procesamiento lleva a cabo las tareas descriptas de modo general en \allref{subsec:impl-pos}, \allref{subsec:impl-ner} y \allref{subsec:qtype},  utiliza como librerías de procesamiento de lenguaje las el POS-Tagger, el NER-Tagger y el Question Classifier de la Universidad de Stanford, disponibles solo para inglés, descriptas en \allref{sec:stanford-both} y \allref{sec:stanford-qc} respectivamente.
-En nuestra adaptación incorporamos los módulos de POS y NERC multilingües de freeling. Con respecto a la clasificación de preguntas, ya mencionamos que no existen clasificadores para español {\color{red} y tampoco para el portugués}. Frente a esta situación podríamos haber implementado clasificadores heurísticos basados en reglas escritas a mano como en el caso del sistema estructurado (\allref{sec:qp-mitic}). Aprovechando la disponibilidad de una traducción confiable al inglés de las preguntas en archivos de datos (debido a la activación de los ejercicios cross-lingual en-es y en-pt), decidimos utilizar el clasificador de Stanford sobre la traducción inglesa de la pregunta.
-Las tablas \ref{table:x} y \ref{table:x} presentan la distribución de las 200 preguntas para español y para portugués según las cincos clases principales del esquema de Li \& Roth. Los niveles de confianza en la clasificación logradas oscilan entre tanto y tanto, dato dato dato.
+En nuestra adaptación incorporamos los módulos de POS y NERC multilingües de freeling. Con respecto a la clasificación de preguntas, ya mencionamos que no existen clasificadores para español y tampoco para el portugués. Frente a esta situación podríamos haber implementado clasificadores heurísticos basados en reglas escritas a mano como en el caso del sistema estructurado (\allref{sec:qp-mitic}). Aprovechando la disponibilidad de una traducción confiable al inglés de las preguntas en archivos de datos (debido a la activación de los ejercicios cross-lingual en-es y en-pt), decidimos utilizar el clasificador de Stanford sobre la traducción inglesa de la pregunta.
+Las tablas \ref{table:qc-es} y \ref{table:qc-pt} presentan la distribución de las 200 preguntas para español y para portugués según las seis clases principales del esquema de Li \& Roth. 
+
+\begin{table}
+\centering
+\begin{center}
+\begin{tabular}{| l | l | }
+\hline
+Clase & \# Preguntas  \\ \hline
+HUM &  62\\ \hline
+NUM &  53\\ \hline        
+ENTY &  34\\ \hline
+DESC &  25\\ \hline
+LOC &  24\\ \hline    
+ABBR &  2\\ \hline
+\end{tabular}
+\caption{Distribución por clases de las preguntas para el ejercicio monolingüe español}
+\label{table:qc-es}
+\end{center}
+\end{table}
+
+
+
+\begin{table}
+\centering
+\begin{center}
+\begin{tabular}{| l | l | }
+\hline
+Clase & \# Preguntas  \\ \hline
+HUM &  53\\ \hline
+NUM &  52\\ \hline        
+ENTY &  28\\ \hline
+DESC &  30\\ \hline
+LOC &  36\\ \hline    
+ABBR &  1\\ \hline
+\end{tabular}
+\caption{Distribución por clases de las preguntas para el ejercicio monolingüe portugués}
+\label{table:qc-pt}
+\end{center}
+\end{table}
 
 
 \subsection{Generación de Respuestas}
@@ -427,9 +467,7 @@ Define heurísticas para los siguientes casos:
 \textbf{Adaptación inicial contra inglés}
 
 Como las tareas cross-lingual y monolingual se cruzaban, estaban disponibles también en inglés las preguntas para nuestras tareas. 
-Como paso de desarrollo, implementamos una solución sobre una wikipedia en inglés con las herramientas de procesamiento originales del baseline: StanfordNER y StanfordPOS. Lamentablemente, la tarea inglés-inglés no fue propuesta, por lo que no disponemos de las goldstandard answers como las que disponemos para español y portugués. De todos modos, realizamos experimentos sobre este sistema, utilizando la wikipedia en inglés de noviembre de 2006. En el apéndice correspondiente pueden encontrarse resultados sobre estos experimentos.
-
-Ver \allref{chap:resultados-ingles-simple} para una tabla de los datos.
+Como paso de desarrollo, implementamos una solución sobre una wikipedia en inglés con las herramientas de procesamiento originales del baseline: StanfordNER y StanfordPOS. Lamentablemente, la tarea inglés-inglés no fue propuesta, por lo que no disponemos de las goldstandard answers como las que disponemos para español y portugués. De todos modos, realizamos experimentos sobre este sistema, utilizando la wikipedia en inglés de noviembre de 2006.
 
 \textbf{Baseline multilingüe}
 
