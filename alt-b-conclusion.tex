@@ -2,7 +2,7 @@
 \label{chap:db}
 
 \begin{center}
-\begin{table}
+\begin{table}[H]
 \centering
 \begin{tabular}{| l | l |}
 \hline
@@ -20,7 +20,8 @@ Página & Página web\\ \hline
 \end{center}
 
 \begin{center}
-\begin{table}
+\begin{table}[H]
+\centering
 \begin{tabular}{| l | l |}
 \hline
 \multicolumn{2}{|c|}{Investigadores} \\ \hline
@@ -41,7 +42,22 @@ Atributo & Descripción \\ \hline
 \end{center}
 
 \begin{center}
-\begin{table}
+\begin{table}[H]
+\centering
+\begin{tabular}{|  l | l |}
+\hline
+\multicolumn{2}{|c|}{Temas} \\ \hline
+Atributo & Descripción \\ \hline
+Nombre &  automatizacion industrial , telefonia ip , inteligencia artificial\\ \hline 
+\end{tabular}
+\caption{Atributos de la colección Temas}
+\label{table:temas}
+\end{table}
+\end{center}
+
+\begin{center}
+\begin{table}[H]
+\centering
 \begin{tabular}{| l | l |}
 \hline
 \multicolumn{2}{|c|}{Empresas} \\ \hline
@@ -64,7 +80,8 @@ Especialidades & \\ \hline
 \end{center}
 
 \begin{center}
-\begin{table}
+\begin{table}[H]
+\centering
 \begin{tabular}{| l | l |}
 \hline
 \multicolumn{2}{|c|}{Proyectos} \\ \hline
@@ -85,7 +102,7 @@ Año Hasta & \\ \hline
 \end{center}
 
 \begin{center}
-\begin{table}
+\begin{table}[H]
 \centering
 \begin{tabular}{|  l | l |}
 \hline
@@ -103,143 +120,6 @@ Url Doc  & \\ \hline
 \end{table}
 \end{center}
 
-\begin{center}
-\begin{table}
-\begin{tabular}{|  l | l |}
-\hline
-\multicolumn{2}{|c|}{Temas} \\ \hline
-Atributo & Descripción \\ \hline
-Nombre &  automatizacion industrial , telefonia ip , inteligencia artificial\\ \hline 
-\end{tabular}
-\caption{Atributos de la colección Temas}
-\label{table:temas}
-\end{table}
-\end{center}
 
 En nuestro modelo eliminamos varios campos que no tenían datos o tenían muy pocos (menos del 0.02\% del total de documentos en la relación). Ellos son: el universidades.areas\_inv, universidades.carreras, empresas.blog\_rss\_url, empresas.twitter\_id, investigadores.disciplina, investigadores.grado\_obtenido, investigadores.instituto, investigadores.locacion, investigadores.numero\_documento, proyectos.codirector, proyectos.provincia\_proy y publicaciones.publisher.
 
-
-\chapter{Placeholders}
-\section{MyMemory}
-MyMemory es la Memoria de Traducción más grande del mundo: 300 millones de segmentos a finales de 2009
-
-Como las MT tradicionales, MyMemory almacena segmentos con sus traducciones, ofreciendo a los traductores correspondencias y concordancias. El proyecto se diferencia de las tecnologías tradicionales por sus ambiciosas dimensiones y por su arquitectura centralizada y basada en la colaboración colectiva. Todos pueden consultar MyMemory o hacer aportaciones a través de Internet; la calidad de las aportaciones será cuidadosamente ponderada.
-MyMemory gives you quick access to a large number of translations originating from professional translators, LSPs, customers and multilingual web content. It uses a powerful matching algorithm to provide the best translations available for your source text. MyMemory currently contains 644.377.834 professionally translated segments.
-
-Las memorias de traducción son almacenes compuestos de textos originales en una lengua alineados con su traducción en otras. Esta definición de memorias de traducción coincide literalmente con una de las definiciones más aceptadas de corpus lingüístico de tipo paralelo (Baker, 1995). Por esto se puede decir que las memorias de traducción son corpus paralelos.
-
-
-Por el momento, no estamos utilizando ningún módulo de traducciones:
-todo el enfoque multilingüe está dado por la detección del idioma
-de la pregunta y la determinación de distintas herramientas de
-análisis según qué idioma sea. Sin embargo, en un momento se
-evaluó un enfoque distinto, basado en la traducción. Por ejemplo:
-utilizar módulos de procesamiento sólo en inglés y
-{\textquotedblleft}normalizar{\textquotedblright} los inputs en otros
-idiomas (en principio, en espa\~nol), a este idioma interno, y luego lo
-mismo con la generación de respuestas. A pesar de que no es el
-enfoque actual, hubo una fase de investigación dentro del dominio de
-la traducción, que resultó en un módulo de traducción basado en
-MyMemoryAPI.
-
-Intento con google translator y la privatización. ?`La falta de
-software de traducción offline? El módulo de mymemory, robado de
-algún lugar. El sistema de cobro. 
-
-
-\section{Texto que fue quedando suelto}
-\subsection{Base de conocimiento}
-La creación de la base de conocimiento es el único que se ejecuta offline
-y consiste en la obtención del corpus original y en la generación de índices
-invertidos. Los índices invertidos, recordamos, son índices que permiten
-buscar, para una serie de términos vinculados lógicamente, un conjunto
-ponderado de documentos pertinentes. Por su naturaleza, este paso está 
-separado de la ejecución del resto del código.
-
-
-La base de conocimiento de los ejercicios de Clef '07 es mucho más sencilla 
-porque no existe ningún modelo \emph{a priori} más allá del documento de lucene.
-El formato de la entidad ``artículo", como señalamos antes, es: $(id, titulo, cuerpo)$. 
-En este caso, el trabajo más fino no está en el modelado inicial del dominio 
-sino la capacidad lingüística de extraer pasajes a partir de un artículo y recomponer información
-estructurada a partir de estos pasajes. Mientras que para un modelo estructurado la base de conocimiento
-debería permitirnos, para un cierto input, identificar univocamente una entidad y darnos pistas sobre un pedido de
-información acerca de esa entidad, el objetivo sobre un corpus de documentos en 
-traer todos los documentos en los que sea posible que exista un pasaje respondiendo a la pregunta o
-evidencia relevante para apoyar una respuesta. Es decir, mientras una respuesta acotada es una virtud para
-el manejador de una base de conocimientos estructurada, el manejador de una lista de documentos de texto debería devolver
-una lista lo suficientemente grande para contener la respuesta dentro de los pasajes. La razón de esta política es que si
-por ser demasiado estrictos a la hora de retornar documentos llegasemos a descartar un pasaje candidato válido esto
-redundaría en una baja generar de efectividad, mientras que en pasos subsiguiente será trivial descartar toda información irrelevante
-sin tanto costo. Por eso, el acceso a los indices de wikpedia consta simplemente de un generador de queries similar al recién comentado
-accediendo y acumulando resultados (rankeados) a partir de un $LuceneIndexReader$ común (Ver \ref{sec:lucene} \nameref{sec:lucene} para más información).
-
-\subsection{Analisis de la Pregunta}
- Para las preguntas de Clef formuladas en español, utilizamos su versión en inglés para obtener el tipo.
-Para este caso, el tipo de respuesta esperada de \dblquote{¿En qué colegio estudia Harry Potter?} es el mismo que el tipo de respuesta esperada de ``In what school does Harry Potter study?" (ENTY:cremat con 0.22 de confianza). 
-
-El análisis gramatical las ponderaciones de pasajes en los scorers de los ejercicios de Clef (\allref{subsec:scorers}), 
-
-\subsection{Generación de Respuestas}
-El proceso de generación de respuestas difiere sustancialmente entre ambos modelos de dominio. Para el sistema basado en datos estructurados, el approach es determinan en casos de código las distintas posibilidades, acotadas, de las cosas que se pueden responder. Nuestro dominio es tal que solo se pueden responder entidades, atributos de entidades o relaciones entre entidades. De ese modo, si no es posible redirigir el flujo de la pregunta hacia alguna respuesta conocida, no hay posibilidad de articular una respuesta significativa. Para el caso de los ejericicios de Clef sobre wikipedia, el enfoque es muy distinto. En primer lugar, no hay un modelo de los datos del dominio, hay textos con pasajes (u oraciones). Si bien es posible una cierta jerarquización de los datos (por ejemplo, utilizando los nombres de los articulos como verificación de la existencia de una entidad), un enfoque estructurado resulta imposible. En este contexto se utiliza la técnica de rankeo semántico de pasajes en base a features (características). Estas dimensiones de valoración de los pasajes son llamados Scorers (ver \allref{subsec:scorers}). Los Scorers, como veremos, pueden ser tan sencillos como preferir minimamente una cierta longitud sobre otra y también pueden incorporar dimensiones de análisis lingüístico (por ejemplo, la presencia de cierta entidad en un cierto rol semántico). El algoritmo de generación de respuestas consiste, en el caso no estructurado, en encontrar features útiles, significativos y en establecer mecanismo inteligentes de priorización de estos features.
-
-\subsection{Otros sistemas de QA: OpenEphyra, Aranea y Just.Ask}
-\label{subsec:otros-sistemas}
-\bigskip
-
-La arquitectura DeepQA no está disponible para la comunidad, el ya mencionado OpenEphyra, como veremos en breve, no funciona, mientras que otros sistemas resultan igualmente inaccesibles (Aranea, Qanda) mientras que QA-sys es un sistema de QA out of the box.
-\bigskip
-
-
-El paper describe las arquitecturas de todos los sistemas, si sirve
-meter más info
-
-El paper [EPHYRA1] \ busca crear un criterio cuantitativo para comparar
-la eficacia de distintos pasos de Just.Ask, Open Ephyra y Aranea
-basándose en la arquitectura \textit{pipeline de tres pasos}
-compartida por todos. Los tres sistemas, por lo demás, están
-basados en la web, utilizando distintas APIs de buscadores o bien
-analizando los resultados de la interfaz de usuario de los mismos. 
-
-El primer ítem importante a destacar de este trabajo, es que, al
-momento de la experimentación \textbf{Aranea no funcionaba más y
-estaba discontinuado}\footnote{\ (Resaltado en Sección 8, muy
-concluyente).\par }\textbf{. }El autor se comunicó con el responsable
-del proyecto que corroboró que las APIs de los buscadores en los que
-se basaba Aranea cambiaron y no había interés en readaptar el
-código para que vuelva a funcionar. Las comparaciones que logró
-entre Just.Ask y Open Ephyra son interesantes y concluyentes a favor de
-la performance de OpenEphyra. 
-
-
-\section{Citas a Textos trascriptos pero no usados}
-\begin{itemize}
-\item QC: \cite{QC1}, \cite{QC2} y también \cite{QC3} (y \cite{QC-other})
-\item Clef: \cite{GuidelineClef07} y \cite{OverviewClef07} 
-\item POS: El manual \cite{POS0} y los dos de Stanford: \cite{POS1} y \cite{POS2}
-\item LangDetect: \cite{nakatani2010langdetect}
-\item NER: Survey \cite{NER1} y el NER de Stanford: \cite{NER2}
-\item Watson: \cite{WATSON1} y \cite{WATSON2}
-\item Qanus: \cite{QANUS1}
-\item RE: Survey \cite{RE1}, for QA \cite{RE2} y reverb: \cite{RE3}
-\item Ephyra: \cite{EPHYRA1}
-\item Freeling: \cite{FREELING1} y \cite{FREELING2} (este no impreso)
-\item Wordnet para web ir: \cite{WN1} (no leido)
-\item Varios de QA: Yago \cite{YAGO-QA1}, sobre una teoria de QA como interfaz a DBs: \cite{QADB1}. Corpus: \cite{TRAIN-QA1}, qall-me: \cite{QALL-ME1}, practical QA: \cite{QAS1}, simple QA: \cite{QAS2} y Surface de Ravishandran: \cite{SURF1}. Introducción a QA: \cite{QA1} y \cite{QA2} y \cite{QA3}
-\item Aranea: \cite{ARANEA1} (no leido)
-\item Passage retrieval evaluation: \cite{PASSAGE1}
-\item Evaluacion de las TREC8 (metrica de \cite{QA3} LASSO): \cite{TREC8}
-\item QA survey: \cite{QA-survey}
-\end{itemize}
-
-
-Cosas de QA:
-\begin{itemize}
-\item Watson: \cite{WATSON1} y \cite{WATSON2}
-\item Qanus: \cite{QANUS1}
-\item Ephyra: \cite{EPHYRA1}
-\item Varios de QA: Yago \cite{YAGO-QA1}, sobre una teoria de QA como interfaz a DBs: \cite{QADB1}. Corpus: \cite{TRAIN-QA1}, qall-me: \cite{QALL-ME1}, practical QA: \cite{QAS1}, simple QA: \cite{QAS2} y Surface de Ravishandran: \cite{SURF1}. Introducción a QA: \cite{QA1} y \cite{QA2} y \cite{QA3}
-\item Aranea: \cite{ARANEA1} (no leido)
-\item Passage retrieval evaluation: \cite{PASSAGE1}
-\item Evaluacion de las TREC8 (metrica de \cite{QA3} LASSO): \cite{TREC8}
-\end{itemize}
