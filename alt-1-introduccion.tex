@@ -32,8 +32,7 @@ Cada uno de estos módulos cuenta a su vez con subcomponentes sobre los cuales h
 
 
 \section{Proyecto de la tesis}
-\horrible
-
+\bienahi
 
 En esta tesis investigamos los distintos problemas que se subsumen bajo el concepto general de question answering y reseñamos diferentes soluciones y modelos aplicados para resolverlos, bajo el proyecto de la implementación de dos modelos de question answering: uno de dominio cerrado (específico) y datos estructurados vinculados con el proyecto Mitic y con adaptaciones bilingües y otro sistema multilingüe, de dominio abierto y que utiliza como corpus las wikipedias de diferentes idiomas. Para el primer modelo orientamos nuestro desarrollo de acuerdo al modelo teórico general y simplificado del paper \cite{QADB1} e implementamos soluciones para un conjunto restingido de preguntas, mientras que para el segundo modelo utilizamos nos orientamos con un subset de los ejercicios de la competencia CLEF '07 y desarrollamos el sistema utilizando como baseline el framework Qanus, adaptandolo para utilizar herramientas de procesamiento de lenguajes multilingües de la librería Freeling. 
 
@@ -45,8 +44,7 @@ producción en TICs en Argentina, que requiere un enfoque estructurado con méto
 formalizaciones de dominio. El enfoque aquí es traducir la pregunta formulada en lenguaje humano a un lenguaje más
 formal ``comprensible" según el modelo de dominio. 
 
-Por otro lado, para evaluar métodos de QA 
-para datos no estructurados, resolvimos algunos ejercicios de la competencia CLEF del '07. La base de conocimientos para
+Por otro lado, para evaluar métodos de QA para datos no estructurados, resolvimos algunos ejercicios de la competencia CLEF del '07. La base de conocimientos para
 estos ejercicios son algunos snapshots de Wikipedia en español, inglés y portugués anteriores al 2007. Sobre esta base de conocimiento,
 el enfoque no es traducir la pregunta a un lenguaje estructurado sino interpretarla y compararla, mediante distintas métricas, 
 con documentos y pasajes, buscando medidas estádisticas y otras condiciones que permitan \textit{rankear} una respuesta candidata
@@ -60,50 +58,18 @@ esencialmente análogos para la base de conocimientos estructurada y para la no 
 tiene distintos enfoques según el caso. 
 
 
-\subsection{Grafo Mitic}
-\label{subsec:mitic}
-\horrible
-Esta sección de la tesis está vinculada con un marco de trabajo común entre el
-Grupo de Autómatas, Lenguajes, Lingüística e Información (GALLI)\footnote{\url{http://www.galli.dc.uba.ar/}}, 
-del Departamento de Computación de la Facultad y la Fundación Sadosky\footnote{\url{http://www.fundacionsadosky.org.ar/}}, relacionado con la construcción de una base de conocimiento
- y la recuperación de la información en el dominio de la investigación y la
-producción relacionada con TICs en Argentina: el proyecto Mitic.
-Mitic\footnote{\url{http://www.fundacionsadosky.org.ar/es/Programas-Proyectos/quien-es-quien\#mitic}} es una plataforma web que permite buscar investigadores, empresas, universidades, proyectos y organismos que se encuentren trabajando en temáticas relacionadas con las TIC, y explorar además las relaciones existentes entre ellos. El grafo de relaciones generado por este proyecto es la base de datos sobre la que trabajamos en la sección closed domain de esta tesis.
-La base de conocimiento generada es estructurada y consta de
-una serie de entidades: investigadores, universidades, publicaciones,
-proyectos, empresas y temáticas, con diferentes tipos de relaciones.
-Esta base de conocimiento está definida como un grafo de relaciones con diferentes pesos y valores entre
-las entidades, a partir de lo que originalmente era una
-recopilación heterogénea de datos en xml. El grafo de Mitic
-tiene relaciones directas y también inferidas, con un cierto grado
-de confiabilidad (peso) para cada relación. Tomando como punto de
-partida esta base de conocimiento, este proyecto se propone construir
-un sistema de question answering biingüe de dominio cerrado, expandible a más idiomas.
-Para esto, definimos sobre la base de conocimiento una ontología
-rígida, que determina el conjunto de preguntas tratables, y
-utilizamos herramientas de procesamiento de lenguaje natural para
-clasificar las consultas del usuario dentro de este esquema. Para la
-ontología , definimos una interfaz única para las entidades que
-permite la integración de nuevos tipos con un esfuerzo mínimo. 
-La base de datos está principalmente en español, solo algunos títulos y resumenes de publicaciones están en inglés,
-pero la ontología definida es formal y no tiene idioma. 
-Para la traducción o el mappeo de la pregunta a esta esquema utilizamos 
-analizadores de distintas librerías, descriptas en \allref{chap:teorico} y en \allref{chap:herramientas}.
-En particular, ver \allref{sec:freeling}, librería de procesamiento de lenguaje natural multilingüe, que
-es la principal herramienta utilizada a la hora de traducir preguntas en distintos idiomas al mismo lenguaje formal.
-La base de datos con la que comenzamos era una serie de xmls que requerían un esfuerzo de modelado bastante alto,
-pero finalmente obtuvimos esta base de datos de mongdb dónde los modelos estaban mucho mejor definidos.
+Con un poco más de detalle, la implementación del modelo de dominio cerrado está vinculada con un marco de trabajo común entre el Grupo de Autómatas, Lenguajes, Lingüística e Información (GALLI)\footnote{\url{http://www.galli.dc.uba.ar/}}, del Departamento de Computación de la Facultad y la Fundación Sadosky\footnote{\url{http://www.fundacionsadosky.org.ar/}}, relacionado con la construcción de una base de conocimiento y la recuperación de la información en el dominio de la investigación y la producción relacionada con TICs en Argentina: el proyecto Mitic. Mitic\footnote{\url{http://www.fundacionsadosky.org.ar/es/Programas-Proyectos/quien-es-quien\#mitic}} es una plataforma web que permite buscar investigadores, empresas, universidades, proyectos y organismos que se encuentren trabajando en temáticas relacionadas con las TIC, y explorar además las relaciones existentes entre ellos. El grafo de relaciones generado por este proyecto es la base de datos sobre la que trabajamos en la sección closed domain de esta tesis. La base de conocimiento generada es estructurada y consta de una serie de entidades: investigadores, universidades, publicaciones, proyectos, empresas y temáticas, con diferentes tipos de relaciones. Esta base de conocimiento está definida como un grafo de relaciones con diferentes pesos y valores entre las entidades, a partir de lo que originalmente era una recopilación heterogénea de datos en varios formatos. El grafo de Mitic tiene relaciones directas y también inferidas, con un cierto grado de confiabilidad (peso) para cada relación. Tomando como punto de
+partida esta base de conocimiento, este proyecto se propone construir un sistema de question answering bilingüe de dominio cerrado, expandible a más idiomas.
+Para esto, definimos sobre la base de conocimiento un modelo rígido, que determina un conjunto acotado de preguntas tratables, y utilizamos herramientas de procesamiento de lenguaje natural para clasificar las consultas del usuario dentro de este esquema. Para este modelo, definimos una interfaz única para las entidades que permite la integración de nuevos tipos con un esfuerzo mínimo. La base de datos está principalmente en español, solo algunos títulos y resumenes de publicaciones están en inglés, pero los tokens que utilizamos para dirigir el flujo de información es formal y no tiene idioma.
 
-\subsection{Clef '07}
-\label{subsec:clef07}
-\horrible
-Por su parte, para desarrollar y evaluar mecanismos de dominio abierto resolvimos algunos ejercicios de la competencia de QA organizada por CLEF 
-en 2007. 
-CLEF (de \textit{Cross-Language Evaluation Forum}) es una organización que busca fomentar la investigación en sistemas de information retrieval cross-language. 
-En particular, una vez por año CLEF lanza una competencia de Question Answering multilenguaje, con diferentes corpus y diferentes tipos de ejercicios. Estas competencia permiten obtener un patrón estándar de comparación entre distintos desarrollos y una idea general del estado de arte alcanzado en cada área.
+Para la traducción o el mappeo de la pregunta a esta esquema utilizamos analizadores de distintas librerías, descriptas en \allref{chap:teorico} y en \allref{chap:herramientas}. En particular, ver \allref{sec:freeling}, librería de procesamiento de lenguaje natural multilingüe, que es la principal herramienta utilizada a la hora de traducir preguntas en distintos idiomas al mismo lenguaje formal. La base de datos con la que comenzamos era una serie de xmls que requerían un esfuerzo de modelado bastante alto, pero finalmente obtuvimos esta base de datos de mongdb dónde los modelos estaban mucho mejor definidos.
+
+
+Por su parte, para desarrollar y evaluar mecanismos de dominio abierto resolvimos algunos ejercicios de la competencia de question answering organizada por CLEF 
+en 2007. CLEF (de \textit{Cross-Language Evaluation Forum}) es una organización que busca fomentar la investigación en sistemas de information retrieval cross-language. En particular, una vez por año CLEF lanza una competencia de Question Answering multilingüe, con diferentes corpus y diferentes tipos de ejercicios. Estas competencia permiten obtener un patrón estándar de comparación entre distintos desarrollos y una idea general del estado de arte alcanzado en cada área.
 Por ejemplo, la competencia ya finalizada del año 2013, QA4MRE@CLEF2013, (Question Answering for Machine Reading Evaluation) se enfoca principalmente en Machine Reading, tarea que incluye un grado de razonamiento elevado para la computadora\footnote{\url{http://celct.fbk.eu/QA4MRE/}}.
 
-Existen distintas conferencias de evaluación de sistemas QA o de subtareas asociadas (por ejemplo TREC - Text Retrieval Conference \footnote{\url{http://trec.nist.gov/}}-, TAC - Text Analysis Conference \footnote{\url{http://www.nist.gov/tac/}}) - y, a su vez, estas distintas competencias ofrecen distinos llamados a competencias. Elegimos resolver una tarea de la competencia Clef '07  por varias razones (Ver \cite{GuidelineClef07} y \cite{OverviewClef07} para un detalle exhaustivo de la conferencia en cuestión). La razón principal fue la pertinencia de la tarea a evaluar al scope de esta tesis. Muchas competencias exigen un grado de complejidad que excede por mucho lo que puede alcanzarse en el tiempo estimado de una tesis de licenciatura. 
+Existen distintas conferencias de evaluación de sistemas QA o de subtareas asociadas (por ejemplo TREC - Text Retrieval Conference \footnote{\url{http://trec.nist.gov/}}-, TAC - Text Analysis Conference \footnote{\url{http://www.nist.gov/tac/}}) - y, a su vez, estas distintas competencias ofrecen distinos llamados a competencias. Elegimos resolver una tarea de la competencia Clef '07  por varias razones (Ver \cite{GuidelineClef07} y \cite{OverviewClef07} para un detalle exhaustivo de la conferencia en cuestión). La razón principal fue la pertinencia de la tarea a evaluar al scope de esta tesis. Muchas competencias exigen un grado de complejidad que excede por mucho lo que puede alcanzarse en el tiempo estimado de una tesis de licenciatura y, si bien tuvimos que recortar ciertos aspectos de los ejercicios a fin de implementar este proyecto en tiempo y forma, estos aspectos fueron pocos.
 Otra razón fue la disponibilidad y el atractivo de la base de conocimiento para estos ejercicios: utilizan snapshots de wikipedia. 
 La competencia del '07 ofrece dos tipos de ejercicios:
 \begin{itemize}
@@ -112,7 +78,7 @@ La competencia del '07 ofrece dos tipos de ejercicios:
 \end{itemize}
 Los ejercicios consideran los siguientes idiomas: inglés, búlgaro, alemán, español, italiano, francés, holandés, rumano y portugués. Por su parte, algunos
 ejercicios utilizan corpus de datos privados de la competencia y otros utilizan como fuente las distintas wikipedias. De los ejercicios que utilizan
-wikipedia, implementamos un sistema que responde las preguntas en español, mono-idioma, es decir, ejercicios con preguntas formuladas en español que se responden en base a la wikipedia en español. A su vez, implementamos esta misma solución para el inglés, dado que estaban disponibles las preguntas y señalados los links a los snapshots de wikipedia en inglés, pero no fue posible evaluar sus resultados debido a que las respuestas esperadas no estaban disponibles online y no obtuvimos respuesta de los organizadores de la competencia. El uso estructural de la librería freeling permite que la implementación de soluciones para otros idiomas mediante el set-up del corpus en el idioma y una pequeña configuración. 
+wikipedia, implementamos un sistema que responde las preguntas en español, mono-idioma, es decir, ejercicios con preguntas formuladas en español que se responden en base a la wikipedia en español e hicimos lo mismo para el portugués. A su vez, implementamos esta misma solución para el inglés, dado que estaban disponibles las preguntas y señalados los links a los snapshots de wikipedia en inglés, pero no fue posible evaluar sus resultados debido a que las respuestas esperadas no estaban disponibles online y no obtuvimos respuesta de los organizadores de la competencia. El uso estructural de la librería freeling permite que la implementación de soluciones para otros idiomas mediante el set-up del corpus en el idioma y una pequeña configuración. 
 Los ejercicios elegidos constan de 200 preguntas agrupadas. Los grupos de preguntas refieren a un tema, inferible a partir de la primer pregunta.
 Por ejemplo, el primer grupo de preguntas es:
 \begin{itemize}
