@@ -322,7 +322,7 @@ factoid y, a modo de comparación, el mejor sistema según la Trec
 En las siguientes secciones de la tesis describiremos la implementación de nuestro sistema de question answering tomando como base los tres pasos principales del pipeline de QA-sys. 
 
 \subsection{Base de conocimiento}
-\cerradaarg{Sin supervisar}
+
 El módulo de procesamiento de la base de información de la implementación QA-sys está desarrollada para correr sobre el tipo de datos de las evaluaciones Trec 2007, un formato XML conocido como ``Aquaint". Por otro lado, el mismo framework esta atado al procesador de XMLs SAX, una entre varias implementaciones disponibles en el entorno de java. En nuestra adaptación, incorporamos la librería gwtwiki\footnote{Java Wikipedia API (Bliki engine): \url{http://code.google.com/p/gwtwiki/}} para procesar los xml dumps de wikipedia. Como esta librería no utiliza SAX, nos vimos obligados a modificar el framework. 
 
 En este proceso descartamos artículos mal formados y entradas representado imágenes o discusiones, tal como se sugiere en la guía. 
@@ -358,8 +358,9 @@ simple-13 & 180067 & 8 & 35600 & 41902 & 102557 & 406M & 133 secs\\ \hline
 
 
 \subsection{Anotado de la pregunta}
-\cerradaarg{Sin supervisar}
-El módulo original de QA-sys de procesamiento de la pregunta espera preguntas en el formato Aquaint definido por Trec, al igual que el tipo de datos esperado sobre el corpus en el paso anterior. En el procesamiento lleva a cabo las tareas descriptas de modo general en \allref{subsec:impl-pos}, \allref{subsec:impl-ner} y \allref{subsec:qtype},  utiliza como librerías de procesamiento de lenguaje las el POS-Tagger, el NER-Tagger y el Question Classifier de la Universidad de Stanford, disponibles solo para inglés, descriptas en \allref{sec:stanford-both} y \allref{sec:stanford-qc} respectivamente.
+
+El módulo original de QA-sys de procesamiento de la pregunta espera preguntas en el formato Aquaint definido por Trec, al igual que el tipo de datos esperado sobre el corpus en el paso anterior. En el procesamiento lleva a cabo las tareas descriptas de modo general en \allref{subsec:impl-pos}, \allref{subsec:impl-ner} y \allref{subsec:qtype},  utiliza como librerías de procesamiento de lenguaje el POS-Tagger, el NER-Tagger y el Question Classifier de la Universidad de Stanford, disponibles solo para inglés, descriptas en \allref{sec:stanford-both} y \allref{sec:stanford-qc} respectivamente.
+
 En nuestra adaptación incorporamos los módulos de POS y NERC multilingües de freeling. Con respecto a la clasificación de preguntas, ya mencionamos que no existen clasificadores para español y tampoco para el portugués. Frente a esta situación podríamos haber implementado clasificadores heurísticos basados en reglas escritas a mano como en el caso del sistema estructurado (\allref{sec:qp-mitic}). Aprovechando la disponibilidad de una traducción confiable al inglés de las preguntas en archivos de datos (debido a la activación de los ejercicios cross-lingual en-es y en-pt), decidimos utilizar el clasificador de Stanford sobre la traducción inglesa de la pregunta.
 Las tablas \ref{table:qc-es} y \ref{table:qc-pt} presentan la distribución de las 200 preguntas para español y para portugués según las seis clases principales del esquema de Li \& Roth. 
 
@@ -401,68 +402,74 @@ ABBR &  1\\ \hline
 \end{center}
 \end{table}
 
+Al finalizar este paso, las preguntas tienen asociadas su tipo, las distintas entidades nombradas, el análisis gramatical y las qwords. Dejamos la generación de queries para el paso posterior ya que así es como estaba implementado en el sistema original.
 
 \subsection{Generación de Respuestas}
 \subsubsection{Baseline}
-\falta
-Como baseline de desarrollo y pruebas, adaptamos los algoritmos de Qanus. 
-El procesamiento realizado por este módulo del paquete puede estructurarse así:
-\begin{itemize}
+
+Como baseline de desarrollo y pruebas, adaptamos los algoritmos de Qanus. En esta subsección vamos a describir esta implementación con detalle, mencionando los cambios más importantes que realizamos para adaptarla a la tarea elegida. En las siguientes comentaremos diferentes modificaciones y algoritmia agregada. El proceso de qanus para la generación de respuestas puede estructurarse así:
+\begin{enumerate}
   \item Filtrado de preguntas
   \item Generación de Queries
   \item Information Retrieval
   \item Extracción y rankeo de oraciones
   \item POS tagging de las mejores oraciones
   \item Heurísticas de AR basadas en el QC
-\end{itemize}
-En esta subsección vamos a describir esta implementación con detalle, mencionando los cambios más importantes que realizamos para adaptarla a la tarea elegida. En las siguientes comentaremos diferentes modificaciones y algoritmia agregada basada en la literatura. 
+\end{enumerate}
 
-El proceso de qanus consiste DETALLE DE LA IMPLEMENTACION DE QUANUS.
+En el primer paso, se descartan todas las preguntas cuyo tipo no sea \textit{factoid}. Esto, en principio, dejaría afuera a 32 preguntas de tipo \textit{definition} y 10 de tipo \textit{list} para el ejercicio en español (24 y 9, respectivamente, considerando solamente las que como goldstandar answer tienen datos de wikipedia) y 31 de tipo \textit{definition} y 10 de tipo \textit{list} para el portugués (18 y 8, respectivamente, considerando las de wikipedia). 
 
-Qanus solo trabaja sobre preguntas de tipo "FACTOID". Esto descarta "NO FACTOID" preguntas para español y "NO FACTOID" preguntas para portugués. Esta información depende de los experimentos y las comparaciones.
+En en segundo paso, la generación de queries, el sistema baseline utiliza 2 algoritmos diferentes según el qtype inferido por el clasificador de preguntas. El primer caso es especifico para la clase fina \sq{HUM:ind} y consta de tres tipos de expresiones regulares escritas a mano y en inglés que matchean contra preguntas de la forma: \dq{Who (is|was) (the)+ NN ... NN?} (NN significa, acá, sustantivo). Por ejemplo: \dq{Who is the CEO of Microsoft?} y \dq{Who VERBO ...?}. En estos casos se extraen los sustantivos y los verbos de la pregunta para generar la query. Eliminamos estos casos ya que adaptarlos a los diferentes idiomas no escalaba para un sistema multilingüe. Por su parte, si el tipo de la pregunta no es \sq{HUM:ind}, el algoritmo general de generación de queries espera, además de la pregunta propiamente dicha, un campo asociado a la pregunta, \sq{target}, aparentemente definido en la competencia TREC para la que está escrito. 
 
-Para la generación de queries, el sistema baseline tiene 4 algoritmos diferentes según QType, es decir, según el resultado de Question Classifier. 
-Los casos son los siguientes:
-\textbf{Casos especificos para \sq{HUM:ind}} \\
-Hay 3 casos especiales para 'HUM:ind', que se chequean contra regexs. En nuestra adaptación ml del sistema baseline, realizamos estos chequeos contra la traducción al inglés de la pregunta original, disponible en los xml de input. Hacer estadísticas con las preguntas. Descomentar y adaptar código. 
+{\color{red}Utilizamos este valor esperado para completar con el \sq{topic} del grupo de preguntas, lo cual no está permitido en las reglas originales de la competencia. }
+El método default FormQuery genera una query que contiene, sin repetir, todas las palabras no-stopwords del campo target y todos los sustantivos, verbos y adjetivos de la pregunta completa según el pos tagger de stanford. Nosotros adaptamos este método para funcionar con las etiquetas de Freeling y utilizamos este mecanismo de generación de queries como baseline.
 
-$HUM\_IND\_TYPE1\_IC$
+En el tercer paso, a partir de la query generada, se hace un pedido al índice lucene. En el cuarto paso, los documentos son divididos en oraciones de manera indiscriminada, es decir: las oraciones no heredan posición de acuerdo al ranking de los documentos a los que pertenecían. Las oraciones se evaluan mediante diferentes métricas contra la query generada. Los scores $coverage$, $freq$ y $prox$ están descriptos en el Apéndice \allref{sec:comparadores}. La fórmula de ponderación es la siguiente: \\
 
-$"[wW]ho/WP (is/VBZ|was/VBD)(([ A-Za-z0-9'\\-]+/NN)*([ A-Za-z0-9'\\-\\?]+/NN)+)") || a_QuestionTextPOS.matches("[wW]ho/WP (is/VBZ|was/VBD) the/DT (([ A-Za-z0-9'\\-]+/NN)*([ A-Za-z0-9'\\-\\?]+/NN)+)"$
+$DocScore = (0.9)*CoverageScore + (0.05)*FreqScore+ (0.05)*ProxScore;$
 
-$HUM\_IND\_TYPE1$
+\medskip
 
-$"[wW]ho/WP (is/VBZ|was/VBD)(([ A-Za-z0-9'\\-]+/NN)+ of/IN(([ A-Za-z0-9'\\-]+/[A-Z]+)*([ A-Za-z0-9'\\-\\?]+/[A-Z]+)+))")|| a_QuestionTextPOS.matches("[wW]ho/WP (is/VBZ|was/VBD) the/DT (([ A-Za-z0-9'\\-]+/NN)+ of/IN(([ A-Za-z0-9'\\-]+/[A-Z]+)*([ A-Za-z0-9'\\-\\?]+/[A-Z]+)+))"$
-			
-$HUM\_IND\_TYPE2$
+En el quinto paso se seleccionan las 40 oraciones mejor rankeadas según este score y se les aplica pos tagging. 
 
-$"[wW]ho/WP( )([^w]+/VBD(([ A-Za-z0-9'\\-]+/[A-Z]+)*([ A-Za-z0-9'\\-\\?]+/[A-Z]+)+))"$
-
-\textbf{Default: FormQuery} \\
-El sistema original espera como parámetro, además de la pregunta propiamente dicha, un campo "target", aparentemente definido en la competencia TREC para la que está escrito. 
-Utilizamos este valor esperado para completar con el "topic" del grupo de preguntas, lo cual no está permitido en las reglas originales de la competencia. 
-El método default FormQuery genera una query que contiene, sin repetir, todas las palabras no-stopwords del campo target y todos los sustantivos, verbos y adjetivos de la pregunta completa según el pos tagger de stanford. 
-
-A partir de la query generada, se hace un pedido al índice lucene. Los documentos son divididos en oraciones de manera indiscriminada, es decir: las oraciones no heredan posición de acuerdo al ranking de los documentos a los que pertenecían.
-
-Las oraciones se evaluan mediante diferentes métricas contra la query generada. La fórmula de ponderación es la siguiente: \\
-$l_DocScore += (0.9)*l_CoverageScore + (0.05)*l_FreqScore+ (0.05)*l_ProxScore;$
-
-Siendo estas los descriptas en Anexo tal.
-
-Finalmente, sobre las 40 oraciones mejor rankeadas aplica diferente heurísticas segun el QType.
-Define heurísticas para los siguientes casos:
-\begin{itemize}
-  \item ABBR:exp
-  \item ABBR:abb
+Finalmente, el sexto paso ejecuta diferentes heurísticas de extracción de respuestas en base al tipo de pregunta generador por el clasificador en el paso anterior.
+Define diferentes heurísticas para los siguientes casos: ABBR:exp, ABBR:abb, HUM:gr,
+\begin{enumerate}
+  \item ABBR:exp: Extrae las NER de tipo organización de la pregunta. Genera regex expandiendo la abreviación. Por ejemplo: IBM --> I.... B... M.... Para cada una de las  40 oraciones, verifica por la ocurrencia de esa regex. Devuelve la primera ocurrencia. 
+  \item ABBR:abb: // Abbreviations : Contractions -> What can we do?
 	\item HUM:gr || ENTY:cremat
+				// HUM:gr - Human groups (companies, organisations)
+			// ENTY:cremat - Entities
+
+			// Can try to identify the subject of the question, i.e. company, university, etc
+			// Heuristically, this is usually the /NN after a /WDT or /WP.
+
+			// Tried some ideas, but gave up on them as they are not helping. One thing tried:
+			// 0. Identified the "subject" of the question. For example in "what company...", the subject is "company".
+			// 1. Ran a web search for candidate answer and the subject and score the number of hits matched
+			// 2. Combined this with other scores like proximity etc
+			// Conclusion: Helped for some queries, but when we try to query "us" and "university" for example, these
+			//   are very generic terms, it didn't help.
+
+			
+
+			// Now we try to extract candidate answers --- these would be the proper nouns (NNP)
+			// We extract them from all the ranked sentences
+			// We assume consecutive NNPs are part of the same NNP.
+			// i.e. Tiger/NNP Woods/NNP form one NNP
+	
+	
   \item HUM:
+  	// All other types of HUMAN questions
+			
+
+			// Take the best ranked sentence, extract the first NNP from it and use that as the answer
   \item NUM:period
   \item NUM:count
   \item NUM:
   \item ENTY:
   \item Else
-\end{itemize}
+\end{enumerate}
 
 \textbf{Adaptación inicial contra inglés}
 
