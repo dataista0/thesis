@@ -405,7 +405,8 @@ ABBR &  1\\ \hline
 Al finalizar este paso, las preguntas tienen asociadas su tipo, las distintas entidades nombradas, el análisis gramatical y las qwords. Dejamos la generación de queries para el paso posterior ya que así es como estaba implementado en el sistema original.
 
 \subsection{Generación de Respuestas}
-\subsubsection{Baseline}
+
+\subsubsection{Generación baseline y adaptación inicial}
 
 Como baseline de desarrollo y pruebas, adaptamos los algoritmos de Qanus. En esta subsección vamos a describir esta implementación con detalle, mencionando los cambios más importantes que realizamos para adaptarla a la tarea elegida. En las siguientes comentaremos diferentes modificaciones y algoritmia agregada. El proceso de qanus para la generación de respuestas puede estructurarse así:
 \begin{enumerate}
@@ -433,43 +434,49 @@ $DocScore = (0.9)*CoverageScore + (0.05)*FreqScore+ (0.05)*ProxScore;$
 En el quinto paso se seleccionan las 40 oraciones mejor rankeadas según este score y se les aplica pos tagging. 
 
 Finalmente, el sexto paso ejecuta diferentes heurísticas de extracción de respuestas en base al tipo de pregunta generador por el clasificador en el paso anterior.
-Define diferentes heurísticas para los siguientes casos: ABBR:exp, ABBR:abb, HUM:gr,
-\begin{enumerate}
-  \item ABBR:exp: Extrae las NER de tipo organización de la pregunta. Genera regex expandiendo la abreviación. Por ejemplo: IBM --> I.... B... M.... Para cada una de las  40 oraciones, verifica por la ocurrencia de esa regex. Devuelve la primera ocurrencia. 
-  \item ABBR:abb: // Abbreviations : Contractions -> What can we do?
-	\item HUM:gr || ENTY:cremat
-				// HUM:gr - Human groups (companies, organisations)
-			// ENTY:cremat - Entities
+Define diferentes heurísticas para los siguientes casos: ABBR:exp, ABBR:abb, HUM:gr,\newline
 
-			// Can try to identify the subject of the question, i.e. company, university, etc
-			// Heuristically, this is usually the /NN after a /WDT or /WP.
+\textbf{Caso ABBR:exp}\newline
 
-			// Tried some ideas, but gave up on them as they are not helping. One thing tried:
-			// 0. Identified the "subject" of the question. For example in "what company...", the subject is "company".
-			// 1. Ran a web search for candidate answer and the subject and score the number of hits matched
-			// 2. Combined this with other scores like proximity etc
-			// Conclusion: Helped for some queries, but when we try to query "us" and "university" for example, these
-			//   are very generic terms, it didn't help.
+Si el tipo de respuesta esperada es ABBR:exp (expansión de una abreviación), entonces el algoritmo de extracción es el siguiente: primero, se extraen las entidades nombradas de tipo \sq{Organización} desde la pregunta. Con ellas, se generan regex de expansión de esa abreviación. Por ejemplo, para la abreviación \dq{IGFA} se genera la regex $[I]+[A-Za-z0-9]+ [G]+[A-Za-z0-9]+ [F]+[A-Za-z0-9]+ [A]+[A-Za-z0-9]+ $. En términos coloquiales, esta regex sirve para buscar en fragmentos de texto por expresiones con la forma I... G... F... A.... Por cada una de las 40 oraciones mejor rankeadas, el proceso busca por ocurrencias de ese patrón. Finalmente, no realiza ningún trabajo posterior y devuelve la primera encontrada. \newline
 
-			
+\textbf{Caso ABBR:abb}\newline
 
-			// Now we try to extract candidate answers --- these would be the proper nouns (NNP)
-			// We extract them from all the ranked sentences
-			// We assume consecutive NNPs are part of the same NNP.
-			// i.e. Tiger/NNP Woods/NNP form one NNP
-	
-	
-  \item HUM:
-  	// All other types of HUMAN questions
-			
+Este tipo de respuesta esperada representa el pedido de una contracción de una abreviación, la inversa de la anterior. Por ejemplo, \dq{¿Con qué siglas se conoce a la corporación \sq{International Business Machines}?} (IBM). El caso no tiene código: \textit{// Abbreviations : Contractions -> What can we do?} \newline
 
-			// Take the best ranked sentence, extract the first NNP from it and use that as the answer
-  \item NUM:period
-  \item NUM:count
-  \item NUM:
-  \item ENTY:
-  \item Else
-\end{enumerate}
+\textbf{Caso HUM:gr y ENTY:cremat} \newline
+
+El tipo HUM:gr refiere a grupos humanos, como compañías u organizaciones, mientras que ENTY:cremat refiere a entidades de creación humana (como libros, inventos, discos, etc).
+Para este caso, el proceso consiste en extraer nombres propios (proper nouns, NNPs) de todas las oraciones rankeadas (se asume que nombres propios consecutivos representan un solo nombre propio, por ejemplo Tiger/NNP, Woods/NNP forman un nombre propio solo). Sobre estos resultados se ejecutan filtros basados en diccionarios. En concreto, se eliminan los siguientes términos: \{Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday\}, \{January, February, March, April, May, June, July, August, September, October, November, December\}, \{us, uk, france, england, cuba, japan, u.s, america\}. Para cada respuesta candidata que pasó el filtro, se rankean de acuerdo a diferentes scores basados los comparadores $coverage$, $freq$ y $prox$.
+La fórmula de ponderación utilizada es la siguiente: \\
+
+$TotalScore = (0.55 * CoverageScore) + (0.2 * SentenceScore)	+ (0.1 * ProximityScore) + (0.15 * RepeatedTermScore)$
+
+Donde $CoverageScore$ es el cubrimiento del {\color{red}$target$} de la pregunta en la oración de soporte de la respuesta, $ProximityScore$ mide la distancia entre el {\color{red}$target$} de la pregunta y la respuesta candidata en el contexto de la oración de soporte, $SentenceScore$ considera la posición de la oración en el ranking de las 40 oraciones y $RepeatedTermScore$ es una penalización (su valor es negativo) si la respuesta candidata tiene tokens en común con el {\color{red}$target$} de la pregunta. No modificamos los diccionarios, {\color{red}en principio}. \newline
+
+
+\textbf{Caso HUM:ind} \newline
+
+El tipo HUM:ind son preguntas que refieren a un individuo humano. El algoritmo en este caso genera, para ciertos patrones, el subject (como en los casos especiales de generación de queries). Eliminamos este caso ya que se basa en expresiones regulares específicas por idioma. Luego, para cada oración se extraen las entidades nombradas de tipo \sq{PERSON}. \newline
+
+\textbf{Caso HUM general} \newline
+
+Este caso contempla todos los tipos de respuestas esperadas de clase HUM (humano) que no son gr ni ind (estos son dos casos: título y descripción). En este caso, se toma el primer nombre propio de la la oración mejor rankeada y se utiliza eso como respuesta. \newline
+
+\textbf{Caso NUM:period} \newline
+
+\textbf{Caso NUM:count} \newline
+
+\textbf{Caso NUM general} \newline
+
+\textbf{Caso ENTY general} \newline
+
+Busca cualquier sustantivo y retorna el primero que encuentra.  \newline
+
+\textbf{Otro caso} \newline
+
+Busca cualquier sustantivo y retorna el primero que encuentra.\newline
+
 
 \textbf{Adaptación inicial contra inglés}
 
