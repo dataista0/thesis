@@ -457,11 +457,42 @@ Donde $CoverageScore$ es el cubrimiento del {\color{red}$target$} de la pregunta
 
 \textbf{Caso HUM:ind} \newline
 
-El tipo HUM:ind son preguntas que refieren a un individuo humano. El algoritmo en este caso genera, para ciertos patrones, el subject (como en los casos especiales de generación de queries). Eliminamos este caso ya que se basa en expresiones regulares específicas por idioma. Luego, para cada oración se extraen las entidades nombradas de tipo \sq{PERSON}. \newline
+El tipo HUM:ind son preguntas que refieren a un individuo humano. El algoritmo en este caso intenta generar, para ciertos patrones, el subject (como en los casos especiales de generación de queries). Eliminamos este caso ya que se basa en expresiones regulares específicas por idioma. Luego, para cada oración se extraen las entidades nombradas de tipo \sq{PERSON}. Para cada respuesta candidata, se evaluan distintos features para generar un score general:
+
+$TotalScore = (0.5 * CoverageScoreTarget)+ (0.25 * CoverageScoreSubject) + (0.35 * SentenceScore) +
+					 (0.25 * ProximityScore)	+ (0.1 * RepeatedTermScore) + (0.5 * IsPronoun)$\newline
+
+Donde los scores representan lo siguiente:
+\begin{itemize}
+  \item CoverageScoreTarget: cuántos tokens del {\color{red}target} aparecen en la oración fuente de la respuesta candidata 
+  \item CoverageScoreSubject: cuántos tokens del {\color{red}subject} aparece en la oración fuente de la respuesta candidata (si era el caso, cero si no)
+  \item SentenceScore: puntaje derivado de la posición de la oración-fuente en el ranking de oraciones
+  \item ProximityScore: cuán cerca están la query utilizada como input del módulo de information retrieval (sin stop-words) y la respuesta candidata en el contexto de la oración de la que se extrajo la respuesta candidata.
+  \item RepeatedTermScore: penalización (negativo). Coverage entre {\color{red} el target} y la respuesta candidata
+  \item IsPronoun: Penizaliza si la respuesta candidata contienen pronombres. En concreto, verifica si algún token pertenece a la lista \{it, we, he, she, they, our, their\}
+\end{itemize}
+
+En base a este score, se devuelve la respuesta candidata con puntaje más alto. \newline
 
 \textbf{Caso HUM general} \newline
 
-Este caso contempla todos los tipos de respuestas esperadas de clase HUM (humano) que no son gr ni ind (estos son dos casos: título y descripción). En este caso, se toma el primer nombre propio de la la oración mejor rankeada y se utiliza eso como respuesta. \newline
+Este caso contempla todos los tipos de respuestas esperadas de clase HUM (humano) que no son gr ni ind (estos son dos casos: título y descripción). En este caso, se toma el primer nombre propio de la oración mejor rankeada y se utiliza eso como respuesta. \newline
+
+\textbf{Caso LOC general} \newline
+
+La clase LOC (location, locación) incluye preguntas que refieren a lugares.  En este caso, se extraen todas las entidades nombradas de tipo \sq{LOCATION} de las oraciones rankeadas y se las evalua según el siguiente scoring:
+
+$TotalScore = (0.6 * CoverageScore) + (0.1 * SentenceScore) + (0.2 * ProximityScore)	+ (0.5 * SanityScore) + (0.3 * RepeatedTermScore)$ \newline
+
+Estos scores son:
+Donde los scores representan lo siguiente:
+\begin{itemize}
+  \item CoverageScore: cuántos tokens del {\color{red}target} aparecen en la oración fuente de la respuesta candidata 
+  \item SentenceScore: puntaje derivado de la posición de la oración-fuente en el ranking de oraciones
+  \item ProximityScore: cuán cerca están la query utilizada como input del módulo de information retrieval (sin stop-words) y la respuesta candidata en el contexto de la oración de la que se extrajo la respuesta candidata.
+  \item RepeatedTermScore: penalización (negativo). Coverage entre {\color{red} el target} y la respuesta candidata.
+  \item SanityScore: es un placeholder para implementar código comentado. En el código que encontramos, vale 1 (constante).
+\end{itemize}
 
 \textbf{Caso NUM:period} \newline
 
@@ -471,11 +502,12 @@ Este caso contempla todos los tipos de respuestas esperadas de clase HUM (humano
 
 \textbf{Caso ENTY general} \newline
 
+El caso de entidades general incluye todas las subclases que no son \sq{cremat}. El algoritmo implementado es el mismo que para el caso de \{HUM} general, este es: tomar el primer nombre propio de la oración mejor rankeada y utilizarlo como respuesta.
 Busca cualquier sustantivo y retorna el primero que encuentra.  \newline
 
 \textbf{Otro caso} \newline
 
-Busca cualquier sustantivo y retorna el primero que encuentra.\newline
+Se implementa el mismo algoritmo que el caso anterior. \newline
 
 
 \textbf{Adaptación inicial contra inglés}
