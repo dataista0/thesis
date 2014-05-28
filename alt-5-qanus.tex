@@ -425,7 +425,7 @@ El método default FormQuery genera una query que contiene, sin repetir, todas l
 
 En el tercer paso, a partir de la query generada, se hace un pedido al índice lucene. En el cuarto paso, los documentos son divididos en oraciones de manera indiscriminada, es decir: las oraciones no heredan posición de acuerdo al ranking de los documentos a los que pertenecían. Las oraciones se evaluan mediante diferentes métricas contra la query generada. Los scores $coverage$, $freq$ y $prox$ están descriptos en el Apéndice \allref{sec:comparadores}. La fórmula de ponderación es la siguiente: \\
 
-$DocScore = (0.9)*CoverageScore + (0.05)*FreqScore+ (0.05)*ProxScore;$
+$PassageScore = (0.9)*CoverageScore + (0.05)*FreqScore+ (0.05)*ProxScore;$
 
 \medskip
 
@@ -530,38 +530,76 @@ Busca cualquier sustantivo y retorna el primero que encuentra.  \newline
 Se implementa el mismo algoritmo que el caso anterior. \newline
 
 
-\subsection{Adaptaciones y modificaciones}
+\subsection{Modificaciones}
 
-\subsubsection{Group Entity extraction}
+Además de los cambios realizados para convertir al baseline de qanus en un sistema multilingüe basado en la librería freeling, realizamos algunos agregados mínimos a la lógica. En esta sección describiremos diferentes modificaciones realizadas y en la siguiente veremos la evaluación comparativa entre la performance del sistema baseline y las modificaciones en las diferentes tareas que realizan los submódulos. 
+
+\subsubsection{Inferencia del tópico del grupo de preguntas}
 \label{subsubsec:entidad-de-grupo}
-\falta
-Formas de extraer la entidad de grupo o tópico y de incorporarlo en la query.
+
+Como vimos anteriormente, los ejercicios consisten en preguntas agrupadas en torno a tópicos con entre 1 y 4 preguntas. Este tópico está disponible en los archivos de datos, pero se esperaba que en la competencia no se utilicen. Los temas pueden ser entidades nombradas, evento o también categorías como objetos, fenómenos naturales, etc. Por ejemplo, estos son algunos de los primeros temas del test set de español: \sq{Colegio de Harry Potter}, \sq{Pez Espada}, \sq{Amintore Fanfani}, \sq{Revolución de Terciopelo}. Según mencionamos anteriomente, el tema del grupo de preguntas respeta las siguiente condiciones:
+
+\begin{itemize}
+\item El tema es nombrado en la primer pregunta o bien en la primera respuesta.
+\item Las siguientes preguntas pueden contener co-referencias al tema expresado en el primer par pregunta/respuesta
+\end{itemize}
+
+Aprovechamos el campo \sq{target} del sistema baseline para incorporar este tópico al flujo de procesamiento, ya que su funcionalidad es la esperada para este input.
+Finalmente, evaluamos diferentes contenidos para este valor. A modo de testeo, utilizamos, aún cuando en la competencia no estaba permitido, el tópico real del grupo según el test set. También, para el caso en que existía solo una entidad nombrada entre la primer pregunta y la oración fuente de su respuesta, utilizamos esta entidad como tópico. En caso de existir más de una, implementamos dos casos: tomar la primera entidad cuyo tipo se pudo especificar de la pregunta y tomar la primera entidad cuyo tipo se pudo especificar de la respuesta. Por otro lado, en caso de no haber identificado ninguna entidad nombrada, se recae en buscar algún constructo de nombres propios y, de no existir, en el primer constructo continuo de sustantivos, ambos de la pregunta. Finalmente, si ninguno de estos casos funciona, se utiliza la pregunta sin stop words ni qwords. Siempre que la situación sea ambigüa, preferimos datos de la pregunta, bajo la hipótesis de que la respuesta puede ser -y en muchos casos será- incorrecta y que, en consecuencia, utilizar datos de ella sería arrastrar el error. 
+
+En concreto, esto se reduce a tres casos de código: \textbf{1) Tema de test}, donde utilizamos el tema explícito de los datos de testing y luego dos casos análogos -los recién comentandos- en los que, de haber más de una entidad nombrada encontrada se prioriza la encontrada en la pregunta (\textbf{2) Tema de pregunta}) o la encontrada en la respuesta (\textbf{3) Tema de respuesta}). La hipótesis es que el primer caso dará mejores resultados que el segundo y este dará mejores que el tercero. Cabe destacar que para la primera pregunta del grupo, todas las opciones vinculadas con la respuesta no estan disponibles. La implementación, en ese caso, es como se espera. 
+
 \subsubsection{Query Generation}
-\falta
-Baseline de Qanus.
-Resultados.
-\subsubsection{Passage Extraction}
-\falta
-\subsubsection{Lasso Heuristics}
-Métricas de medición: definición de documento relevante.
-\subsubsection{Qanus baseline}
-\falta
-\subsubsection{Heuristic 1}
-\falta
-\subsubsection{Heuristic 2}
-\falta
-\subsubsection{Heuristic 3}
-\falta
-\subsubsection{Experimentación de Answer Retrieval}
-\falta
+
+Para la extracción de queries utilizamos, como primer método y baseline de evaluación, el implementado por qanus. La query generada contiene, sin repetir, todas las palabras no-stopwords del campo target y todos los sustantivos, verbos y adjetivos de la pregunta completa contra el campo $ALL$. En la evaluación llamaremos a este método \textbf{baseline}. Implementamos un segundo método, aprovechando el conocimiento de la estructura de datos del índice, que consiste en agregarle a esta misma query un caso, si el tema no es vacío, en el que se busca por este tema en el título de los artículos, con un peso virtualmente infinito frente al resto de la query.
+
+Es decir, la query generada por el método dos tiene la forma siguiente: \textit{(TITLE: target)$^n$ OR \textbf{query baseline}}. En concreto, utilizamos $n=5$. En la evaluación llamaremos a este método \textbf{improved baseline}.
+
+Finalmente, implementamos la heurística propuesta por los papers \cite{QA1} y \cite{QA3}, que, recordamos, consiste en 8 reglas para agregar, en orden, a la query:
+
+\begin{enumerate}
+\item Todas las palabras no stop words entre comillas
+\item Todas las entidades nombradas reconocidas
+\item Todas las construcciones nominales con sus adjetivos
+\item Todas las demás construcciones nominales
+\item Todos los sustantivos con sus adjetivos
+\item Todos los demás sustantivos
+\item Todos los verbos
+\item El \sq{focus} de la pregunta
+\end{enumerate}
+
+Dado que no implementamos ningún algoritmo de extracción de \textit{focus}, el último item fue reemplazado por el tema de la pregunta, si existiera.  En la evaluación llamaremos a este método \textbf{lasso}, por el nombre del sistema en el que fue implementado por primera vez.
+
+\subsubsection{Generación de respuestas}
+
+Con respecto a la generación de respuestas, incorporamos solamente distintos scorers nuevos para rankear los pasajes y no modificamos los mecanismos baseline de extracción de respuestas a partir de pasajes más allá de lo explicado en la sección anterior.
+Los nuevos features incorporados son:
+
+\begin{itemize}
+\item LengthScore: Contempla la longitud del pasaje, priorizando oraciones cortas pero no demasiado cortas. Este score trata de evitar problemas vinculados con mala redacción en los documentos que generaban pasajes enormes y sin sentido para las librerías.
+\item QVerbScore: Contempla la presencia de verbos de la pregunta en el pasaje candidato.
+\item QNounScore: Contempla la presencia de sustantivos de la pregunta en el pasaje candidato.
+\item QNERScore: Contempla la presencia de las entidades nombradas de la pregunta en el pasaje candidato.
+\end{itemize}
+
+Todos estan normalizados (son reales entre 0 y 1 inclusive). El objetivo de los últimos tres fue distinguir, dentro de lo que es el score de cobertura, la presencia de términos de importancia destacada dentro del pasaje. 
 
 
-\subsection{Evaluación}
+Con estos cuatro scores nuevos, implementamos tres métodos de rankeo de pasajes. El primero es el \textbf{baseline} y su formula de rankeo es la siguiente: \newline
+
+$PassageScore_{bl} = (0.9)*CoverageScore + (0.05)*FreqScore+ (0.05)*ProxScore;$ \newline
+
+El segundo método y tercer método utilizan este score y se definen como sigue:\newline
+
+$PassageScore_2 =  PassageScore_{bl} * 0.4 + QNERScore * 0.2 + QVerbScore*0.2	+ QNounScore * 0.2 + $\newline
+
+$PassageScore_3 =  PassageScore_{bl} * 0.4 + LengthScore * 0.2 + QNERScore * 0.15 + QVerbScore*0.15	+ QNounScore * 0.1 $\newline
+
+
+\subsection{Experimentación}
 \label{sec:eval}
-\falta
-\subsection{Evaluación y resultados de Clef}
-\falta
-Como en años anteriores, la respuesta correcta pudo estar copiada y pegada exactamente desde el documento, aún cuando sea gramaticamente incorrecta (por ejemplo: el caso de inflexión no coincide con el requerido por la pregunta). De todos modos, este año se les permitió a los sistemas usar generación de lenguaje natural para corregir inconsistencias morfosintácticas. (Por ejemplo, en alemán cambiar “dem Presidenten” por “der President” si la pregunta implica que la respuesta está en caso nominativo) y para introducir cambios gramáticos y léxicos (por ejemplo: Pregunta: ¿De qué nacionalidad es X? Respuesta: X es de Holanda => Respuesta Exacta: Holandés).
+
+Hicimos corridas con todas las combinaciones recién expuestas y, además, variamos la cantidad de documentos retornados por lucene (50 en el sistema baseline) y la cantidad de pasajes extraidos de ellos (40 en el sistema baseline).  Por otro lado, modificamos el sistema para que devuelva una lista de respuestas en lugar de una sola, considerando que los resultados serían bajos. Sobre esta lista, utilizamos la métrica MRR (Mean Reciprocal Rank), única adaptada al caso, sobre distintas longitudes de listas de respuestas. Finalmente, utilizamos una evaluación automática, lenient (indulgente), es decir, no consideramos la justificación de la respuesta sino solo la respuesta. Como $R-set$ utilizamos solamente la respuesta golstandard disponible en los archivos de test y, considerando su tamaño acotado, evaluamos 4 diferentes métricas: match exacto, cubrimiento del 100\%, 90\% y 80\% de la respuesta esperada por la respuesta dada. 
 
 
 % \chapter{Implementación}
