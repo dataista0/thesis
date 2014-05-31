@@ -1,19 +1,19 @@
 \chapter{Implementación de datos estructurados}
 \label{chap:4}
 \horrible
-En este capitulo veremos la implementación del modelo de question answering con soporte sintáctico bilingüe de dominio cerrado para la base de datos del proyecto Mitic. Como señalamos en la introducción, en el transcurso del proyecto Mitic se generó una base de información sobre el dominio de la investigación y el desarrollo vinculados con las tecnologías de la información en Argentina. En concreto, heredamos del proyecto una base de datos de mongodb con modelos en java para seis colecciones (universidades, investigadores, empresas, publicaciones, proyectos y temáticas), con vínculos entre las entidades de diferentes pesos. Sobre esta base de datos, construimos una interfaz de análisis lingüístico que permita responder preguntas formuladas en inglés o español sobre ciertos hechos del dominio de datos. Utilizamos como guía el marco teórico de \cite{QADB1} que vimos en \allref{subsec:closed-domain}, adaptado a nuestro caso puntual basado en modelos de mongo y no en SQL puro, y como modelos de análisis lingüístico utilizamos la librería Freeling y diferentes herramientas de Stanford. La implementación está disponible en \url{https://github.com/julian3833/modelos_db} con la especificación del algoritmo de instalación. 
+En este capitulo veremos la implementación del modelo de question answering con soporte sintáctico bilingüe de dominio cerrado para la base de datos del proyecto Mitic. Como señalamos en la introducción, en el transcurso del proyecto Mitic se generó una base de información sobre el dominio de la investigación y el desarrollo vinculados con las tecnologías de la información en Argentina. En concreto, heredamos del proyecto una base de datos de MongoDB con modelos en Java para seis colecciones (universidades, investigadores, empresas, publicaciones, proyectos y temáticas), con vínculos entre las entidades de diferentes pesos. Sobre esta base de datos, construimos una interfaz de análisis lingüístico que permita responder preguntas formuladas en inglés o español sobre ciertos hechos del dominio de datos. Utilizamos como guía el marco teórico de \cite{QADB1} que vimos en \allref{subsec:closed-domain}, adaptado a nuestro caso puntual basado en modelos de MongoDB y no en SQL puro, y como modelos de análisis lingüístico utilizamos la librería Freeling y diferentes herramientas de Stanford. La implementación está disponible en \url{https://github.com/julian3833/modelos_db} con la especificación del algoritmo de instalación. 
 
-La estructura de este capitulo es la siguiente: en \allref{sec:grafo-mitic} describimos la base de datos original $D$ y el módulo $KnowledgeManager$, el cual es responsable de las reglas y la algoritmia de traducción de los tokens de una pregunta $q$ en elementos de $D$, en \allref{sec:qp-mitic} comentaremos los módulos lingüísticos utilizados para procesar las preguntas y los algoritmos que hacen uso de los servicios del $KnowledgeManager$ para asignar diferentes etiquetas a la pregunta y, finalmente, en \allref{sec:ar-mitic} describiremos el módulo que hace uso de los servicios de estos dos módulos para decidir la tratabilidad de la pregunta y generar una respuesta para las preguntas tratables.
+La estructura de este capítulo es la siguiente: en \allref{sec:grafo-mitic} describimos la base de datos original $D$ y el módulo $KnowledgeManager$, el cual es responsable de las reglas y la algoritmia de traducción de los tokens de una pregunta $q$ en elementos de $D$, en \allref{sec:qp-mitic} comentaremos los módulos lingüísticos utilizados para procesar las preguntas y los algoritmos que hacen uso de los servicios del $KnowledgeManager$ para asignar diferentes etiquetas a la pregunta y, finalmente, en \allref{sec:ar-mitic} describiremos el módulo que hace uso de los servicios de estos dos módulos para decidir la tratabilidad de la pregunta y generar una respuesta para las preguntas tratables.
 
 \section{Base de conocimiento}
 \label{sec:grafo-mitic}
 
-Los datos originales del proyecto mitic constan de seis colecciones de mongodb y relaciones entre sus documentos. Las seis coleccciones son: universidades, investigadores, empresas, publicaciones, proyectos y temáticas. Estas colecciones definen el dominio de conocimiento. Cada entidad posee sus respectivos atributos y distintas relaciones con otras entidades que señalaremos aquí. La red de relaciones del modelo de mitic contiene vínculos explicitos como \dq{trabajar-en} y también relaciones inferidas mediante distintos algoritmos durante proyectos anteriores, que representan un grafo de \textit{adyacencias} sin etiqueta, es decir, relaciones sin nombre. Estas relaciones inferidas tienen distintos pesos según y tejen un grafo de distancias más o menos \dq{especulativas} entre las entidades. 
+Los datos originales del proyecto Mitic constan de seis colecciones de MongoDB y relaciones entre sus documentos. Las seis coleccciones son: universidades, investigadores, empresas, publicaciones, proyectos y temáticas. Estas colecciones definen el dominio de conocimiento. Cada entidad posee sus respectivos atributos y distintas relaciones con otras entidades que señalaremos aquí. La red de relaciones del modelo de Mitic contiene vínculos explícitos como \dq{trabajar-en} y también relaciones inferidas mediante distintos algoritmos durante proyectos anteriores, que representan un grafo de \textit{adyacencias} sin etiqueta, es decir, relaciones sin nombre. Estas relaciones inferidas tienen distintos pesos  y tejen un grafo de distancias más o menos \dq{especulativas} entre las entidades. 
 
-A partir de esta base de datos de construimos seis índices de búsqueda lucene y un índice de búsqueda más, general, con la información normalizada de los otros seis. La creación offline de índices lucene tiene como finalidad optimizar la base de conocimiento para responder con mayor eficiencia a búsquedas de resultados en un momento posterior. 
+A partir de esta base de datos de construimos seis índices de búsqueda lucene y un índice de búsqueda más general, con la información normalizada de los otros seis. La creación offline de índices lucene tiene como finalidad optimizar la base de conocimiento para responder con mayor eficiencia a búsquedas de resultados en un momento posterior. 
 
 Cada uno de los seis índices por entidad mantiene la estructura del tipo como campos de los documentos. Esto quiere decir que el índice invertido para \emph{Investigadores} tiene los mismos campos
-del modelo de datos de nosql. Además, se agregó el campo \dq{all} que resulta de la concatenación de todos los campos. Este campo resulta útil a la hora de filtrar resultados. El índice general posee un documento por cada entidad de las cinco colecciones, manteniendo también un puntero a la entidad original y su tipo. El proceso de creación de índices se ilustra en la Figura \ref{fig:LuceneIndexWriterEstructurado}%~\nameref{fig:LuceneIndexWriterEstructurado}.
+del modelo de datos de noSQL. Además, se agregó el campo \dq{all} que resulta de la concatenación de todos los campos. Este campo resulta útil a la hora de filtrar resultados. El índice general posee un documento por cada entidad de las cinco colecciones, manteniendo también un puntero a la entidad original y su tipo. El proceso de creación de índices se ilustra en la Figura \ref{fig:LuceneIndexWriterEstructurado}%~\nameref{fig:LuceneIndexWriterEstructurado}.
 
  \begin{figure}[H]
    \centering
@@ -45,7 +45,7 @@ En el Apéndice \allref{chap:db} describimos y ejemplificamos con valores el tip
 
 \textit{Universidades(Id, Canónico, Nombre, Dirección, Página)} \newline
 
-\textit{Investigadores(Id, Nombre y Apellido,	Fecha Nacimiento,	E-mail,   Telefono,   Titulo,  Centro, Lugares Trabajo,	Tema ,	Url Personal)} \newline
+\textit{Investigadores(Id, Nombre y Apellido, Fecha Nacimiento, E-mail,   Telefono,   Titulo,  Centro, Lugares Trabajo, Tema ,  Url Personal)} \newline
 
 \textit{Empresas(Id, Nombre, Año Fundación, Cantidad Empleados, Domicilio, Ciudad, Provincia, ID LinkedIn, Telefono, Website url, Descripcion, Especialidades)} \newline
 
@@ -56,7 +56,7 @@ En el Apéndice \allref{chap:db} describimos y ejemplificamos con valores el tip
 \textit{Publicaciones(Id, Titulo, Keywords, Investigadores Nombre, Journal, Resumen, Url Doc)}
 
 
-Siguiendo a \cite{QADB1} utilizamos $D$ para referir a la base de datos. El conjunto de colecciones $c$, de seis elementos, es \{universidades, investigadores, empresas, publicaciones, proyectos y temática\}, el conjunto de atributos $a$ es \{Canónico, Nombre, Dirección, Página, Nombre y Apellido, Fecha Nacimiento, E-mail, Telefono, Titulo, Centro, Lugares Trabajo, Tema , Url Personal, Año Fundación, Cantidad Empleados, Domicilio, Ciudad, Provincia, ID LinkedIn, Telefono, Website url, Descripcion, Especialidades, Keywords, Director, Investigadores Nombre, Entidad Benefactora, Instrumento, Año, Año Hasta, Journal, Resumen, Url Doc\}, de cardinalidad 33 y el conjunto de valores $v$ contiene cada dato de información independiente de la base de datos. La suma de estos tres conjuntos determinan el espacio de elementos $E$ que es el material básico para el modelo teórico. En nuestro modelo utilizaremos, constantemente, la noción de \textit{entidad}. Una entidad es el equivalente a una \textit{fila} en una base de datos relacional. El investigador Jorge Perez, la Universidad de Mar de Ajó y el tema Inteligencia Artificial son ejemplos de entidades. Llamaremos $e$ al conjunto de entidades.
+Siguiendo a \cite{QADB1} utilizamos $D$ para referir a la base de datos. El conjunto de colecciones $c$, de seis elementos, es \{universidades, investigadores, empresas, publicaciones, proyectos y temática\}, el conjunto de atributos $a$ es \{Canónico, Nombre, Dirección, Página, Nombre y Apellido, Fecha Nacimiento, email, Teléfono, Título, Centro, Lugares Trabajo, Tema , Url Personal, Año Fundación, Cantidad Empleados, Domicilio, Ciudad, Provincia, ID LinkedIn, Teléfono, Website url, Descripción, Especialidades, Keywords, Director, Investigadores Nombre, Entidad Benefactora, Instrumento, Año, Año Hasta, Journal, Resumen, Url Doc\}, de cardinalidad 33 y el conjunto de valores $v$ contiene cada dato de información independiente de la base de datos. La suma de estos tres conjuntos determinan el espacio de elementos $E$ que es el material básico para el modelo teórico. En nuestro modelo utilizaremos, constantemente, la noción de \textit{entidad}. Una entidad es el equivalente a una \textit{fila} en una base de datos relacional. El investigador Jorge Perez, la Universidad de Mar de Ajó y el tema Inteligencia Artificial son ejemplos de entidades. Llamaremos $e$ al conjunto de entidades.
 
 En lo que resta de esta sección (\ref{subsec:modelos-db}) discutiremos la implementación de distintas funciones del modelo teórico sobre este modelo de datos.
 
@@ -77,9 +77,9 @@ En lo que resta de esta sección (\ref{subsec:modelos-db}) discutiremos la imple
 \subsection{Interfaz de servicios}
 \label{subsec:modelos-db}
 
-Para la implementación del módulo de acceso a la información reutilizamos el modelo de datos escrito en java del grafo de entidades que obtuvimos de los investigadores del proyecto Mitic. A estos modelos les agregamos soporte para su representación como documento dentro de los índices. Por ejemplo, el modelo para la entidad \dq{Universidad de Buenos Aires}, además de persistirse en la colección de universidades de la base de datos de mongo, también dispone de una representación como documento en su índice lucene particular (el índice de universidades) y otra en el índice general. A nivel colecciones, cada entidad dispone de un representante que maneja el acceso su información. A partir de estos manejadores de colecciones creamos la interfaz \emph{KnowlegdeBase}, que toma responsabilidades genéricas sobre su colección.
+Para la implementación del módulo de acceso a la información reutilizamos el modelo de datos escrito en Java del grafo de entidades que obtuvimos de los investigadores del proyecto Mitic. A estos modelos les agregamos soporte para su representación como documento dentro de los índices. Por ejemplo, el modelo para la entidad \dq{Universidad de Buenos Aires}, además de persistirse en la colección de universidades de la base de datos de MongoDB, también dispone de una representación como documento en su índice lucene particular (el índice de universidades) y otra en el índice general. A nivel colecciones, cada entidad dispone de un representante que maneja el acceso su información. A partir de estos manejadores de colecciones creamos la interfaz \emph{KnowlegdeBase}, que toma responsabilidades genéricas sobre su colección.
 
-Los atributos relacionales son: {\color{red}ESTOS}.
+Los atributos relacionales son: {\color{red}ESTOS}. %terminar esto o sacar.
 
 Por otro lado, las adyacencias del grafo pueden relacionar, en principio, a cualquier entidad con cualquier otra entidad y sin ninguna especificación de la naturaleza de la relación. Las adyacencias representan la relación general \dq{se relaciona con} sin especificar un modo puntual como sería \dq{trabaja en} o \dq{estudió con}, etc. 
 
@@ -94,9 +94,10 @@ El $KnowledgeManager$ ofrece diferentes servicios de verificación de entidades.
   \item Si el conjunto de tokens se traduce como un valor de alguna entidad del modelo
 \end{itemize}
 
-Estos servicios cubren lo que en \ref{subsec:closed-domain} definimos como función de traducción, \tradqd. Para la implementación de estos servicios, en todos los casos, reificamos la noción de comparación (Ver Apéndice \allref{sec:comparadores}), asignando distintos comparadores a los elementos. 
+Estos servicios % te referís a lo que mencionás como problemas? no lo cambies porque no se entiene la correferencia.
+ cubren lo que en \ref{subsec:closed-domain} definimos como función de traducción, \tradqd. Para la implementación de estos servicios, en todos los casos, reificamos la noción de comparación (Ver Apéndice \allref{sec:comparadores}), asignando distintos comparadores a los elementos. 
 
-Para resolver los primeros dos items definimos, para cada colección $c_i \in c$ un diccionario de sinónimos a mano ($syn(c_i)$) y también para cada atributo $a_j \in a$ definimos diccionarios de sinónimos $syn(a_j)$. Estos diccionarios podrían ampliarse, en un futuro, incorporando tesauro como Wordnet, o diferentes recursos automáticos de sinonímias. Por otro lado, definimos diccionarios solo para el español y sería interesante incorporar un proceso de traducción -o diccionarios diferentes- para cada idioma que el sistema busque soportar- lo cual es una tarea costosa y tediosa. Con respecto a las relaciones entre entidades, para los atributos relacionales normales utilizamos la misma técnica de verificación por lookup en un diccionario, mientras que para las adyacencias consideramos diferentes casos en función de la entidad nombrada.
+Para resolver los primeros dos items definimos, para cada colección $c_i \in c$ un diccionario de sinónimos a mano ($syn(c_i)$) y también para cada atributo $a_j \in a$ definimos diccionarios de sinónimos $syn(a_j)$. Estos diccionarios podrían ampliarse, en un futuro, incorporando un tesauro como Wordnet, o diferentes recursos automáticos de sinonímias. Por otro lado, definimos diccionarios solo para el español y sería interesante incorporar un proceso de traducción -o diccionarios diferentes- para cada idioma que el sistema busque soportar- lo cual es una tarea costosa. Con respecto a las relaciones entre entidades, para los atributos relacionales normales utilizamos la misma técnica de verificación por lookup en un diccionario, mientras que para las adyacencias consideramos diferentes casos en función de la entidad nombrada.
 
 Para abordar la detección de entidades, marcamos diferentes atributos como identificadores. \textit{Universidades(Canónico, Nombre)}, \textit{Investigadores(Nombre y Apellido,E-mail)}, \textit{Empresas(Nombre)}, \textit{Proyectos(Titulo)}, \textit{Temas(Nombre)}, \textit{Publicaciones(Titulo)}. Consideramos que un conjunto de tokens se traduce como una entidad si se traduce como el valor de un atributo marcado como identificatorio. 
 
@@ -114,6 +115,8 @@ El funcionamiento del $KnowlegdeManager$ será ilustrado en lo que resta del cap
 \section{Anotado de la pregunta}
 \label{sec:qp-mitic}
 
+%% Debería haber algún ejemplo acá del resultado.
+
 En este paso se realizan diferentes análisis lingüísticos de la pregunta. El resultado son distintas características asociadas a la pregunta (anotaciones) y distintas entidades semánticas reconocidas útiles para el proceso de generación de respuestas. 
 Las herramientas de procesamiento de lenguaje natural que utilizamos en nuestra implementación incluyen: detección de lenguaje, extracción y verificación de entidades nombradas (NER), de verbos, sustantivos, qwords (qué, quién, cómo) (POS), análisis de n-gramas y categorización por tipo de pregunta (QC).
 Con ellas implementamos diferentes módulos que anotan los tokens y la pregunta original y la dejan preparada para ser consumida por el módulo de generación de respuestas. En lo que sigue de esta sección, veremos los siguientes módulos:
@@ -130,7 +133,7 @@ cada uno de estos pasos utiliza estas herramientas de diferentes maneras. Por ej
 
 \subsection{Detección de idioma}
 
-Uno de los objetivos iniciales del sistema es que sea capaz de responder preguntas en inglés y en español. En el modelo que describiremos en el próximo capítulo, el módulo de detección de idiomas no es utilizado porque en los ejercicios no se evalua esta detección de idiomas. Los archivos de preguntas están separadas por idioma y no se espera que el idioma se infiera a partir de los textos de las preguntas, sino que es un dato dado al sistema participante. En este modelo, en cambio, no está disponible ninguna información sobre el idioma de la pregunta, por lo que es necesario detectarlo. El módulo de detección de idiomas de este sistema utiliza dos librerías distintas: el módulo de detección de idiomas de Freeling y una librería especializada de Cybozu Labs. (Ver apéndices \allref{sec:freeling} y \allref{sec:cybozu} para más información).
+Uno de los objetivos iniciales del sistema es que sea capaz de responder preguntas en inglés y en español. En el modelo que describiremos en el próximo capítulo, el módulo de detección de idiomas no es utilizado porque en los problemas no se evalúa esta detección de idiomas. Los archivos de preguntas están separadas por idioma y no se espera que el idioma se infiera a partir de los textos de las preguntas, sino que es un dato dado al sistema participante. En este modelo, en cambio, no está disponible ninguna información sobre el idioma de la pregunta, por lo que es necesario detectarlo. El módulo de detección de idiomas de este sistema utiliza dos librerías distintas: el módulo de detección de idiomas de Freeling y una librería especializada de Cybozu Labs. (Ver apéndices \allref{sec:freeling} y \allref{sec:cybozu} para más información).
 
 Ambos permiten priorizar la detección de ciertos idiomas sobre otros desde su configuración.
 De esta manera podemos forzarlos a identificar sólo los idiomas esperados en nuestro dominio. 
@@ -145,7 +148,7 @@ pero pueden habilitarse más idiomas de ser necesario y funcionan correctamente.
 \end{figure}
 
 
-El módulo de detección simplemente evalua ambos algoritmos y 
+El módulo de detección simplemente evalúa ambos algoritmos y 
 decide el resultado con un cierto grado de confianza. En caso de existir un empate, se 
 prioriza la opción de Cybozu labs que en la práctica dió resultados más exactos.
 
@@ -177,9 +180,10 @@ Where does Carolina Fernandez live and why does she lives there? & en & en & en 
 \subsection{Entidades nombradas}
 \label{subsec:impl-ner}
 
-Para la detección de entidades utilizamos la clase simple de detección (NER) y clasificación (NEC) de entidades de Freeling y el NERC de Stanford (ver \allref{sec:freeling} y \allref{sec:stanford-both}). Las herramientas de Stanford en general superan a las de Freeling -al igual que el detector de idiomas de Cybozu-, pero solo sirven para inglés. La clasificación utilizada por ambos es la más general de las comentadas en \allref{subsec:nerc}: persona, lugar, organización y otros. 
+Para la detección de entidades utilizamos la clase simple de detección (NER) y clasificación (NEC) de entidades de Freeling y el NERC de Stanford (ver \allref{sec:freeling} y \allref{sec:stanford-both}). Las herramientas de Stanford en general superan a las de Freeling -al igual que el detector de idiomas de Cybozu-, pero sólo sirven para inglés. La clasificación utilizada por ambos es la más general de las comentadas en \allref{subsec:nerc}: persona, lugar, organización y otros. 
 
 Veamos algunos ejemplos de funcionamiento de los módulos de detección de entidades. 
+%% Esta tabla no parece tener sentido acá sacarla o poner lo que corresponda.
 
 \begin{center}
 \begin{tabular}{| p {8cm} | l | l | l |}
@@ -260,6 +264,8 @@ Sin embargo, como ya señalamos oportunamente (ver \allref{subsec:qc}), no exist
 \section{Generación de Respuestas}
 \label{sec:ar-mitic}
 \horrible
+%% Esta parte hay que mejorarla y poner algún ejemplo, no está ``horrible''
+
 Una vez etiquetados todos los tokens de la pregunta, se procede a marcar como procesadas las ``marcadores sintácticos", mediante un filtro que incorpora stopwords por idioma y algunas clases de pos-tags (como proposiciones, pronombres y algunos conectores). Si al etiquetar la pregunta no se logró identificar ninguna entidad del modelo, entonces será dificil avanzar. Como vimos recién, la fase de procesamiento de la pregunta para el caso estructurado excede por mucho la mera anotación lingüística: al finalizar el etiquetado deberíamos disponer de al menos una entidad reconocida por el modelo. Por otro lado, durante la fase de etiquetado cada palabra se marca como procesada. Como acabamos de señalar, al finalizar este proceso se marcan también como procesados ciertos tokens triviales. En lugar de exigir una traducción completa de la pregunta, aplicamos la siguiente regla: si no ha logrado etiquetar una cierta cantidad de tokens (más del 80\%), entonces se considera que no tiene sentido dar por ``comprendida" la pregunta y se procede a un segundo análisis, computacionalmente más costoso y además más inexacto, en el que se intenta encontrar alguna entidad con otros métodos que enunciaremos en breve. En caso de encontrarse una entidad, entonces el flujo del programa retorna al curso de análisis estructurado. Si esto no ocurre, se devuelve la lista de entidades (documentos) que el índice lucene general devuelve para la pregunta original interpretada como una query normal de information retrieval. Este caso, si bien retorna información, es un caso de falla de procesamiento. Esta lista de documentos viene acompañada de un mensaje del tipo: \dblquote{No se logró interpretar su pregunta} y, en un trabajo futuro, podría incorporar un sistema de recomendaciones e idas y vueltas con el usuario (¿Quiso decir...?).
 
 Si, en cambio, el threshold de tokens es alcanzado, entonces se avanza al siguiente paso, en el que se distingue según la cantidad de entidades del modelo reconodias. Por entidades del modelo entenderemos, aquí, entidades internas, objetos, no nombres de clase o de atributos gni valores. Distinguimos estos tres casos: `ninguna entidad reconocida', `una entidad reconocida', `más de una entidad reconocida'.
@@ -280,7 +286,9 @@ Por otro lado, si hay más de una entidad reconocida entonces hay sólo algunos 
 
 
 \subsubsection*{Una entidad}
-El mejor caso es aquél en el que se reconocío una entidad y otros datos lingüisticos que permitan especificar qué se está preguntando. Al especificar acerca de qué/quién resulta mucho más sencillo canalizar qué se está preguntando. Los modelos que representan objetos (ver \allref{subsec:modelos-db}) son subclases de $NodoBase$, el cual representa una entidad en abstracto. Una entidad sabe responder preguntas acerca de ella. Para esto, utiliza las anotaciones de verbos, atributos nombrados y qwords para identificar qué se está preguntando. La pregunta puede responderse con un atributo o con una relación. Los distintos atributos de las distintas entidades se corresponden con verbos y con tipos de respuesta esperada. 
+El mejor caso es aquél en el que se reconoció una entidad y otros datos lingüísticos que permitan especificar qué se está preguntando. Al especificar acerca de qué/quién resulta mucho más sencillo canalizar qué se está preguntando. Los modelos que representan objetos (ver \allref{subsec:modelos-db}) son subclases de $NodoBase$, el cual representa una entidad en abstracto. Una entidad sabe responder preguntas acerca de ella. Para esto, utiliza las anotaciones de verbos, atributos nombrados y qwords para identificar qué se está preguntando. La pregunta puede responderse con un atributo o con una relación. Los distintos atributos de las distintas entidades se corresponden con verbos y con tipos de respuesta esperada. 
 
 [[Detalle de casos y combinaciones de verbos + tipo de respuesta esperada + atributo]]
 [[Ejemplos]]
+
+%No se entiende esto último. Toda esta sección hay que mejorarla con ejemplos en lo posible.
