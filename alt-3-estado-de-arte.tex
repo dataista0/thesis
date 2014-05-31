@@ -42,7 +42,7 @@ El MRR mide la habilidad de un sistema para responder un conjunto de pregunta $Q
 
 \begin{equation*}
     RR(q_i) = \begin{cases}
-               0     & \text{si existe al menos una respuesta correcta}\\
+               0     & \text{si no existe ninguna respuesta correcta}\\
                \frac{1}{\text{Posicion de }q_i} & \text{si }q_i\text{ es la primer respuesta correcta}\\
            \end{cases}
 \end{equation*}
@@ -557,5 +557,4 @@ formulaciones lingüísticas de lo mismo, por ejemplo:
 este paso se utilizan técnicas de machine learning que requieren
 entrenamiento, y modelos basados en scores para ensamblar los distintos
 resultados intermedios y generar una respuesta final.
-
 
