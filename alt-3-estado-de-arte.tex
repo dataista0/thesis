@@ -37,7 +37,7 @@ Con respecto a la métricas de evaluación para sistemas como un todo, veremos a
 El MRR mide la habilidad de un sistema para responder un conjunto de pregunta $Q$. Asume que el sistema devuelve una o más respuestas por pregunta, en orden de \dq{confiabilidad}. El puntaje de cada pregunta individual ($RR(q_i)$) se define como la inversa de la posición de la primera respuesta correcta en la lista de respuestas dada, o cero si no hay ninguna.
 
 \begin{equation}\label{eq:mrr}
- \text{MRR} = \frac{1}{|Q|} \sum_{i=1}^{|Q|} \frac{1}{RR(q_i)}. \!
+ \text{MRR} = \frac{1}{|Q|} \sum_{i=1}^{|Q|} RR(q_i). \!
 \end{equation}
 
 \begin{equation*}
@@ -557,4 +557,3 @@ formulaciones lingüísticas de lo mismo, por ejemplo:
 este paso se utilizan técnicas de machine learning que requieren
 entrenamiento, y modelos basados en scores para ensamblar los distintos
 resultados intermedios y generar una respuesta final.
-
