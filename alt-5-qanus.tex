@@ -549,7 +549,7 @@ Finalmente, evaluamos diferentes contenidos para este valor. A modo de testeo, u
 
 En concreto, esto se reduce a cuatro casos de código, que en la sección de experimentacioń llamaremos: \textbf{1) Tema Test}, cuando utilizamos el tema explícito de los datos de testing, (\textbf{2) Tema NERS}), \textbf{3) Tema sustantivos} y \textbf{4) Tema híbrido}.
 
-\subsubsection{Query Generation}
+\subsubsection{Generación de queries}
 
 Para la extracción de queries utilizamos, como primer método y baseline de evaluación, el implementado por qanus. La query generada contiene, sin repetir, todas las palabras no-stopwords del campo target y todos los sustantivos, verbos y adjetivos de la pregunta completa contra el campo $ALL$. En la evaluación llamaremos a este método \textbf{baseline}. Le agregamos, además, números y fechas al final. Implementamos un segundo método, aprovechando el conocimiento de la estructura de datos del índice, que consiste en agregarle a esta misma query un caso, si el tema no es vacío, en el que se busca por este tema en el título de los artículos, con un peso virtualmente infinito frente al resto de la query.
 
@@ -568,7 +568,7 @@ Finalmente, implementamos la heurística propuesta por los papers \cite{QA1} y \
 \item El \sq{focus} de la pregunta
 \end{enumerate}
 
-Dado que no implementamos ningún algoritmo de extracción de \textit{focus}, el último item fue reemplazado por el tema de la pregunta, si existiera.  En la evaluación llamaremos a este método \textbf{lasso}, por el nombre del sistema en el que fue implementado por primera vez.
+Dado que no implementamos ningún algoritmo de extracción de \textit{focus}, el último item fue reemplazado por el tema de la pregunta, si existiera.  En la evaluación llamaremos a este método \textbf{lasso}, por el nombre del sistema en el que fue implementado por primera vez. Además, agregamos números y fechas también, como en el baseline. En realidad, detectores de entidades distintos de freeling suelen incorporar los números como entidades nombradas, por lo que no salimos de la propuesta de lasso.
 
 \subsubsection{Generación de respuestas}
 
@@ -576,7 +576,7 @@ Con respecto a la generación de respuestas, incorporamos solamente distintos sc
 Los nuevos features incorporados son:
 
 \begin{itemize}
-\item LengthScore: Contempla la longitud del pasaje, priorizando oraciones cortas pero no demasiado cortas. Este score trata de evitar problemas vinculados con mala redacción en los documentos que generaban pasajes enormes y sin sentido para las librerías.
+\item LengthScore : Contempla la longitud del pasaje, priorizando oraciones cortas pero no demasiado cortas. Este score trata de evitar problemas vinculados con mala redacción en los documentos que generaban pasajes enormes y sin sentido para las librerías.
 \item QVerbScore: Contempla la presencia de verbos de la pregunta en el pasaje candidato.
 \item QNounScore: Contempla la presencia de sustantivos de la pregunta en el pasaje candidato.
 \item QNERScore: Contempla la presencia de las entidades nombradas de la pregunta en el pasaje candidato.
@@ -599,7 +599,465 @@ $PassageScore_3 =  PassageScore_{bl} * 0.4 + LengthScore * 0.15 + QNERScore * 0.
 \subsection{Experimentación}
 \label{sec:eval}
 
-Hicimos corridas con todas las combinaciones recién expuestas y, además, variamos la cantidad de documentos retornados por lucene (50 en el sistema baseline) y la cantidad de pasajes extraidos de ellos (40 en el sistema baseline).  Por otro lado, modificamos el sistema para que devuelva una lista de respuestas en lugar de una sola, considerando que los resultados serían bajos. Sobre esta lista, utilizamos la métrica MRR (Mean Reciprocal Rank), única adaptada al caso, sobre distintas longitudes de listas de respuestas. Finalmente, utilizamos una evaluación automática, lenient (indulgente), es decir, no consideramos la justificación de la respuesta sino solo la respuesta. Como $R-set$ utilizamos solamente la respuesta golstandard disponible en los archivos de test y, considerando su tamaño acotado, evaluamos 4 diferentes métricas: match exacto, cubrimiento del 100\%, 90\% y 80\% de la respuesta esperada por la respuesta dada. 
+Hicimos corridas con todas las combinaciones recién expuestas y, además, variamos la cantidad de documentos retornados por lucene (50 en el sistema baseline) y la cantidad de pasajes extraidos de ellos (40 en el sistema baseline).  Por otro lado, modificamos el sistema para que devuelva una lista de respuestas en lugar de una sola, considerando que los resultados serían bajos. Sobre esta lista, utilizamos la métrica MRR (Mean Reciprocal Rank), única adaptada al caso, sobre distintas longitudes de listas de respuestas. Para evaluar utilizamos consideramos solamente la respuesta y no el pasaje de justificación, es decir, realizamos una evaluación lenient (indulgente). Por otro lado, en el caso general utilizamos una evaluación automática, aunque luego revisamos las respuestas para algunos caso de modo manual. Como $R-set$ utilizamos solamente la respuesta golstandard disponible en los archivos de test y, considerando su tamaño acotado, evaluamos diferentes métricas. Utilizamos, primero, un match exacto, es decir, chequeamos que la respuesta dada y la respuesta esperada coincidan exactamente. Luego usamos cubrimientos de la respuesta esperada por la respuesta dada, con diferentes porcentajes de cubrimiento. Esta decisión se justifica, por ejemplo, para el caso de la primer pregunta del ejercicio para el español, en la que la respuesta esperada es \dq{Colegio Hogwarts de Magia y Hechiceria} y nuestro sistema encuentra, en 5to lugar, la respuesta \dq{Hogwarts}.
+
+A continuación listamos sintéticamente todas las variables libres y las instanciaciones que elegimos cuyas permutaciones generan una corrida distinta:
+
+\begin{itemize}
+  \item Idioma: español, portugués (2 opciones)
+  \item Cantidad de Documentos retornados por el módulo de IR: 50, 100, 200 (3 opciones)
+  \item Cantidad de Pasajes extraidos de esos documentos: 20, 40, 70 (3 opciones)
+  \item Método de Generación de Queries: baseline (1), improved baseline (2), lasso (3) (3 opciones)
+  \item Método de Inferencia de Temas: Test (1), NERs (2), sustantivos (3), híbrido (4) (4 opciones)
+  \item Método de Ranking de Pasajes: baseline (1), 2, 3 (3 opciones)
+\end{itemize}
+
+Por otro lado, las siguientes opciones no determinan corridas pero sí determinan resultados distintos:
+
+\begin{itemize}
+  \item Cantidad de respuestas dadas por el sistema: 1, 5, 10, 25 (4 opciones)
+  \item Forma de evaluación automática: exacto, cubrimiento del 100\%, 75\% y 50\%, 15\%  y 1\% (6 opciones)
+\end{itemize}
+
+La cantidad de permutaciones totales es inmensa: 2 idiomas $\times$ 3 métodos de generación de queries $\times$ 4 métodos de generación de tópicos $\times$ 3 métodos de rankeo de pasajes $\times$ $n$ distintas cantidades de documentos retornados por lucene $\times$ $m$ cantidad de pasajes extraidos de los documentos, con $n=3$ y $m=3$ es, 648. Por eso, realizamos el siguiente procedimiento experimental: en primer lugar, evaluamos, para el sistema baseline, variaciones sobre la cantidad de documentos y de pasajes. Como método \sq{baseline} de inferencia de tópicos usamos el método 2), que agrega solo NERs como target, ya que el método baseline de generación de queries contiene sustantivos, adjetivos y verbos, pero no entidades nombradas. Sobre la combinación de totales que dieron mejores resultados para esta combinación, evaluamos los diferentes métodos. Como veremos en la corrida 1, muchas de las variaciones planteadas parecen no generar grandes cambios en los resultados, por lo que redujimos la cantidad de parámetros en las corridas posteriores. \newline 
+
+Por otro lado, consideramos diferentes conjuntos de preguntas, discriminando por tipo de pregunta y por base de conocimientos en la que se esperaba encontrarla. Con respecto al tipo de pregunta, el sistema no considera preguntas que no sean factoids y nosotros diponemos de esa información en el archivo de datos. Con respecto a la base de conocimientos en la que se espera encontrarla podemos discriminar entre preguntas cuya respuesta goldstandard surge de wikipedias y aquellas que surgen del corpus que no utilizamos. Es esperable que los resultados sean superiores en preguntas \textit{factoids} cuya respuesta esperaba está en wikipedia. 
+Limitamos la presentación de resultados a preguntas factoids cuya respuesta goldstandard está en wikipedia. Los resultados para los demás casos, salvo alguna escasas excepciones, son inferiores. Como vimos anteriormente, las preguntas que se responden con wikipedia son 162 para el español y XXX para el portugués, las factoid son 157 y XXX respectivamente y las que cumplen ambas condiciones son 129 y XXX.  \newline
+
+
+Las corridas que vienen a continuación se estructuran de la siguiente manera: en la \textbf{Corrida 1}, variamos la cantidad de documentos retornados y la cantidad de pasajes extraidos de los mismos, dejando fijos los métodos de algoritmia y el idioma. En las siguientes tres corridas (\textbf{Corrida 2.1},  \textbf{Corrida 2.2} y \textbf{Corrida 2.3}) variamos de a uno los métodos de generacion de queries, inferencia de temas y ranking de pasajes, respectivamente, dejando fijos en el método baseline los otros dos. En las siguientes corridas evaluamos permutaciones de estos métodos para encontrar la configuración optima y, en la siguiente, aplicamos esta configuración para el portugués. En la subsección de la tesis siguiente revisaremos los resultados para esta configuración óptima en busca de observaciones de interés. \newline
+
+
+\textbf{Corrida 1: instanciación de cantidades} \newline
+
+En la primer corrida variamos la cantidad de documentos retornados por el índice entre $\{50, 100, 200\}$, y variamos también la cantidad de pasajes extraidos de esos documentos entres $\{20, 40, 70\}$, generando un total de 9 ejecuciones y dejando fijos los siguente parámetros: \newline
+
+\begin{itemize}
+  \item Idioma: Español
+  \item Método de Generación de Queries: 1
+  \item Método de Temas: 2
+  \item Método de Ranking: 1
+\end{itemize}
+
+Las tablas \ref{table:1_50_getExactMRRWikiFactoid_getCovrMRRWikiFactoid}, \ref{table:1_100_getExactMRRWikiFactoid_getCovrMRRWikiFactoid} y \ref{table:1_200_getExactMRRWikiFactoid_getCovrMRRWikiFactoid} presentan los resultados generales de esta primera corrida.
+
+\begin{table}[H]
+\centering
+\begin{center}
+\begin{tabular}{|l | l | l | l | l | l | l |}
+\hline
+Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
+$MRR_{1}$ & 7.69 & 7.69 & 8.46 & 10.00 & 10.00 & 10.00  \\ \hline
+$MRR_{5}$ & 8.87 & 9.18 & 9.95 & \textbf{12.51} & \textbf{13.47} & \textbf{13.54}  \\ \hline
+$MRR_{10}$ & \textbf{9.37} & \textbf{9.44} & \textbf{10.21} & \textbf{12.77} & \textbf{14.25} & \textbf{14.31}  \\ \hline
+$MRR_{25}$ & \textbf{9.56} & \textbf{9.63} & \textbf{10.40} & \textbf{13.07} & \textbf{14.58} & \textbf{14.65}  \\ \hline
+\end{tabular}
+
+\medskip
+
+\begin{tabular}{|l | l | l | l | l | l | l |}
+\hline
+Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
+$MRR_{1}$ & \textbf{7.75} & \textbf{7.75} & \textbf{8.53} & \textbf{10.08} & \textbf{10.08} & \textbf{10.08}  \\ \hline
+$MRR_{5}$ & \textbf{8.94} & \textbf{9.25} & \textbf{10.03} & 12.42 & 13.39 & 13.45  \\ \hline
+$MRR_{10}$ & 9.31 & 9.38 & 10.16 & 12.55 & 14.03 & 14.10  \\ \hline
+$MRR_{25}$ & 9.54 & 9.61 & 10.39 & 12.89 & 14.41 & 14.48  \\ \hline
+\end{tabular}
+
+\medskip
+
+\begin{tabular}{|l | l | l | l | l | l | l |}
+\hline
+Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
+$MRR_{1}$ & 6.98 & 6.98 & 7.75 & 8.53 & 8.53 & 8.53  \\ \hline
+$MRR_{5}$ & 8.58 & 8.89 & 9.66 & 11.99 & 13.02 & 13.02  \\ \hline
+$MRR_{10}$ & 8.92 & 8.99 & 9.76 & 12.09 & 13.64 & 13.64  \\ \hline
+$MRR_{25}$ & 9.12 & 9.19 & 9.96 & 12.43 & 14.02 & 14.02  \\ \hline
+\end{tabular}
+
+\caption{Corrida 1: con 50 documentos de Lucene y 20, 40 y 70 pasajes extraidos respectivamente}
+\label{table:1_50_getExactMRRWikiFactoid_getCovrMRRWikiFactoid}
+\end{center}
+\end{table}
+
+
+\begin{table}[H]
+\centering
+\begin{center}
+\begin{tabular}{|l | l | l | l | l | l | l |}
+\hline
+Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
+$MRR_{1}$ & 6.15 & 6.15 & 6.92 & 7.69 & 7.69 & 7.69  \\ \hline
+$MRR_{5}$ & 7.24 & 7.40 & 8.17 & 10.09 & 11.12 & 11.12  \\ \hline
+$MRR_{10}$ & 7.37 & 7.40 & 8.28 & 10.33 & 11.76 & 11.76  \\ \hline
+$MRR_{25}$ & 7.67 & 7.73 & 8.61 & 10.84 & 12.27 & 12.27  \\ \hline
+\end{tabular}
+
+\medskip
+
+\begin{tabular}{|l | l | l | l | l | l | l |}
+\hline
+Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
+$MRR_{1}$ & 6.25 & 6.25 & 7.03 & 7.81 & 7.81 & 7.81  \\ \hline
+$MRR_{5}$ & 7.42 & 7.58 & 8.36 & 10.27 & 11.32 & 11.32  \\ \hline
+$MRR_{10}$ & 7.64 & 7.66 & 8.54 & 10.70 & 12.17 & 12.17  \\ \hline
+$MRR_{25}$ & 7.95 & 8.02 & 8.90 & 11.19 & 12.66 & 12.66  \\ \hline
+\end{tabular}
+
+\medskip
+
+\begin{tabular}{|l | l | l | l | l | l | l |}
+\hline
+Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
+$MRR_{1}$ & 6.20 & 6.20 & 6.98 & 7.75 & 7.75 & 7.75  \\ \hline
+$MRR_{5}$ & 7.82 & 7.97 & 8.75 & 10.68 & 11.72 & 11.72  \\ \hline
+$MRR_{10}$ & 7.95 & 7.97 & 8.84 & 11.12 & 12.58 & 12.58  \\ \hline
+$MRR_{25}$ & 8.24 & 8.31 & 9.18 & 11.60 & 13.05 & 13.05  \\ \hline
+\end{tabular}
+
+\caption{Corrida 1 con 100 documentos de Lucene y 20, 40, 70 pasajes extraidos respectivamente}
+\label{table:1_100_getExactMRRWikiFactoid_getCovrMRRWikiFactoid}
+\end{center}
+\end{table}
+
+
+
+
+
+\begin{table}[H]
+\centering
+\begin{center}
+\begin{tabular}{|l | l | l | l | l | l | l |}
+\hline
+Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
+$MRR_{1}$ & 4.69 & 4.69 & 4.69 & 5.47 & 5.47 & 5.47  \\ \hline
+$MRR_{5}$ & 6.64 & 6.80 & 6.80 & 8.49 & 9.53 & 9.53  \\ \hline
+$MRR_{10}$ & 6.85 & 6.87 & 7.08 & 8.91 & 10.36 & 10.36  \\ \hline
+$MRR_{25}$ & 7.03 & 7.06 & 7.27 & 9.23 & 10.68 & 10.68  \\ \hline
+\end{tabular}
+
+\medskip
+
+\begin{tabular}{|l | l | l | l | l | l | l |}
+\hline
+Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
+$MRR_{1}$ & 4.62 & 4.62 & 4.62 & 5.38 & 5.38 & 5.38  \\ \hline
+$MRR_{5}$ & 6.35 & 6.50 & 6.50 & 8.23 & 9.26 & 9.26  \\ \hline
+$MRR_{10}$ & 6.66 & 6.68 & 6.87 & 8.86 & 10.31 & 10.31  \\ \hline
+$MRR_{25}$ & 6.81 & 6.83 & 7.02 & 9.15 & 10.59 & 10.59  \\ \hline
+\end{tabular}
+
+\medskip
+
+\begin{tabular}{|l | l | l | l | l | l | l |}
+\hline
+Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
+$MRR_{1}$ & 4.69 & 4.69 & 4.69 & 5.47 & 5.47 & 5.47  \\ \hline
+$MRR_{5}$ & 6.64 & 6.80 & 6.80 & 8.49 & 9.53 & 9.53  \\ \hline
+$MRR_{10}$ & 6.77 & 6.80 & 6.98 & 8.90 & 10.37 & 10.37  \\ \hline
+$MRR_{25}$ & 7.00 & 7.02 & 7.21 & 9.31 & 10.78 & 10.78  \\ \hline
+\end{tabular}
+\caption{Corrida 1 con 200 documentos de Lucene y 20, 40 y 70 pasajes extraidos respectivamente}
+\label{table:1_200_getExactMRRWikiFactoid_getCovrMRRWikiFactoid}
+\end{center}
+\end{table}
+
+En primer lugar, observamos que el incremento de documentos retornados por el módulo de recuperación de información empobrece los resultados en todos los casos. 
+En segundo lugar, se observa que extraer 70 pasajes empobrece los resultados, también en todos los casos. Las opciones de 20 y 40 pasajes no son tan lineales. En la table \ref{table:1_50_getExactMRRWikiFactoid_getCovrMRRWikiFactoid} marcamos en negritas los casos en los que uno u otro dieron mejores resultados. Como se puede apreciar, el cuadrante más exacto (para $MRR_{1}$ y $MRR_{5}$ y para comparaciones exactas, 40 dio mejores resultados. Considerando esto, utilizaremos la configuración original del sistema baseline de qanus (50 documentos $\times$ 40 pasajes) para el resto de las corridas. \newline
+
+
+\textbf{Corrida 2.1: Generación de Queries}\newline
+
+En esta corrida variamos únicamente el método de generación de queries, generando un total de 3 ejecuciones y dejando fijos los siguente parámetros: \newline
+
+\begin{itemize}
+  \item Idioma: Español
+  \item Cantidad de documentos retornados: 50
+  \item Cantidad de pasajes extraidos: 40
+  \item Método de Temas: 2
+  \item Método de Ranking: 1
+\end{itemize}
+
+Los resultados pueden observarse en la tabla \ref{table:2_1_50_40_getExactMRRWikiFactoid_getCovrMRRWikiFactoidx}. En ella salta a la vista que las diferencias son análogas para todas las celdas de las matrices: el método 3) es ligeramente superior al 1) y el 2) queda resagado por lejos. 
+
+
+\begin{table}[H]
+\centering
+\begin{center}
+\begin{tabular}{|l | l | l | l | l | l | l |}
+\hline
+\multicolumn{7}{|c|}{1) Baseline}  \\ \hline
+Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
+
+$MRR_{1}$ & 7.75 & 7.75 & 8.53 & 10.08 & 10.08 & 10.08  \\ \hline
+$MRR_{5}$ & 8.94 & 9.25 & 10.03 & 12.42 & 13.39 & 13.45  \\ \hline
+$MRR_{10}$ & 9.31 & 9.38 & 10.16 & 12.55 & 14.03 & 14.10  \\ \hline
+$MRR_{25}$ & 9.54 & 9.61 & 10.39 & 12.89 & 14.41 & 14.48  \\ \hline
+\end{tabular}
+
+\medskip
+
+
+\begin{tabular}{|l | l | l | l | l | l | l |}
+\hline
+\multicolumn{7}{|c|}{2) Improved Baseline}  \\ \hline
+Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
+
+$MRR_{1}$ & 3.91 & 3.91 & 3.91 & 3.91 & 3.91 & 3.91  \\ \hline
+$MRR_{5}$ & 5.36 & 5.91 & 5.91 & 8.50 & 9.31 & 9.31  \\ \hline
+$MRR_{10}$ & 5.96 & 6.43 & 6.43 & 9.02 & 10.18 & 10.18  \\ \hline
+$MRR_{25}$ & 5.96 & 6.43 & 6.49 & 9.20 & 10.46 & 10.46  \\ \hline
+\end{tabular}
+
+
+\medskip
+
+\begin{tabular}{|l | l | l | l | l | l | l |}
+\hline
+\multicolumn{7}{|c|}{3) Lasso}  \\ \hline
+Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
+
+$MRR_{1}$ & 7.81 & 7.81 & 8.59 & 10.16 & 10.94 & 10.94  \\ \hline
+$MRR_{5}$ & 9.27 & 9.58 & 10.76 & 13.52 & 14.49 & 14.56  \\ \hline
+$MRR_{10}$ & 9.64 & 9.71 & 10.89 & 13.65 & 15.15 & 15.21  \\ \hline
+$MRR_{25}$ & 9.94 & 10.01 & 11.18 & 14.05 & 15.59 & 15.65  \\ \hline
+\end{tabular}
+
+\caption{Corrida 2.1: Generacion de Queries 1, 2 y 3 respectivamente}
+\label{table:2_1_50_40_getExactMRRWikiFactoid_getCovrMRRWikiFactoidx}
+\end{center}
+\end{table}
+
+
+\textbf{Corrida 2.2: Inferencia de Temas}\newline
+
+En esta corrida variamos únicamente el método de inferencia de temas, generando un total de 4 ejecuciones y dejando fijos los siguente parámetros: \newline
+
+
+\begin{itemize}
+  \item Idioma: Español
+  \item Cantidad de documentos retornados: 50
+  \item Cantidad de pasajes extraidos: 40
+  \item Método de Generación de Queries: 1
+  \item Método de Ranking de Pasajes: 1
+\end{itemize}
+
+Los resultados pueden observarse en la tabla \ref{table:2_2_40_getExactMRRWikiFactoid_getCovrMRRWikiFactoidy} y resulta que el método utilizado (Ners + números de la primer pregunta como target) es el más efectivo en todos los casos.\newline
+
+\begin{table}[H]
+\centering
+\begin{center}
+\begin{tabular}{|l | l | l | l | l | l | l |}
+\hline
+\multicolumn{7}{|c|}{1) Tema Test}  \\ \hline
+Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
+$MRR_{1}$ & 6.15 & 6.15 & 6.15 & 6.92 & 6.92 & 6.92  \\ \hline
+$MRR_{5}$ & 7.87 & 8.41 & 8.79 & 10.21 & 10.85 & 10.85  \\ \hline
+$MRR_{10}$ & 8.08 & 8.49 & 8.87 & 10.53 & 11.77 & 11.77  \\ \hline
+$MRR_{25}$ & 8.29 & 8.72 & 9.16 & 10.91 & 12.18 & 12.18  \\ \hline
+\end{tabular}
+
+\medskip
+
+\begin{tabular}{|l | l | l | l | l | l | l |}
+\hline
+\multicolumn{7}{|c|}{2) Tema NERs}  \\ \hline
+Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
+$MRR_{1}$ & 7.75 & 7.75 & 8.53 & 10.08 & 10.08 & 10.08  \\ \hline
+$MRR_{5}$ & 8.94 & 9.25 & 10.03 & 12.42 & 13.39 & 13.45  \\ \hline
+$MRR_{10}$ & 9.31 & 9.38 & 10.16 & 12.55 & 14.03 & 14.10  \\ \hline
+$MRR_{25}$ & 9.54 & 9.61 & 10.39 & 12.89 & 14.41 & 14.48  \\ \hline
+\end{tabular}
+
+\medskip
+
+
+\begin{tabular}{|l | l | l | l | l | l | l |}
+\hline
+\multicolumn{7}{|c|}{3) Tema Sustantivos}  \\ \hline
+Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
+$MRR_{1}$ & 3.85 & 3.85 & 3.85 & 4.62 & 4.62 & 4.62  \\ \hline
+$MRR_{5}$ & 4.19 & 4.19 & 4.45 & 5.88 & 6.14 & 6.14  \\ \hline
+$MRR_{10}$ & 4.19 & 4.30 & 4.56 & 5.99 & 6.43 & 6.43  \\ \hline
+$MRR_{25}$ & 4.47 & 4.58 & 4.83 & 6.46 & 7.08 & 7.08  \\ \hline
+\end{tabular}
+
+\medskip
+
+\begin{tabular}{|l | l | l | l | l | l | l |}
+\hline
+\multicolumn{7}{|c|}{4) Tema NERs + Sustantivos}  \\ \hline
+Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
+$MRR_{1}$ & 5.47 & 5.47 & 6.25 & 7.03 & 7.03 & 7.03  \\ \hline
+$MRR_{5}$ & 7.12 & 7.43 & 8.22 & 9.77 & 10.51 & 10.57  \\ \hline
+$MRR_{10}$ & 7.36 & 7.43 & 8.22 & 9.77 & 11.03 & 11.10  \\ \hline
+$MRR_{25}$ & 7.64 & 7.71 & 8.49 & 10.15 & 11.45 & 11.52  \\ \hline
+\end{tabular}
+
+
+
+
+\caption{Corrida 2.2: Metodos 1, 2, 3 y 4 respectivamente}
+\label{table:2_2_40_getExactMRRWikiFactoid_getCovrMRRWikiFactoidy}
+\end{center}
+\end{table}
+
+
+\textbf{Corrida 2.3: Ranking de Pasajes}\newline
+
+En esta corrida variamos únicamente el método de ranking de pasajes, generando un total de 3 ejecuciones y dejando fijos los siguente parámetros: \newline
+
+
+\begin{itemize}
+  \item Idioma: Español
+  \item Cantidad de documentos retornados: 50
+  \item Cantidad de pasajes extraidos: 40
+  \item Método de Generación de Queries: 1
+  \item Método de Temas: 2
+\end{itemize}
+
+Los resultados pueden observarse en la tabla \ref{table:2_3_40_getExactMRRWikiFactoid_getCovrMRRWikiFactoidq}. Las fórmulas nuevas propuestas no resultaron de utilidad en ningún caso. Viendo la diferencia de resultados entre los métodos 2 y 3, se hace claro que el $LengthScore$ aporta, ya que es el único agregado sustantivo en el método 3 y este tiene una mejoría significativa en comparación con el 2. De allí surgió la idea de aplicarlo a la fórmula baseline.
+Hicimos dos modificaciónes: Una ponderando 90 / 10 y otra ponderando 80 / 20 y 70 / 30 dando buenos resultados las tres (Ver tabla \ref{table:2_4}).
+La fórmula del score es la siguiente:
+
+\begin{equation*}
+    LengthScore = \begin{cases}
+               1.0     & 4 <   \#tokens < 100\\
+               0.5     & 100 \leq \#tokens < 200 \\
+               0.0     & \text{En cualquier otro caso}\\
+           \end{cases}
+\end{equation*}
+
+
+Como se puede ver en \ref{table:2_4}, agregar este valor en el score general del pasaje mejora los resultados. Las causas más evidentes son que el score funciona como un filtro para pasajes mal formados (es decir, que por alguna razón el spliter no logró \sq{separar} bien) o bien pasajes bien formados pero excesivamente largos. En ambos casos, las herramientas de procesamiento de lenguajes pierden su performance, por lo que pasajes bien rankeados, en el momento de la extracción de la respuesta no son de utilidad. Evaluamos tres ponderaciones -9/1, 8/2 y 7/3-, dando mejores resultados cuanto más se ponderó el score, salvo para $MRR_1$ que se redujo en la tercer corrida. Dado que esta métrica es la preferida, decidimos quedarnos con esta fórmula. Eventualmente podría evaluarse otra métricas y descubrir por qué se dió que esta funcionó mejor para $MMR_1$ y 7/3 funcionó mejor para el resto. Todo parece indicar que por este camino pueden encontrarse mejoras sustantivas con bajo costo de implementación, sea mejorando la ponderación, sea complejizando la formulación del score, que, como puede verse, es realmente simple.
+
+
+
+
+\begin{table}[H]
+\centering
+\begin{center}
+
+\begin{tabular}{|l | l | l | l | l | l | l |}
+\hline
+\multicolumn{7}{|c|}{$PassageScore_{bl}$}  \\ \hline
+Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
+$MRR_{1}$ & 7.75 & 7.75 & 8.53 & 10.08 & 10.08 & 10.08  \\ \hline
+$MRR_{5}$ & 8.94 & 9.25 & 10.03 & 12.42 & 13.39 & 13.45  \\ \hline
+$MRR_{10}$ & 9.31 & 9.38 & 10.16 & 12.55 & 14.03 & 14.10  \\ \hline
+$MRR_{25}$ & 9.54 & 9.61 & 10.39 & 12.89 & 14.41 & 14.48  \\ \hline
+\end{tabular}
+
+\medskip
+
+\begin{tabular}{|l | l | l | l | l | l | l |}
+\hline
+\multicolumn{7}{|c|}{$PassageScore_2$}  \\ \hline
+Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
+$MRR_{1}$ & 3.10 & 3.10 & 3.10 & 4.65 & 4.65 & 4.65  \\ \hline
+$MRR_{5}$ & 5.06 & 5.22 & 5.22 & 7.51 & 8.35 & 8.41  \\ \hline
+$MRR_{10}$ & 5.35 & 5.50 & 5.50 & 7.89 & 9.18 & 9.24  \\ \hline
+$MRR_{25}$ & 5.39 & 5.55 & 5.55 & 8.10 & 9.60 & 9.67  \\ \hline
+\end{tabular}
+
+
+\medskip
+
+
+\begin{tabular}{|l | l | l | l | l | l | l |}
+\hline
+\multicolumn{7}{|c|}{$PassageScore_3$}  \\ \hline
+Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
+$MRR_{1}$ & 5.38 & 5.38 & 5.38 & 6.15 & 6.15 & 6.15  \\ \hline
+$MRR_{5}$ & 6.69 & 6.85 & 7.10 & 9.35 & 10.69 & 10.88  \\ \hline
+$MRR_{10}$ & 7.15 & 7.31 & 7.56 & 9.98 & 11.66 & 11.85  \\ \hline
+$MRR_{25}$ & 7.19 & 7.35 & 7.60 & 10.21 & 11.99 & 12.19  \\ \hline
+\end{tabular}
+
+
+\caption{Corrida 2.3: Fórmulas 1, 2 y 3 respectivamente}
+\label{table:2_3_40_getExactMRRWikiFactoid_getCovrMRRWikiFactoidq}
+\end{center}
+\end{table}
+
+
+\begin{table}[H]
+\centering
+\begin{center}
+\begin{tabular}{|l | l | l | l | l | l | l |}
+\hline
+\multicolumn{7}{|c|}{ $PassageScore_{bl} \times 0.9 + LengthScore \times 0.1$ }  \\ \hline
+Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
+$MRR_{1}$ & 7.81 & 7.81 & 8.59 & 10.16 & 10.16 & 10.16  \\ \hline
+$MRR_{5}$ & 9.47 & 9.78 & 10.56 & 12.97 & 13.95 & 14.14  \\ \hline
+$MRR_{10}$ & 9.71 & 9.78 & 10.56 & 12.97 & 14.47 & 14.66  \\ \hline
+$MRR_{25}$ & 10.01 & 10.08 & 10.86 & 13.38 & 14.92 & 15.11  \\ \hline
+\end{tabular}
+
+\medskip
+
+\begin{tabular}{|l | l | l | l | l | l | l |}
+\hline
+\multicolumn{7}{|c|}{ $PassageScore_{bl} \times 0.8 + LengthScore \times 0.2$ }  \\ \hline
+Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
+$MRR_{1}$ & \textbf{10.08} & \textbf{10.08} & \textbf{10.85} & \textbf{12.40} & \textbf{13.18} & \textbf{13.18}  \\ \hline
+$MRR_{5}$ & 11.68 & 11.99 & 13.15 & 15.80 & 16.58 & 16.77  \\ \hline
+$MRR_{10}$ & 11.92 & 11.99 & 13.15 & 15.80 & 16.99 & 17.18  \\ \hline
+$MRR_{25}$ & 12.27 & 12.34 & 13.51 & 16.26 & 17.55 & 17.74  \\ \hline
+\end{tabular}
+
+\medskip
+
+\begin{tabular}{|l | l | l | l | l | l | l |}
+\hline
+\multicolumn{7}{|c|}{$PassageScore_{bl} \times 0.7 + LengthScore \times 0.3$}  \\ \hline
+Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
+$MRR_{1}$ & 10.00 & 10.00 & 10.77 & 12.31 & 13.08 & 13.08  \\ \hline
+$MRR_{5}$ & 11.94 & 12.50 & 13.65 & 17.04 & 17.81 & 18.00  \\ \hline
+$MRR_{10}$ & 12.35 & 12.67 & 13.83 & 17.12 & 18.32 & 18.51  \\ \hline
+$MRR_{25}$ & 12.58 & 12.91 & 14.06 & 17.46 & 18.70 & 18.90  \\ \hline
+\end{tabular}
+
+
+\label{table:2_4}
+\caption{Corrida 2.3: Combinación métodos 1 y 3}
+\end{center}
+\end{table}
+
+\textbf{Corrida 3: Combinación de Óptimos}\newline
+
+En esta corrida utilizamos los parámetros que mejores resultados dieron en todos los métodos anteriores, bajo la hipótesis de que el resultado debería agregarse. Como puede verse en la tabla \ref{table:optimos}, esto no es así para $MRR_1$....\newline
+
+
+\begin{itemize}
+  \item Idioma: Español
+  \item Cantidad de documentos retornados: 50
+  \item Cantidad de pasajes extraidos: 40
+  \item Método de Generación de Queries: 3
+  \item Método de Temas: 2
+  \item Fórmula de Ranking de Pasajes:  $PassageScore_{bl} \times 0.8 + LengthScore \times 0.2$ 
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\begin{center}
+\begin{tabular}{|l | l | l | l | l | l | l |}
+\hline
+Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
+$MRR_{1}$ & 10.00 & 10.00 & 10.77 & 12.31 & 13.08 & 13.08  \\ \hline
+$MRR_{5}$ & 12.00 & 12.31 & 13.46 & 16.18 & 16.95 & 17.01  \\ \hline
+$MRR_{10}$ & 12.24 & 12.31 & 13.46 & 16.26 & 17.44 & 17.50  \\ \hline
+$MRR_{25}$ & 12.55 & 12.62 & 13.78 & 16.72 & 18.00 & 18.06  \\ \hline
+\end{tabular}
+\label{table:optimos}
+
+\medskip
+
+\caption{Corrida 3: Combinación de Óptimos}
+\end{center}
+\end{table}
+
+
 
 
 % \chapter{Implementación}
