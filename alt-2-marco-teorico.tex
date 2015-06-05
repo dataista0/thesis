@@ -3,7 +3,7 @@
 \cerradaarg{Falta mejorar ref y allref}
 En este capítulo vamos a recorrer algunos términos básicos y problemas de procesamiento de lenguaje e information retrieval que deben conocerse para comprender mejor lo que discutiremos sobre question answering en los siguientes capítulos. En la primer sección (\ref{sec:terminologia}) vamos a introducir terminología básica como $token$, \textit{n-grama}, \textit{ontología} y $feature$, en la segunda (\ref{sec:information-retrieval}) comentaremos qué es information retrieval, cuales son las métricas de evaluación del área y qué es un índice invertido de búsqueda y, finalmente (\ref{sec:nlp}), describiremos los principales problemas propios de procesamiento de lenguajes relacionados con QA (POS tagging o etiquetado gramatical, NE tagging o reconocimiento de entidades y clasificación de preguntas) y mencionamos algunas otras herramientas y conceptos de uso frecuente. 
 
-\section{Terminologia}
+\section{Terminología}
 \label{sec:terminologia}
 \subsection*{Tokens}
 Un token es una palabra o un signo de puntuación en el contexto de un texto.
@@ -52,11 +52,11 @@ $v_3$:$string$ & representa la palabra en minúsculas \\
 \end{center}
 
 
-Encontrar features (o “características”) discriminantes e independientes entre si es una forma con la que se modelan correctamente muchos problemas de PLN, como la asignación de diferentes etiquetas a las palabras de una oración (por ejemplo: pos tags, ner tags), la clasificación de preguntas y la extración de tópicos. 
+Encontrar features (o “características”) discriminantes e independientes entre si es una forma con la que se modelan correctamente muchos problemas de PLN, como la asignación de diferentes etiquetas a las palabras de una oración (por ejemplo: pos tags, ner tags), la clasificación de preguntas y la extracción de tópicos. 
 
 Los features aparecen en muchos contextos, por ejemplo: en \allref{chap:5} nosotros construimos una serie de features a mano en la sección de answer retrieval, para subir la posición de la respuesta esperada entre la lista de pasajes rankeados. En las herramientas lingüísticas que veremos a continuación (\ref{sec:nlp}), los features son normalmente extraídos automáticamente de un corpus. En estos casos, el volumen de features suele ser relativamente alto (10.000, 100.000) y se incorporan patrones estadísticos complejos alejados de la simplicidad del vector de tres features de nuestro ejemplo. 
 
-A modo de ilustración, reproducimos los ejemplos que se pueden encontrar en \\ \cite{NER1} sobre dimensiones de features típicas para el proceso de reconocimiento de entidades. Veremos sobre reconocimiento de entidades en breve (\ref{subsec:nerc}), pero, brevemente, lo que se busca es encontrar entidades nombradas como \dq{Buenos Aires} o \dq{Juán Perez} en oraciones. En este proceso podrían usarse, por ejemplo, tres tipos de features basados en propiedades de las palabras mismas, su ocurrencia en listas o {\em gazeteers} conocidos y en propiedadades de los documentos del corpus.
+A modo de ilustración, reproducimos los ejemplos que se pueden encontrar en \\ \cite{NER1} sobre dimensiones de features típicas para el proceso de reconocimiento de entidades. Veremos sobre reconocimiento de entidades en breve (\ref{subsec:nerc}), pero, brevemente, lo que se busca es encontrar entidades nombradas como \dq{Buenos Aires} o \dq{Juan Perez} en oraciones. En este proceso podrían usarse, por ejemplo, tres tipos de features basados en propiedades de las palabras mismas, su ocurrencia en listas o {\em gazeteers} conocidos y en propiedades de los documentos del corpus.
 
 \begin{center}
 
@@ -69,14 +69,14 @@ Features & Ejemplo \\ \hline
  &  Mezcla mayúsculas y minúsculas (por ejemplo: eBay, laTex) \\ \hline
 \multirow{3}{*}{Puntuación} & Termina con punto, tiene un punto en el medio \\
 & (por ejemplo: Sr., I.B.M.) \\
- &  Contiene un apóstrofre  \\ \hline
+ &  Contiene un apóstrofe  \\ \hline
 \multirow{2}{*}{Morfología} & Prefijo, sufijo, stem \\
  & Terminaciones comunes \\ \hline
 Part-of-speech & nombre propio, sustantivo, verbo, etc \\ \hline
 \multirow{5}{*}{Funcional} & Sólo letras, sólo símbolos, n-gramas \\
 & Versión en mayúsculas / minúsculas \\
-& Patrones (matchs con expresiones regulares) \\
-& Cantidad de tokens, cantidad de carácteres \\ 
+& Patrones (matches con expresiones regulares) \\
+& Cantidad de tokens, cantidad de caracteres \\ 
 & Terminaciones comunes \\ \hline 
 \end{tabular}
 
@@ -88,7 +88,7 @@ Features & Ejemplo \\ \hline
  &  Stop words \\
  &  Sustantivos capitalizados (por ejemplo: Octubre, Lunes) \\
  &  Abreviaciones comunes (por ejemplo: Sr., PhD.) \\ \hline
- \multirow{3}{*}{Lista de Entidades} & Organizaciones, gobiernos, aerolineas, etc \\
+ \multirow{3}{*}{Lista de Entidades} & Organizaciones, gobiernos, aerolíneas, etc \\
  &  Nombre típico, apellido, celebridad \\
  &  Estrella, continente, país, calle \\ \hline
 \multirow{3}{*}{Lista de pistas} & Palabras típicas de una organización (\dq{asociados}) \\
@@ -105,12 +105,12 @@ Features & Ejemplo \\ \hline
 \multirow{3}{*}{Ocurrencias múltiples} & Entidades en el contexto \\
  &  Ocurrencias en mayúsculas o minúsculas \\
  &  Anáforas, correferencia \\ \hline
- Posición en documento & Posición según oración, parrafo, documento \\ \hline
-\multirow{3}{*}{Metadatos} & URI, mail headers, sección del xml \\
+ Posición en documento & Posición según oración, párrafo, documento \\ \hline
+\multirow{3}{*}{Meta datos} & URI, mail headers, sección del xml \\
  &  imágenes asociadas \\
  \multirow{3}{*}{Frecuencia en corpus} & Frecuencia de la palabra o la frase \\
  &  Co-ocurrencia \\
- &  Permanecia de una unidad de varias palabras \\ \hline
+ &  Permanencia de una unidad de varias palabras \\ \hline
 \end{tabular}
 \end{center}
 
@@ -147,7 +147,7 @@ La precisión \eqref{eq:precision} mide cuántos de los documentos devueltos son
 
 
 Otras métricas conocidas son la familia de métricas $F$, que representa distintos trade off entre precisión y recall.
-La formula general \eqref{eq:fb} introduce el parámetro $\beta$ que podera recall sobre precisión. $F_\beta$ pondera $\beta$ veces más el recall que la precisión. Las más utilizadas son $F_1$ (o solo $F$), $F_2$ y $F_{0.5}$. $F_2$ \eqref{eq:f2} pondera 2 veces más el recall que la precisión, por lo que es muy utilizada para evaluar subtareas de information retrieval en question answering.
+La formula general \eqref{eq:fb} introduce el parámetro $\beta$ que pondera recall sobre precisión. $F_\beta$ pondera $\beta$ veces más el recall que la precisión. Las más utilizadas son $F_1$ (o solo $F$), $F_2$ y $F_{0.5}$. $F_2$ \eqref{eq:f2} pondera 2 veces más el recall que la precisión, por lo que es muy utilizada para evaluar subtareas de information retrieval en question answering.
 
 \begin{equation}\label{eq:fb}
   F_\beta = \frac{(1 + \beta^2) \cdot (\mathrm{Precision} \cdot \mathrm{Recall})}{(\beta^2 \cdot \mathrm{Precision} + \mathrm{Recall})}
@@ -160,7 +160,7 @@ La formula general \eqref{eq:fb} introduce el parámetro $\beta$ que podera reca
 \end{equation}
 
 
-\subsection{Indice invertido de búsqueda}
+\subsection{Índice invertido de búsqueda}
 \label{subsec:indice-invertido}
 
 Un índice invertido es la estructura de datos típica utilizada en problemas de information retrieval. Consiste en un mapeo de términos en documentos que los contienen. Es decir, para un término dado, un índice invertido devuelve una lista de los documentos cargados que lo contienen. Este tipo de estructuras invierte la relación normal en la cual a partir de un documento se accede a la lista de términos que este documento contiene (de allí el nombre invertido).
@@ -242,7 +242,7 @@ La asignación de etiquetas no es un proceso trivial debido a la ambigüedad de 
 \sq{ayuda} puede funcionar como sustantivo (en \dq{La ayuda llegó a tiempo}) o como verbo (en \dq{Batman ayuda a los ciudadanos de Ciudad Gótica}). 
 Un algoritmo de pos-tagging debe resolver estas ambigüedades seleccionando la categoría adecuada según el contexto. Más allá de estos casos, muchas palabras tienen una sola categoría posible (por ejemplo: \sq{ventana} es siempre un sustantivo, mientras que \sq{lentamente} es un adverbio y \sq{corrió} un verbo, etc).
 
-Existen diferentes formas de clasificar gramaticalmente a las palabras. El esquema más general y reconocido de categorias gramaticales tal vez sea el siguiente, de 9 clases:
+Existen diferentes formas de clasificar gramaticalmente a las palabras. El esquema más general y reconocido de categorías gramaticales tal vez sea el siguiente, de 9 clases:
 \begin{center}
 \begin{tabular}{| l | l |}
  \hline
@@ -262,7 +262,7 @@ Adverbio & despacio, hábilmente, posteriormente\\ \hline
 Mientras a algunas de estas categorías se les puede agregar más información, como \textit{género} y \textit{número} a los sustantivos, otras son categorías que no toleran modificaciones. Veremos esto con más detalle al hablar del tagset propuesto por el grupo EAGLES en breve.
 
 Si bien en ciertos idiomas estas categorías no resultan del todo adecuadas o explicativas, dentro del scope de esta tesis podemos dejar de lado este problema.
-Estas clases de palabras -en general, para muchos idiomas- pueden dividirse en dos superclases conceptuales de acuerdo a su naturaleza: las clases cerradas y las abiertas. Las primeras constan de una lista acotada y fija de palabras y está, por lo general, cristalizada. Esto es: no se incorporan, a esta altura de la historia del lenguaje, nuevas palabras a las clases gramaticales cerradas. Además, estas clases de palabras cumplen un rol funcionaal en la construcción de la oración y, como una nota más, son palabras cortas. Son clases cerradas, de las 9 recién enunciadas, los determinantes, los pronombres, las preposiciones, las conjunciones y las interjecciones. En contraposición, las clases abiertas son los sustantivos, los verbos, los adjetivos y los adverbios. Las clases abiertas incorporan, con naturalidad y frecuencia, nuevas palabras a su lista: se inventan nuevos objetos y en consecuencia nuevos sustantivos y nuevas acciones (nuevos verbos). Existen esquemas formales de conjugación de miembros a las clases abiertas, teniendo la mayoría sus miembros ciertas regularidades morfológicos que se repiten. 
+Estas clases de palabras -en general, para muchos idiomas- pueden dividirse en dos superclases conceptuales de acuerdo a su naturaleza: las clases cerradas y las abiertas. Las primeras constan de una lista acotada y fija de palabras y está, por lo general, cristalizada. Esto es: no se incorporan, a esta altura de la historia del lenguaje, nuevas palabras a las clases gramaticales cerradas. Además, estas clases de palabras cumplen un rol funcional en la construcción de la oración y, como una nota más, son palabras cortas. Son clases cerradas, de las 9 recién enunciadas, los determinantes, los pronombres, las preposiciones, las conjunciones y las interjecciones. En contraposición, las clases abiertas son los sustantivos, los verbos, los adjetivos y los adverbios. Las clases abiertas incorporan, con naturalidad y frecuencia, nuevas palabras a su lista: se inventan nuevos objetos y en consecuencia nuevos sustantivos y nuevas acciones (nuevos verbos). Existen esquemas formales de conjugación de miembros a las clases abiertas, teniendo la mayoría sus miembros ciertas regularidades morfológicos que se repiten. 
 
 A partir de las clases de lingüística teórica y algunas otras características de la morfología de las palabras se construyen los \textit{tagsets}. Estos son diferentes conjuntos de etiquetas que se utilizan de hecho en los algoritmos de tagging, siendo los más conocidos el tagset de 87 etiquetas usado en el Corpus Brown y algunos de sus derivados: el tagset de Penn Treebank, de 45 tags; el C5, de 61 tags, usado en el proyecto CLAWS y el C7, más grande, de 146 tags. 
 El POS tagger de Stanford\cite{POS2} (usado en esta tesis) utiliza el tagset de Penn Treebank, cuyas etiquetas y significados se listan en la siguiente tabla:
@@ -276,7 +276,7 @@ El POS tagger de Stanford\cite{POS2} (usado en esta tesis) utiliza el tagset de 
 
 %\newline
 
-Por su parte, el POS-tagger español de Freeling, por su naturaleza multilingüe, utiliza el tagset propuesto por el grupo EAGLES (\textit{Expert Advisory Group on Language Engineering Standards})\footnote{\url{http://www.ilc.cnr.it/EAGLES96/home.html}}, una organización europea que fomenta la investigación multilingüe, mientras que por una cuestión de compatibilidad, se preservan los tags de Penn Treebank para el inglés. Los tags de EAGLES tienen en consideración diferentes matices para contemplar las variaciones de diferentes idiomas. Sobre un conjunto inicial de 12 categorías -las 9 recién enunciadas más \sq{Signos de puntuación}, \sq{Numerales} y \sq{Fechas y horas} define etiquetas mucho más especificas. En concreto, un tag consta de entre 6 y 7  posiciones, cada una de las cuales expresa una caracteristica de la palabra dependiendo del valor especificado en la posición anterior. Para algunas clases alguno de estos valores no tienen sentido, mientras que para algunas palabras algunos valores no están o no pueden definirse (en el caso de subespecificación de un atributo, esta se nota como un \sq{0}). 
+Por su parte, el POS-tagger español de Freeling, por su naturaleza multilingüe, utiliza el tagset propuesto por el grupo EAGLES (\textit{Expert Advisory Group on Language Engineering Standards})\footnote{\url{http://www.ilc.cnr.it/EAGLES96/home.html}}, una organización europea que fomenta la investigación multilingüe, mientras que por una cuestión de compatibilidad, se preservan los tags de Penn Treebank para el inglés. Los tags de EAGLES tienen en consideración diferentes matices para contemplar las variaciones de diferentes idiomas. Sobre un conjunto inicial de 12 categorías -las 9 recién enunciadas más \sq{Signos de puntuación}, \sq{Numerales} y \sq{Fechas y horas} define etiquetas mucho más especificas. En concreto, un tag consta de entre 6 y 7  posiciones, cada una de las cuales expresa una característica de la palabra dependiendo del valor especificado en la posición anterior. Para algunas clases alguno de estos valores no tienen sentido, mientras que para algunas palabras algunos valores no están o no pueden definirse (en el caso de subespecificación de un atributo, esta se nota como un \sq{0}). 
 A continuación presentamos la especificación para el conjunto de tags relacionados con sustantivos y un ejemplo de su aplicación.
 
 \begin{center}
@@ -298,7 +298,7 @@ Pos. & Atributo & Valor & Código \\ \hline
  & & Organización &  O0 \\ \cline{3-4}
  & & Otros & V0  \\ \hline
 \multirow{2}{*}{7} & \multirow{2}{*}{Grado} & Aumentativo  & A \\ \cline{3-4}
-  & & Disminutivo & D \\ \hline
+  & & Diminutivo & D \\ \hline
 \end{tabular}
 \end{center}
 
@@ -321,7 +321,7 @@ Pedro & pedro & NP000P0 \\ \hline
 \end{center}
 
 
-Existen varios enfoques algoritmicos al problema del POS tagging: desde los más primitivos basados en reglas escritas a mano pasando a los basados en HMMs (Hidden Markov Models), Maximum Entropy o Transformation Based Learning. Un detalle de estos métodos excede la introducción al problema que supone esta sección de la tesis. El POS tagger de Freeling está basado en el approach de HMMs y el de Stanford en el de Maximum Entropy, ambos modelos de machine learning. En \allref{subsec:freeling-pos} y \allref{sec:stanford-pos} se encuentran algunos comentarios más técnicos de los algoritmos de POS tagging que utilizamos en este trabajo y vinculos a bibliografía pertinente y en la sección siguente \allref{subsec:nerc} veremos una descripción más detallada de enfoques algorítmicos al problema que ilustrarán, al menos de modo general, la estructura de la algoritmía basada en machine learning aplicada a procesamiento de lenguajes. 
+Existen varios enfoques algorítmicos al problema del POS tagging: desde los más primitivos basados en reglas escritas a mano pasando a los basados en HMMs (Hidden Markov Models), Maximum Entropy o Transformation Based Learning. Un detalle de estos métodos excede la introducción al problema que supone esta sección de la tesis. El POS tagger de Freeling está basado en el approach de HMMs y el de Stanford en el de Maximum Entropy, ambos modelos de machine learning. En \allref{subsec:freeling-pos} y \allref{sec:stanford-pos} se encuentran algunos comentarios más técnicos de los algoritmos de POS tagging que utilizamos en este trabajo y vínculos a bibliografía pertinente y en la sección siguiente \allref{subsec:nerc} veremos una descripción más detallada de enfoques algorítmicos al problema que ilustrarán, al menos de modo general, la estructura de la algoritmia basada en machine learning aplicada a procesamiento de lenguajes. 
 A continuación listamos ejemplos concretos de análisis de la oración de ejemplo del comienzo de esta sección (\dq{El hombre bajó la escalera.}) para mostrar un funcionamiento real de los algoritmos utilizados en esta tesis. 
 
 
@@ -330,8 +330,8 @@ A continuación listamos ejemplos concretos de análisis de la oración de ejemp
 \hline
 \multicolumn{3}{|c|}{Freeling (ES)} \\ \hline
 Forma &  Etiqueta & Descripción \\ \hline 
-El & DA0MS0 & Determinante, Artículo, Másculino, Singular\\ \hline 
-hombre & NCMS000 & Nombre, Común, Másculino, Singular  \\ \hline 
+El & DA0MS0 & Determinante, Artículo, Masculino, Singular\\ \hline 
+hombre & NCMS000 & Nombre, Común, Masculino, Singular  \\ \hline 
 bajó & VMIS3S0 & Verbo, Principal, Indicativo, Pasado, Tercera Persona, Singular\\ \hline 
 la & DA0FS0 & Determinante, Artículo, Femenino, Singular\\ \hline 
 escalera& NCFS000 & Nombre, Común, Femenino, Singular \\ \hline 
@@ -388,13 +388,13 @@ Muchos trabajos sobre NER están basados sólo en inglés, pero también existen
 El problema del reconocimiento de entidades nombradas está acotado a lo que el filósofo del lenguaje Saúl Kripke llamó “designador rígido”, dejando afuera las descripciones definidas. Por ejemplo, podemos referirnos a Saúl Kripke como “Saúl Kripke” o como “el filósofo de lenguaje que acuñó el concepto de designador rígido”. El primer ejemplo es un designador rígido y un NER debería detectarlo, mientras que el segundo es una descripción y por lo tanto queda afuera de esta subtarea. Notar que ambos denotan unívocamente a un individuo. Para identificar a la compañía automotriz creada por Henry Ford, dos designadores rígidos son “Ford” y “Ford Company”, etc. Más en general, los designadores rígidos incluyen nombres propios tanto como clases naturales (por ejemplo, especies de biología y nombres de sustancias, etc). Además, se incorpora al problema la detección de expresiones temporales (“26 de Agosto de 2013”) y ciertas expresiones numéricas como dinero (“U\$D 250”) y otros tipos de unidades (“20\%”, “10,25”, etc). En un principio se buscaba detectar nombres propios en general, pero luego se incorporó la clasificación como un paso de esta subtarea. Las clases más utilizadas, por una cuestión completamente pragmática, son: persona, organización y lugar (location). Estas tres clases se conocen con el nombre de ENAMEX. A su vez, existen trabajos que subclasifican estas tres clases, dando como output, para un lugar (location), un subtipo como  “ciudad”, “estado” o  “país” y para personas alguna definición más específica (“político”, “farandulero”, “deportista”, etc). Algunos trabajos incluyen otras clases como “varios”, para aquellos que no caen con un grado alto de confiabilidad en ninguna categoría, y categorías específicas para los valores numéricos (date, time, money, percent, etc). Las categorías estándar pueden, sin embargo, adaptarse a las clases de entidades nombradas de un dominio de problemas puntual, pero por lo general este enfoque requiere del entrenamiento de módulos de machine learning, lo cual suele requerir una serie de inputs de los que no siempre se dispone (principalmente, un corpus de datos suficientemente grande para entrenar el sistema y la disponibilidad temporal para configurarlo).
 
 
-Además de los ya mencionados sistemas de reconocimiento de entidades nombradas basados en reglas escritas a mano del comienzo de las investigaciones en el área, existen los basados en machine learning, en los cuales vamos a detenernos brevemente en esta sección. Los algoritmos basadon en machine learning son entrenados sobre un corpus de datos con ejemplos positivos y negativos de entidades nombradas, a partir de los cuales infieren sus propias reglas de reconocimiento basadas en features. Hay tres tipos de enfoques al problema basados en machine learning: aprendizaje supervisado , aprendizaje semi supervisado y aprendizaje no supervisado.
+Además de los ya mencionados sistemas de reconocimiento de entidades nombradas basados en reglas escritas a mano del comienzo de las investigaciones en el área, existen los basados en machine learning, en los cuales vamos a detenernos brevemente en esta sección. Los algoritmos basados en machine learning son entrenados sobre un corpus de datos con ejemplos positivos y negativos de entidades nombradas, a partir de los cuales infieren sus propias reglas de reconocimiento basadas en features. Hay tres tipos de enfoques al problema basados en machine learning: aprendizaje supervisado , aprendizaje semi supervisado y aprendizaje no supervisado.
 El aprendizaje supervisado es la técnica actualmente más utilizada para resolver el problema de reconocimiento de entidades. Estos métodos incluyen Hidden Markov Models (HMM), Decision Trees, Maximum Entropy Models (ME), Support Vector Machines (SVM)  y Conditional Random Fields (CRF). Estos métodos son variantes de un modelo único de aprendizaje supervisado que consiste en leer un gran corpus de datos anotados, crear features de identificación y clasificación de entidades a partir de estos datos (generar un \textit{modelo entrenado}) y finalmente identificar y clasificar un input nuevo en base a este modelo. 
 
 En cuanto al aprendizaje semi supervisado, la principal técnica aplicada a NER es conocida como “bootstraping” e involucra un grado de supervisión bajo, como por ejemplo, configurar un conjunto inicial de semillas (seeds) para el algoritmo de aprendizaje. Más genéricamente, un algoritmo de aprendizaje semi automático podría buscar a partir de los ejemplos iniciales (dados manualmente) otras entidades que cumplan el mismo rol léxico en contextos similares, para luego iterar sobre el conjunto ampliado.
 Otro enfoque consiste en aplicar una serie de reglas simples basadas en patrones (por ejemplo: “New York” es una entidad de tipo location; si empieza con “Sr.” es una entidad de tipo person”) y luego identificar contextos de uso común sobre un corpus para generar reglas basadas en contextos. Un contexto puede incluir desde el rol semántico de las palabras en cuestión hasta ciertos patrones (como por ejemplo “empezar con ‘Sr.’”).
 
-Finalmente, existen algortimos de reconocimiento de entidades basados en aprendizaje no supervisado. El enfoque típico es el clustering, por ejemplo: agrupar entidades nombradas de diferentes clusters basados en similaridad de contexto.  La forma general consiste en aplicar diferentes recursos léxicos (por ejemplo, Wordnet) sobre patrones léxicos y estadísticas tomadas de un gran corpus no anotado. 
+Finalmente, existen algoritmos de reconocimiento de entidades basados en aprendizaje no supervisado. El enfoque típico es el clustering, por ejemplo: agrupar entidades nombradas de diferentes clusters basados en similaridad de contexto.  La forma general consiste en aplicar diferentes recursos léxicos (por ejemplo, Wordnet) sobre patrones léxicos y estadísticas tomadas de un gran corpus no anotado. 
 
 En nuestro trabajo utilizamos los NER taggers de Stanford\cite{NER2} y de Freeling, el primero implementando un algoritmo CRF, es decir, de aprendizaje supervisado (ver \allref{sec:stanford-both}) mientras que el segundo es un algoritmo trivial basado en Autómatas Finitos (ver \allref{subsec:freeling-mods}). Para descripciones y referencias de diferentes implementaciones de algoritmos de NERC ver \cite{NER1}.
 
@@ -429,7 +429,7 @@ Debido a la complejidad de análisis lingüístico intrínseca en la clasificaci
 
 Como nota al pie, este esquema de clasificación semántico es uno entre otros. Por ejemplo, \cite{QC-other} propuso un esquema \textit{conceptual} de 13 clases en las que incluye, por ejemplo: antecedentes y consecuencias causales, habilitación, verificación, disyunción, etc.
 
-Estas reglas básicas -triviales, si se quiere- cubren gran parte de las preguntas con una eficacia alta. En \allref{sec:stanford-qc} veremos un enfoque más complejo que permite una clasificación más granular, basado en machine learning. El uso de algoritmos de machine learning tiene una serie de ventajes interesantes a la hora de definir un sistema de clases complejo. Como mencionamos al hablar de los otros taggers, la definición de reglas manuales es una tarea tediosa y con poca capacidad de adaptarse o modificarse, mientras que la definición de un set de features adecuado para el aprendizaje programático, en cambio, permite la fácil incorporación de nuevas clases y/o la incorporación de nuevas mejoras descubiertas. Por otro lado, un esquema de clases semánticamente rico -más granular que el modelo básico recién enunciado- requiere la consideración de una gran cantidad de dimensiones lingüísticas, tanto sintácticas como semánticas, lo que hace que la definición manual de reglas una tarea potencialmente imposible en terminos de costo de tiempo humano. 
+Estas reglas básicas -triviales, si se quiere- cubren gran parte de las preguntas con una eficacia alta. En \allref{sec:stanford-qc} veremos un enfoque más complejo que permite una clasificación más granular, basado en machine learning. El uso de algoritmos de machine learning tiene una serie de ventajas interesantes a la hora de definir un sistema de clases complejo. Como mencionamos al hablar de los otros taggers, la definición de reglas manuales es una tarea tediosa y con poca capacidad de adaptarse o modificarse, mientras que la definición de un set de features adecuado para el aprendizaje programático, en cambio, permite la fácil incorporación de nuevas clases y/o la incorporación de nuevas mejoras descubiertas. Por otro lado, un esquema de clases semánticamente rico -más granular que el modelo básico recién enunciado- requiere la consideración de una gran cantidad de dimensiones lingüísticas, tanto sintácticas como semánticas, lo que hace que la definición manual de reglas una tarea potencialmente imposible en términos de costo de tiempo humano. 
 
 Finalmente, cabe mencionar que no existen clasificadores de preguntas para el español y que a la hora de abordar este problema en nuestra implementación debimos apelar a mecanismos ad-hoc. En particular, para el modelo estructurado implementamos un sistema de reglas simples como el recién enunciado y para el modelo no estructurado utilizamos el resultado de la clasificación de la misma pregunta pero formulada en inglés (pues las preguntas están disponibles en ambos idiomas).
 %Actualmente, un tesista del grupo GALLI está trabajando en la construcción de un corpus para alimentar un clasificador de preguntas basado en machine learning para el español, pero lamentablemente por cuestiones de tiempos no pudimos hacer uso del mismo en esta tesis.
