@@ -4,7 +4,7 @@
 \label{sec:intro-general-qa}
 Como vimos brevemente en la introducción, QA es un área de investigación de ciencias de la computación que busca generar respuestas concretas a preguntas expresadas en algún lenguaje natural. Es, por esto mismo, un problema complejo que involucra herramientas y modelos de otras áreas de existencia autónoma, como information retrieval (IR), procesamiento del lenguaje natural (PLN) e information extraction (IE).
 
-También señalamos algunos ejes de subclasificación de problemas de QA. Con respecto al dominio de hechos y conocimientos sobre los que se espera que el sistema sepa responder los sistemas se clasifican como de dominio abierto (\textit{open domain}) o de dominio cerrado (\textit{closed domain}): mientras de los primeros se espera que sepan responder pregunta acerca cualquier tema o dominio, de los segundos solo se espera que sepan responder preguntas acerca de un dominio acotado particular. A su vez, los datos pueden ser estructurados, semi estructurados o no estructurados. El ejemplo típico de una base de conocimientos estructurada es una base de datos relacional, un tipo de datos semi estructurados puede ser un documento XML no normalizado, mientras que el tipo de datos no estructurado por antonomasia es un corpus de documentos en texto plano.
+También señalamos algunos ejes de subclasificación de problemas de QA. Con respecto al dominio de hechos y conocimientos sobre los que se espera que el sistema sepa responder, los sistemas se clasifican como de dominio abierto (\textit{open domain}) o de dominio cerrado (\textit{closed domain}): mientras de los primeros se espera que sepan responder preguntas acerca cualquier tema o dominio, de los segundos solo se espera que sepan responder preguntas acerca de un dominio acotado particular. A su vez, los datos pueden ser estructurados, semi estructurados o no estructurados. El ejemplo típico de una base de conocimientos estructurada es una base de datos relacional, un tipo de datos semi estructurados puede ser un documento XML no normalizado, mientras que el tipo de datos no estructurado por antonomasia es un corpus de documentos en texto plano.
 
 Las bases de conocimiento de los sistemas de QA pueden tener uno o más tipos de datos, pero cada unos de estos tipos determina un enfoque algorítmico diferente. Por ejemplo, si la base de conocimientos es una DB relacional con un lenguaje formal de consultas similar al SQL, el problema de QA típico consiste en encontrar un mapeo desde la pregunta en lenguaje natural a una consulta formal expresada en un lenguaje comprensible para la base de datos. Esto implica que el foco de trabajo está en la generación de esta consulta y no en el trabajo posterior sobre los resultados de ejecutarla. Por otro lado, un corpus no estructurado no permite una consulta formal, por lo que el enfoque usual es obtener una lista de documentos relevantes para luego aplicar distintas técnicas de procesamiento de textos para extraer la respuesta buscada.
 
@@ -18,18 +18,18 @@ La organización de este capitulo es como sigue: en lo que queda de esta secció
 \subsection{Historia y Competencias}
 \label{subsec:historia}
 \label{subsec:competencias}
-Los primeros sistemas que podemos considerar como pertenecientes al área datan de los años sesenta. Las primeras décadas de investigación al respecto están centradas en sistemas de dominio cerrado, es decir, su objetivo consiste en responder preguntas sobre temas específicos, apoyándose en general en una base de conocimientos estructurada, específicamente creada para el sistema. Por ejemplo Baseball \cite{BASEBALL}, un proyecto del MIT que data de 1961, es la primera investigación académica cuyo enfoque la incorpora con certeza en este área que pudimos encontrar en Internet. Baseball respondía preguntas sobre algunos hechos vinculados al torneo de la Liga Americana de baseball de un año (no se especifica cuál). La información se archivó de manera estructurada y contenía: el día, el mes, el lugar, los equipos y los puntajes de cada juego por un año\footnote{Como una nota de color, trascribimos las dos primeras oraciones del abstract: \dq{Baseball is a computer program that answers questions phrased in ordinary English about stored data. The program reads the question from punched cards}. Traducido: Baseball es un programa de computadora que responde preguntas verbalizadas en inglés común sobre datos guardados. El programa lee la pregunta de tarjetas perforadas.}. Otro ejemplo conocido es el chatbot-psicóloga Eliza, cuyo código original fue escrito en 1966, que se basa en reglas muy simples de matcheo de las lineas ingresadas por el usuario para simular una conversación de terapia bastante convincente\footnote{En internet están disponibles diferentes implementaciones de Eliza. En \url{https://github.com/julian3833/eliza} puede encontrarse una implementación funcional en python}. Existieron otros desarrollos e investigaciones durante las siguientes décadas, con complejidad creciente, pero con un enfoque similar al de Baseball y de Eliza. Pero la investigación, la producción de software y, principalmente, la formación de una comunidad de desarrollo e investigación mínimamente articulada vinculada con el question answering estuvo impulsada fuertemente por el lanzamiento de los ejercicios de QA en la competencia TREC\footnote{\url{http://trec.nist.gov/}} (Text Retrieval Conference) en el año 1999, la TREC-8 \cite{TREC8}.
+Los primeros sistemas que podemos considerar como pertenecientes al área datan de los años sesenta. Las primeras décadas de investigación al respecto están centradas en sistemas de dominio cerrado, es decir, su objetivo consiste en responder preguntas sobre temas específicos, apoyándose en general en una base de conocimientos estructurada, específicamente creada para el sistema. Por ejemplo Baseball \cite{BASEBALL}, un proyecto del MIT que data de 1961, es la primera investigación académica cuyo enfoque la incorpora con certeza en este área que pudimos encontrar en Internet. Baseball respondía preguntas sobre algunos hechos vinculados al torneo de la Liga Americana de baseball de un año concreto. La información se archivó de manera estructurada y contenía: el día, el mes, el lugar, los equipos y los puntajes de cada juego por un año\footnote{Como una nota de color, trascribimos las dos primeras oraciones del abstract: \dq{Baseball is a computer program that answers questions phrased in ordinary English about stored data. The program reads the question from punched cards.}. Traducido: Baseball es un programa de computadora que responde preguntas verbalizadas en inglés común sobre datos guardados. El programa lee la pregunta de tarjetas perforadas.}. Otro ejemplo conocido es el chatbot-psicóloga Eliza, cuyo código original fue escrito en 1966, que se basa en reglas muy simples de matcheo de las lineas ingresadas por el usuario para simular una conversación de terapia bastante convincente\footnote{En internet están disponibles diferentes implementaciones de Eliza. En \url{https://github.com/julian3833/eliza} puede encontrarse una implementación funcional en python}. Existieron otros desarrollos e investigaciones durante las siguientes décadas, con complejidad creciente, pero con un enfoque similar al de Baseball y de Eliza. Pero la investigación, la producción de software y, principalmente, la formación de una comunidad de desarrollo e investigación mínimamente articulada vinculada con el question answering estuvo impulsada fuertemente por el lanzamiento de los ejercicios de QA en la competencia TREC\footnote{\url{http://trec.nist.gov/}} (Text Retrieval Conference) en el año 1999, la TREC-8 \cite{TREC8}.
 
 TREC se convirtió en una referencia obligada y centro de nucleamiento de la investigación en QA. Esta primera competencia mono-lengua (para inglés), consistía en retornar un fragmento de texto de entre 50 y 250 bytes conteniendo la respuesta a preguntas fácticas (factoids). La evaluación, que marcó la historia futura de la evaluación de QA en competencias, consideraba el sistema de QA como un todo, es decir, no consideraba la evaluación de subcomponentes. La organización permitía dar una lista con 5 respuestas posibles por cada pregunta, y esto siguió así hasta la TREC-2002, cuando se comenzó a exigir una sola respuesta por pregunta. TREC siguió lanzando un track de QA en todas sus competencias anuales, variando la forma y la complejidad de las tareas propuestas, por ejemplo: incorporando preguntas largas, con un formato realista y corpora de mayor tamaño, también introduciendo preguntas sin respuesta (NIL answers) y preguntas de tipo Lista (por ejemplo: \sq{¿Qué libros escribió Friedrich Nietzsche entre 1870 y 1896?}), pregunta de definiciones (por ejemplo: \sq{¿Quién es el General Paz?}), en TREC 2003, preguntas agrupadas por un tema (target), explícito o implícito y de diferentes tipos -como personas, organizaciones, cosas, eventos, etc-, restricciones temporales (por ejemplo: antes, durante y después de una fecha, evento o período), anáforas y co-referencias entre preguntas (por ejemplo: ¿Quién es George Bush?. ¿Y quién es \textit{su} esposa?), etc. Las competencias anuales de la TREC, por otro lado cambiaron el enfoque que existía en décadas anteriores, hacia preguntas de dominio abierto y corpora de datos textuales planos.
 
-En lo que respecta a los sistemas multi-idioma (y mono-idioma no centrados en inglés), más allá de algunos eventos anteriores, un hito clave es el lanzamiento, en 2003, de la primer tarea de QA \cite{CLEF03} de CLEF (Cross Language Evaluation Forum)\footnote{\url{http://www.clef-initiative.eu/}} proponiendo tareas tanto monolingües como multilingües en varios idiomas europeos. Se propusieron tareas monolingües para francés, español, alemán, italiano y neerlandés, y tareas multilingües, con corpora en inglés y preguntas en otros idiomas europeos. En este año, se exigía respuestas de hasta 50 bytes, se permitía una lista de 3 respuestas por pregunta y las tareas podían incluir preguntas sin respuesta en los corpora. En la CLEF 2004, la tarea de QA principal incorporó 9 lenguas de origen (lengua de la pregunta) y 7 de destino (lengua del corpus), habilitando 55 ejercicios mono y bilingües. La cantidad de respuestas se redujo a 1 y se incorporaron preguntas de tipo \dq{¿Cómo...?}, de definiciones, de listas y también se agregaron restricciones temporales (antes, durante y después de una fecha, evento o período). CLEF continuó presentando {\em tracks} de tareas de QA todos los años desde entonces, con diferentes variaciones. Otra conferencia de prestigio en el área es NTCIR \footnote{\url{http://research.nii.ac.jp/ntcir/}}, que puede es un análogo a CLEF para idiomas asiáticos, incorporando tareas monolingües y bilingües entre inglés, japonés y chino, entre otras.
+En lo que respecta a los sistemas multi-idioma (y mono-idioma no centrados en inglés), más allá de algunos eventos anteriores, un hito clave es el lanzamiento, en 2003, de la primer tarea de QA \cite{CLEF03} de CLEF (Cross Language Evaluation Forum)\footnote{\url{http://www.clef-initiative.eu/}} proponiendo tareas tanto monolingües como multilingües en varios idiomas europeos. Se propusieron tareas monolingües para francés, español, alemán, italiano y neerlandés, y tareas multilingües, con corpora en inglés y preguntas en otros idiomas europeos. En este año, se exigía respuestas de hasta 50 bytes, se permitía una lista de 3 respuestas por pregunta y las tareas podían incluir preguntas sin respuesta en los corpora. En la CLEF 2004, la tarea de QA principal incorporó 9 lenguas de origen (lengua de la pregunta) y 7 de destino (lengua del corpus), habilitando 55 ejercicios mono y bilingües. La cantidad de respuestas se redujo a 1 y se incorporaron preguntas de tipo \dq{¿Cómo...?}, de definiciones, de listas y también se agregaron restricciones temporales (antes, durante y después de una fecha, evento o período). En general, las respuestas concretas deben ir acompañadas de un fragmento de texto \dq{soporte}, es decir, el fragmento de texto del cual se extrajo la respuesta. CLEF continuó presentando {\em tracks} de tareas de QA todos los años desde entonces, con diferentes variaciones. Otra conferencia de prestigio en el área es NTCIR \footnote{\url{http://research.nii.ac.jp/ntcir/}}, que es un análogo a CLEF para idiomas asiáticos, incorporando tareas monolingües y bilingües entre inglés, japonés y chino, entre otras.
 
 \subsection{Métricas de evaluación}
 \label{subsec:metricas}
 
-En cuanto a las métricas de evaluación utilizadas por estas competencias respecta, es importante distinguir la evaluación de las respuestas a una pregunta y la evaluación general del sistema. Con respecto a la evaluación de respuestas, la clasificación usual de evaluación consiste en 4 valores asignados a cada respuesta: Correcta (C), si responde a la pregunta y el fragmento de soporte justifica esa respuesta; No soportada (U, de Unsupported), si responde a la pregunta pero el fragmento de soporte no está o no justifica la respuesta; Inexacta (X), si sobra o falta información en la respuesta (algunas competencias solo aceptan respuestas exactas) y, finalmente, Incorrecta (I), si ninguna de las condiciones anteriores se cumple.
+En cuanto a las métricas de evaluación utilizadas por estas competencias, es importante distinguir la evaluación de las respuestas a una pregunta y la evaluación general del sistema. Con respecto a la evaluación de respuestas, la clasificación usual de evaluación consiste en 4 valores asignados a cada respuesta: Correcta (C), si responde a la pregunta y el fragmento de soporte justifica esa respuesta; No soportada (U, de Unsupported), si responde a la pregunta pero el fragmento de soporte no está o no justifica la respuesta; Inexacta (X), si sobra o falta información en la respuesta (algunas competencias solo aceptan respuestas exactas) y, finalmente, Incorrecta (I), si ninguna de las condiciones anteriores se cumple.
 
-La evaluación de respuestas puede ser estricta (strict) o \textit{indulgente} (lenient) dependiendo de si considera las respuestas no soportadas como válidas o como inválidas. Por otro lado, la evaluación puede ser manual -llevada a cabo por un jurado especial- o bien automática. En el caso de la evaluación automática, siempre es indulgente, ya no hay forma de decidir si un fragmento soporta o no una respuesta. Para este tipo de evaluaciones se suele utilizar un set de patrones de respuestas correctas que se deriva de un set de \dq{respuestas conocidas} generadas por los organizadores y los mismos competidores, conocido como R-set, pero no es un proceso trivial: en principio, es difícil saber qué respuestas correctas puede esperarse, ya que por la naturaleza del problema es probable que diferentes sistemas devuelvan respuestas textualmente distintas.
+La evaluación de respuestas puede ser estricta (strict) o \textit{indulgente} (lenient) dependiendo de si considera las respuestas no soportadas como válidas o como inválidas. Por otro lado, la evaluación puede ser manual -llevada a cabo por un jurado especial- o bien automática. En el caso de la evaluación automática, siempre es indulgente, ya que no hay forma automática sencilla de decidir si un fragmento soporta o no una respuesta. Para este tipo de evaluaciones se suele utilizar un set de patrones de respuestas correctas que se deriva de un set de \dq{respuestas conocidas} generadas por los organizadores y los mismos competidores, conocido como R-set, pero no es un proceso trivial: en principio, es difícil saber qué respuestas correctas pueden esperarse, ya que por la naturaleza del problema es probable que diferentes sistemas devuelvan respuestas textualmente distintas.
 
 Con respecto a la métricas de evaluación para sistemas como un todo, veremos a continuación las métricas más conocidas: MRR (Mean reciprocal rank, o promedio de rankings recíprocos), CWS (Confidence Weighted Score, Puntaje ponderado por confiabilidad) y K-Measure (Medida K).
 
@@ -94,12 +94,13 @@ La dificultad principal de esta métrica es determinar un $R_i$ exhaustivo. Una 
 
 Nuevamente, vale que $K1 \in \mathbb{R} \wedge  K1 \in [-1,1]$ y $K1=0$ se condice con un sistema sin conocimiento.
 
-
 \section{Literatura y sistemas}
 \label{sec:literatura}
+% Estado: Agregar una introducción acá sobre qué veremos en esta sección.
+
 \subsection{Enfoques sobre open domain}
 \label{subsec:open-domain}
-\falta
+% Estado: limé aristas (brevemente) y eliminé la etiqueta \falta. Para el yo del 6-6 cuenta como Cerrado.
 Existe un consenso general a la ahora de definir el modelo de software más abstracto o de arquitectura para encarar la construcción de un sistema de question answering open domain. Esta arquitectura consiste en un pipeline con al menos tres módulos o componentes bien diferenciados:
 \begin{itemize}
 \item Módulo de procesamiento de la pregunta
@@ -111,7 +112,7 @@ Cada uno de estos módulos cuenta a su vez con subcomponentes sobre los cuales h
 
 El módulo de procesamiento de la pregunta tiene como subcomponente principal un Clasificador de Preguntas (Ver \allref{subsec:qc} y \allref{sec:stanford-qc}) y puede incorporar otros componentes como identificadores del \sq{foco} (\textit{focus}) y del tipo esperado de la respuesta (\textit{answer type}), y también puede incluirse en este módulo un componente encargado de expandir o reformular la pregunta para optimizar los resultados del módulo de procesamiento de documentos ( este subcomponente también se suele considerar como parte del módulo de procesamiento de respuestas). Este último subcomponente tiene diferentes nombres en la literatura (\textit{query reformulation}, \textit{query generation}, \textit{query expansion}, etc).
 
-En el núcleo del módulo de procesamiento de documentos, por lo general, hay uno o más índices invertidos ( creados por un Lucene o Indri) como el descripto en \allref{subsec:indice-invertido}, o bien accesos a un buscador web, o, más en general, estructuras de information retrieval. Como vimos (\ref{subsec:metricas-ir}), existen dos métricas fundamentales a la hora de evaluar el funcionamiento de un módulo de information retrieval: precisión y recall. La precisión es la proporción de documentos relevantes devueltos sobre el total documentos devueltos por el módulo, mientras que el recall es la proporción de documentos relevantes devueltos sobre el total de documentos relevantes existentes en la base de conocimientos. Estas dos métricas suelen comportarse una con la otra como un trade-off, es decir: suelen aparecer escenarios de diseño en los que se deberá optar por priorizar una o bien la otra. Considerando esto, existe una tercera métrica extendida, la medida $F$, que busca parametrizar este compromiso.
+En el núcleo del módulo de procesamiento de documentos, por lo general, hay uno o más índices invertidos (por ejemplo, de Lucene o Indri) como el descripto en \allref{subsec:indice-invertido}, o bien accesos a un buscador web, o, más en general, estructuras de information retrieval. Como vimos (\ref{subsec:metricas-ir}), existen dos métricas fundamentales a la hora de evaluar el funcionamiento de un módulo de information retrieval: precisión y recall. La precisión es la proporción de documentos relevantes devueltos sobre el total documentos devueltos por el módulo, mientras que el recall es la proporción de documentos relevantes devueltos sobre el total de documentos relevantes existentes en la base de conocimientos. Estas dos métricas suelen comportarse una con la otra como un trade-off, es decir: suelen aparecer escenarios de diseño en los que se deberá optar por priorizar una o bien la otra. Considerando esto, existe una tercera métrica extendida, la medida $F$, que busca parametrizar este compromiso.
 
 En el contexto de uso de los sistemas de QA, la métrica que se busca maximizar para el módulo de procesamiento de documentos es el recall, es decir, no interesa que el módulo no recupere documentos no relevantes siempre y cuando recupere todos los documentos relevantes existentes que pueda. El motivo es simple: se espera que el análisis lingüístico fino del módulo de procesamiento de la respuesta sea capaz de eliminar texto irrelevante en la misma o en mejor medida que el sistema de information retrieval subyacente al módulo de documentos. Por otro lado, si al recuperar los documentos se filtra una respuesta válida como irrelevante, entonces el resto del pipeline verá sus probabilidades de éxito mermadas (sino directamente anuladas).  La expansión/reformulación de la pregunta del paso anterior apunta, justamente, a generar una query que priorice el recall sobre la precisión.
 
@@ -149,11 +150,11 @@ En \cite{QA1} y \cite{QA3} se propone una heurística basada en 8 reglas para im
 \end{enumerate}
 
 \subsubsection*{Módulo de procesamiento de documentos}
-El input del módulo de procesamiento de documentos es la pregunta reformulada según describimos en los párrafos inmediatamente anteriores y su output es una lista de documentos (o parágrafos) ordenados según la factibilidad de que contengan la respuesta a la pregunta. El módulo consta, en general, de uno o más sistemas de information retrieval (entre los cuales puede estar la web indexada) y de submódulos de filtrado, fragmentación y reordenamiento. Sobre los sistemas de information retrieval es importante notar que suelen usarse sistemas tradicionales y no aquellos como el utilizado, por ejemplo, en latent semantic analysis (LSA). Este último enfoque, que demostró ser útil a la hora de eliminar o reducir problemas de sinonimia y polisemia en information retrieval, pero en QA es importante que las keywords de búsqueda mismas estén presentes en los documentos relevantes y no que sean solamente \dq{semánticamente similares}. Dada la gran cantidad de documentos que se espera que retorne el subsistema de information retrieval (como señalamos, se prioriza el recall y no la precisión), existe un paso de filtrado (en \cite{WATSON1} se lo nombra como \sq{soft filtering}) en el cual: 1\textsuperscript{o} se reduce la cantidad de documentos a retornar por el módulo en general y 2\textsuperscript{o} se reduce la cantidad de texto en cada documento. El principio que guía este proceso es la idea de que las palabras clave de la pregunta deben aparecer, de alguna manera, cercanas entre sí. De este modo, es posible buscar por estas keywords en los documentos y quedarse solo con los $N$ parágrafos que contengas las keywords, desechando el resto del texto. Finalmente, se procede a ordenar los parágrafos/documentos filtrados. Una implementación posible de este ordenamiento es utilizar radix sort, considerando features de ordenamiento específicos para el dominio de problemas o bien, re generando un índice de information retrieval con la nueva información recortada.
+El input del módulo de procesamiento de documentos es la pregunta reformulada según describimos en los párrafos inmediatamente anteriores y su output es una lista de documentos (o parágrafos) ordenados según la factibilidad de que contengan la respuesta a la pregunta. El módulo consta, en general, de uno o más sistemas de information retrieval (entre los cuales puede estar la web indexada) y de submódulos de filtrado, fragmentación y reordenamiento. Sobre los sistemas de information retrieval es importante notar que suelen usarse sistemas tradicionales y no aquellos como el utilizado, por ejemplo, en latent semantic analysis (LSA). Este último enfoque demostró ser útil a la hora de eliminar o reducir problemas de sinonimia y polisemia en information retrieval, pero en QA es importante que las keywords de búsqueda mismas estén presentes en los documentos relevantes y no que sean solamente \dq{semánticamente similares}. Dada la gran cantidad de documentos que se espera que retorne el subsistema de information retrieval (como señalamos, se prioriza el recall y no la precisión), existe un paso de filtrado (en \cite{WATSON1} se lo nombra como \sq{soft filtering}) en el cual: 1\textsuperscript{o} se reduce la cantidad de documentos a retornar por el módulo en general y 2\textsuperscript{o} se reduce la cantidad de texto en cada documento. El principio que guía este proceso es la idea de que las palabras clave de la pregunta deben aparecer, de alguna manera, cercanas entre sí. De este modo, es posible buscar por estas keywords en los documentos y quedarse solo con los $N$ parágrafos que contengas las keywords, desechando el resto del texto. Finalmente, se procede a ordenar los parágrafos/documentos filtrados. Una implementación posible de este ordenamiento es utilizar radix sort, considerando features de ordenamiento específicos para el dominio de problemas o bien re generando un índice de information retrieval con la nueva información recortada.
 
 
 \subsubsection*{Módulo de procesamiento de la respuesta}
-Finalmente, el modulo de procesamiento de respuestas es el encargado de generar una respuesta a partir del output de los otros dos módulos. Para ello debe identificar la respuesta dentro de los parágrafos, extraer la fracción de texto que responde puntual y concretamente a la pregunta y, finalmente, validar su corrección.
+Finalmente, el módulo de procesamiento de respuestas es el encargado de generar una respuesta a partir del output de los otros dos módulos. Para ello debe identificar la respuesta dentro de los parágrafos, extraer la fracción de texto que responde puntual y concretamente a la pregunta y, finalmente, validar su corrección.
 
 Para identificar la respuesta se utilizan distintas heurísticas, utilizando el tipo de respuesta esperado cuando es posible. Sin embargo, el tipo de respuesta esperado no siempre es explícito en la pregunta o en la respuesta, por lo que se utilizan diferentes reglas basadas en POS-tags, NERs, en un parser específico para el reconocimiento de las respuestas candidatas.
 
@@ -161,7 +162,7 @@ Para las respuestas candidatas se extrae luego el o los términos concretos de l
 
 Como señalamos anteriormente, en las competencias TREC hasta 2001 se permitía devolver una lista de 5 respuestas, mientras que desde el 2002 se exige una única respuesta.
 
-Finalmente, hay distintas formas de validar la corrección o de estimar un grado de confianza en la corrección de una respuesta. En primer lugar, pueden usarse diferente corpus específicos como veremos en \allref{subsec:ibm-watson}.
+Finalmente, hay distintas formas de validar la corrección o de estimar un grado de confianza en la corrección de una respuesta. Un enfoque típico es utilizar diferentes corpus específicos estructurados con los cuales contrastar la información obtenida hasta el momento. Veremos este enfoque en breve en \allref{subsec:ibm-watson}.
 
 \subsection{QA como interfaz a una base de datos}
 \label{subsec:closed-domain}
@@ -169,16 +170,16 @@ El enfoque a la hora de encarar una solución de question answering sobre domini
 
 Los usos que puede hacer un sistema híbrido de sus bases de información estructurada son varias. Un uso típico es responder preguntas sobre dominios específicos, esto es, un sistema puede utilizar bases de conocimiento estructuradas y algoritmia específica para ciertos temas concretos (por ejemplo: Liga Americana del año 1958) y para ciertos tipos de preguntas (¿cuál fue el resultado del partido...?), mientras que para el resto de las preguntas recae en métodos de dominio abierto. Estos \dq{subsistemas} son más costosos y difíciles de construir, pero, en general, logran mejores resultados para las preguntas que acepta (y brindan una estimación de la confiabilidad de la respuesta bastante buena). Otro uso típico es verificar el tipo de una respuesta extraído de un corpus plano, contra ontologías como Freebase, Yago o dbPedia \cite{WATSON2}, por ejemplo, verificando que la respuesta generada para \dq{¿Quién fue el presidente de...?} sea una persona y, mejor, un presidente.
 
-Los sistemas de dominio cerrado puros, por otro lado, tienen interés en diferentes ámbitos en los que se dispone de información estructurada de utilidad para crear una interfaz más natural con la DB. %personas sin los conocimientos técnicos necesarios para escribir una consulta en el lenguaje formal que brindan las bases de datos como interfaz de consultas.
+Los sistemas de dominio cerrado puros, por otro lado, tienen interés en diferentes ámbitos en los que se dispone de información estructurada de utilidad para crear una interfaz más natural con la DB, permitiendo así el acceso a la base de datos a personas sin los conocimientos técnicos necesarios para escribir una consulta en el lenguaje formal que brindan las bases de datos como interfaz de consultas.
 
 Para ambos casos de uso de los modelos de dominio cerrado (sistemas híbridos y de dominio cerrado puros) el enfoque algorítmico consiste en traducir la pregunta formulada en un lenguaje natural a una consulta del lenguaje formal (potencialmente: SQL, SPARQL o similar). Dado que la cantidad de \dq{cuestiones} sobre las que se puede responder es siempre acotada, el modelo estándar de dominio cerrado sobre datos estructurados busca traducir la pregunta formulada en lenguaje humano a una consulta acerca de algún aspecto de la base de datos. Debe, además poder decidir si una pregunta tiene sentido en el contexto de la información de la que dispone.
 
-\subsubsection{Marco teórico utilizado}
+%\subsubsection{Marco teórico utilizado en la tesis}
 
 En esta tesis utilizamos como marco teórico el desarrollado por Ana-Maria Popescu et. al. en sus papers \cite{QADB1} y \cite{QADB2}.
 % TODO: potencialmente, citar los otros trabajos que tengo en personal-folder/Thesis/
 
-En estos trabajos, Ana María Popescu et. al. definen la noción de pregunta \textit{semánticamente tratable} en el contexto de una base de datos concreta. Proponen, así mismo, un modelo teórico para identificar este tipo de preguntas y una forma de transformarlas en queries de SQL, así como también un sistema concreto que implementa el modelo, llamado PRECISE. Popescu argumenta que una interfaz a una base de datos en lenguaje natural puede no identificar una pregunta, pero que jamás debe mal interpretarla activamente, es decir, interpretar algo distinto a lo preguntado y dar una respuesta que no se condice con la necesidad de información del usuario. Una mala interpretación de una pregunta reducirá la confianza del usuario en el sistema, volviéndolo inusable. En cambio, identificando una pregunta como intratable, se puede disparar un proceso de reformulación o especificación asistida de la pregunta, lo cual no es tan costoso en términos de confianza en el sistema.
+En estos trabajos, Ana María Popescu et. al. definen la noción de pregunta \textit{semánticamente tratable} en el contexto de una base de datos concreta. Proponen, así mismo, un modelo teórico para identificar este tipo de preguntas y una forma de transformarlas en consultas de SQL, así como también un sistema concreto que implementa el modelo, llamado PRECISE. Popescu argumenta que una interfaz a una base de datos en lenguaje natural puede no identificar una pregunta, pero que jamás debe mal interpretarla activamente, es decir, interpretar algo distinto a lo preguntado y dar una respuesta que no se condice con la necesidad de información del usuario. Una mala interpretación de una pregunta reducirá la confianza del usuario en el sistema, volviéndolo inusable. En cambio, identificando una pregunta como intratable, se puede disparar un proceso de reformulación o especificación asistida de la pregunta, lo cual no es tan costoso en términos de confianza en el sistema.
 
 En lo que resta de esta sección, describiremos con detalle el modelo teórico propuesto por Popescu en sus publicaciones, así como también el sistema concreto implementado con ese modelo como guía.
 
@@ -189,21 +190,21 @@ Según el modelo relacional usual, una base de datos está compuesta de tres tip
 Popescu define la noción de \textbf{compatibilidad} entre elementos como sigue:
 \begin{enumerate}
   \item Un valor es compatible con su atributo
-  \begin{enumerate}
+  \begin{itemize}
       \item Figueroa Alcorta 1234 es compatible con Dirección
-  \end{enumerate}
+  \end{itemize}
   \item Un valor es compatible con la relación que contiene a su atributo
-  \begin{enumerate}
+  \begin{itemize}
     \item Figueroa Alcorta 1234 es compatible con Universidades
-  \end{enumerate}
+  \end{itemize}
   \item Un atributo es compatible con su relación
-  \begin{enumerate}
+  \begin{itemize}
       \item Dirección es compatible con Universidades
-  \end{enumerate}
+  \end{itemize}
   \item Cada atributo tiene un conjunto de qwords compatibles
-  \begin{enumerate}
+  \begin{itemize}
     \item Dirección es compatible con “Dónde”
-  \end{enumerate}
+  \end{itemize}
 \end{enumerate}
 
 Observemos que mientras las primeras tres reglas de compatibilidad son independientes de los contenidos de la base de datos, la cuarta, en principio, requiere una formulación explícita (humana) de la relación entre qwords y atributos.
@@ -212,9 +213,9 @@ Las \textbf{qwords}, recordemos, son los pronombres interrogativos, palabras tí
 
 % TODO: Quizas, introducir que es un lema, pero qué sé yo
 Por otro lado, se introduce una noción de \textbf{token}, diferente de la que dimos en \allref{sec:terminologia}.
-En el contexto de este modelo, un token es un conjunto de lemas de palabras que corresponden a un elemento de la base de datos. Por ejemplo, \{experiencia, requerir\} y \{experiencia, necesario\} son tokens que corresponden al atributo “Experiencia Requerida” de una base de datos.
+En el contexto de este modelo, un token es un conjunto de lemas de palabras (Ver \allref{subsec:otras-tareas-pnl}) que corresponden a un elemento de la base de datos. Por ejemplo, \{experiencia, requerir\} y \{experiencia, necesario\} son tokens que corresponden al atributo “Experiencia Requerida” de una base de datos.
 
-El concepto de correspondencia\footnote{Traducimos aquí \textit{to match} por \textit{corresponder}} a no está definido teóricamente sino operacionalmente al describir el sistema PRECISE. El procedimiento que utilizaron es el siguiente (Utilizaremos el atributo “Experiencia Requerida” como ejemplo para ilustrar cada paso):
+Otra definición inicial importante es el concepto de correspondencia\footnote{Traducimos aquí \textit{to match} por \textit{corresponder}}, que no está definido teóricamente sino operacionalmente al describir el sistema PRECISE. El procedimiento utilizado es el siguiente (Utilizaremos el atributo “Experiencia Requerida” como ejemplo para ilustrar cada paso):
 
 \begin{itemize}
   \item Cada elemento de la base de datos se separa en palabras individuales:
@@ -231,17 +232,17 @@ El concepto de correspondencia\footnote{Traducimos aquí \textit{to match} por \
       \item experiencia $\rightarrow$ \{experiencia, conocimiento, habilidad,...\}
       \item requerida $\rightarrow$ \{requerir, necesario, indispensable,...\}
   \end{itemize}
-  \item Se generan tokens con los lemas de los sinónimos de cada elemento:
+  \item Se generan tokens combinando los lemas de los sinónimos de cada elemento:
   \begin{itemize}
       \item tokens = \{(experiencia, requerir), (conocimiento, requerir), (habilidad, requerir),(experiencia, necesario), (conocimiento, necesario), (habilidad, necesario),(experiencia, indispensable), (conocimiento, indispensable), (habilidad, indispensable)\}
   \end{itemize}
   \item Este conjunto de tokens se asocia a cada elemento:
   \begin{itemize}
-    \item “Experiencia Requerida” $\rightarrow$ tokens (definido en el bullet anterior)
+    \item “Experiencia Requerida” $\rightarrow$ tokens (como está definido en el bullet anterior)
   \end{itemize}
 \end{itemize}
 
-Con este diccionario de elementos en tokens construido, la función \textbf{correspondencia}, es trivial. Dado un token se puede obtener todos los elementos de la base de datos a los que ese token corresponde, es decir, todos los elementos para los cuales el token en cuestión pertenece al conjunto de tokens generado según el procedimiento recién enunciado. Notar que un token puede corresponder a más de un elemento de la base de datos.
+Con este procedimiento se construye un diccionario de elementos de la base de datos en listas de tokens. Finalmente, basándose en este diccionario, se construye la función \textbf{correspondencia}, que va de tokens en elementos de la base de datos. Dado un token se obtienen todos los elementos de la base de datos a los que ese token corresponde, esto es, todos los elementos para los cuales el token en cuestión pertenece al conjunto de tokens generado según el procedimiento recién enunciado. Notar que un token puede corresponder a más de un elemento de la base de datos.
 
 Los tipos de elementos a los que un token corresponde determinan el conjunto de \textbf{tipos posibles de un token} dado: token de relación, token de atributo, token de valor. Qué tipo tome un token dentro de sus tipos posibles dependerá de la correspondencia utilizada en el contexto dado.
 
@@ -250,15 +251,15 @@ Los tipos de elementos a los que un token corresponde determinan el conjunto de 
 
 El conjunto de preguntas que este trabajo rescata como semánticamente tratables es un conjunto conceptualmente simple pero prácticamente muy abarcador. Esto significa que se abordan preguntas formuladas de forma sencilla, pero que corresponden a una gran cantidad de preguntas de las que realmente se deberá ocupar un sistema de interfaz en lenguaje natural a una base de datos. En cualquier caso, como ya dijimos antes, existe siempre la posibilidad de pedirle al usuario una reformulación de la pregunta. La definición de tratabilidad semántica se basa en -e intenta formalizar- la observación de que muchas preguntas formuladas en lenguaje natural constan de una especificación de pares atributo/valor así como también de valores sueltos, donde el atributo asociado está implícito. Por su parte, un atributo podría estar asociado, también a una qword.  Por ejemplo, consideremos la pregunta: “¿Qué carreras se estudian en universidades localizadas en Buenos Aires?” en el contexto de una base simplificada que conste de una sola relación Universidades con atributos (Nombre, Dirección, Director, Cantidad de Alumnos, Carreras). En este caso, la palabra “localizada” está relacionada con el atributo Dirección, y está asociada a los términos “Buenos Aires”, también relacionado con el atributo Dirección (como valor), el término universidades está relacionado con la relación Universidades, mientras que la qword “Qué” y el término “carreras” refieren, ambos, al atributo Carreras. Para definir la tratabilidad semántica es necesario introducir antes dos definiciones más.
 
-Considerando la definición de token recién enunciada, se define como una \textbf{tokenización completa de una pregunta \textit{q}} a cualquier conjunto de tokens en los que cada término de $q$ aparece en exactamente un token del conjunto.
+Considerando la definición de token recién enunciada, se define como una \textbf{tokenización completa de una pregunta \textit{q}} a cualquier conjunto de tokens en los que cada término de $q$ aparece en exactamente un token del mismo.
 
-Por su parte, decimos que dos tokens están \textbf{sintácticamente asociados}\footnote{Traducimos aquí \textit{syntactic attachment} como \textit{asociación sintáctica}} en el contexto de una pregunta $q$ cuando estos dos tokens cumplen ciertas condiciones sintácticas en algún parse tree (Ver \allref{subsec:parse-tree}) de la pregunta.
-La función $attachment$ tiene como dominio un par de palabras o lemas (y la oración en la que aparecen) y como imagen Verdadero o Falso. En la implementación presentada por los investigadores (Precise), como veremos en la sección siguiente, se utiliza un Charniak Parser para modelar esta función.
+Por su parte, decimos que dos tokens están \textbf{sintácticamente asociados}\footnote{Traducimos aquí \textit{syntactic attachment} como \textit{asociación sintáctica}} en el contexto de una pregunta $q$ cuando estos dos tokens cumplen ciertas condiciones sintácticas en algún árbol sintáctico de la pregunta.
+% Reemplacé "parse tree" por "árbol sintáctico y eliminé una referencia a una sección parse-tree"
+La función $attachment$, que modela la asociación sintáctica, tiene como dominio un par de palabras o lemas (y la oración en la que aparecen) y como imagen Verdadero o Falso. En la implementación presentada por los investigadores (Precise), como veremos en la sección siguiente, se utiliza un Charniak Parser para modelar esta función.
 
-
-Con estos conceptos definidos, podemos dar finalmente la definición de \textbf{traducción válida}\footnote{Traducimos aquí \textit{valid mapping} por \textit{traducción válida}}. Una traducción válida de una pregunta $q$ en un conjunto de elementos $E$ de una base de datos es una tokenización completa de $q$ que cumple las siguientes tres condiciones:
+Con estos conceptos definidos, podemos dar finalmente la definición de \textbf{traducción válida}\footnote{Traducimos aquí \textit{valid mapping} por \textit{traducción válida}}. Una traducción válida de una pregunta $q$ en un conjunto de elementos $E$ de una base de datos es una tokenización completa de $q$ que cumple las siguientes tres condiciones (notar que los términos \textit{correspondencia}, \textit{compatibilidad},\textit{asociación sintáctica} están usados según las definiciones técnicas recién reconstruidas):
 \begin{enumerate}
-  \item Cada token se corresponde a un único elemento de $E$
+  \item Cada token se corresponde con un único elemento de $E$.
   \item Cada token de atributo se asocia a un único token de valor, cumpliendo las siguientes condiciones:
   \begin{itemize}
     \item el atributo de la base de datos que corresponde al token de atributo y el valor de la base de datos que corresponde al token de valor son compatibles
@@ -270,7 +271,6 @@ Con estos conceptos definidos, podemos dar finalmente la definición de \textbf{
     \item ambos tokens (token de relación - token de atributo o bien token de relación - token de valor) están sintácticamente asociados
   \end{itemize}
 \end{enumerate}
-
 
 Notar que no se exigen condiciones sobre los tokens de valor (esto captura la intuición de que los valores pueden aparecer con su atributo asociado implícito).
 
@@ -384,17 +384,23 @@ en el ajedrez, porque buscó superar un reto  significativo y
 visible del campo de la Inteligencia Artificial tanto para la comunidad
 científica como para la sociedad en general:
 {\textquotedblleft}?`puede un sistema computacional ser diseñado para
-competir con los mejores hombre en alguna tarea que requiera altos
+competir con los mejores hombres en alguna tarea que requiera altos
 niveles de inteligencia humana y, si es el caso, qué clase de
 tecnología, algoritmos e ingeniería se
 requiere?{\textquotedblright} \cite{WATSON1}.
+
+\medskip
+
+A continuación presentamos brevemente la descripción de Watson según los trabajos \cite{WATSON1} y \cite{WATSON2}.
+
+\medskip
 
 Watson es la implementación específica para participar en este
 programa de una arquitectura más genérica de question answering,
 Deep-QA, que da el nombre al proyecto de la corporación. Esta
 arquitectura es de construcción reciente y ejemplifica perfectamente la complejidad del problema de
-QA de dominio abierto e incorpora tecnologías de punta de distintos
-dominios de ciencias de la computación, y de IA en particular:
+QA de dominio abierto, incorporando tecnologías de punta de distintos
+dominios de ciencias de la computación y de IA en particular:
 information retrieval, natural language processing, knowledge
 representation and reasoning, machine learning e interfaces humano -
 computadora. En el transcurso de esta tesis, IBM lanzó el programa
@@ -416,7 +422,7 @@ fin de optar por responder o no responder.
 La confiabilidad de la respuesta, o al menos una estimación, debe
 calcularse antes de que pase el tiempo para decidir responder (6
 segundos) y también de que otro participante oprima su pulsador
-(menos de 3 segundos).
+(menos de 3 segundos en promedio).
 \item Precisión:\newline
 El tipo de respuestas que se dan en el show suelen ser respuestas
 exactas (por ejemplo: solamente un nombre, un número o una fecha,
@@ -471,7 +477,7 @@ contestadas) y el \textit{porcentaje de respuestas dadas }(preguntas
 contestadas / total de preguntas). Mediante la configuración de un
 threshold de \textit{confiabilidad} pueden obtenerse distintas
 estrategias de juego: un umbral bajo repercutirá en un juego más
-agresivo, incrementando la proporción de respuestas contestadas,,
+agresivo, incrementando la proporción de respuestas contestadas,
 pero disminuyendo su precisión, mientras que un umbral alto
 determinará un juego conservador, con menos respuestas dadas pero
 mayor precisión en las mismas. Es un clásico escenario de trade-off
@@ -479,22 +485,15 @@ entre dos atributos de calidad. Un buen sistema de estimación de
 confiabilidad implica una mejora general del sistema, aún cuando el
 módulo de generación de respuestas permanezca idéntico.
 
-
-\bigskip
-
 En el show, el porcentaje de respuestas dadas depende de la velocidad
 con la que se llega a presionar el pulsador, lo cual sólo interesa
 para el dominio de QA como una restricción temporal.
-
-
-\bigskip
 
 Mediante análisis numérico, los investigadores determinaron que los
 campeones de Jeopardy lograban tomar entre el 40\% y el 50\% de las
 preguntas y, sobre ellas, lograban una precisión de entre el 85\% y
 el 95\%, lo que determinaba una barrera de performance bastante
 exigente en lo que respecta a QA.
-
 
 \bigskip
 
@@ -505,8 +504,7 @@ adaptarlos al problema \ de Jeopardy. \ El primero fue PIQUANT
 (Practical Intelligent Question Answering Technology), un sistema
 desarrollado por IBM en conjunto con el programa del gobierno
 estadounidense AQUAINT y varias universidades, que estaba entre los
-mejores según la TREC (Text Retrieval Conference), una autoridad en
-el área. PIQUANT consta de un pipeline típico con
+mejores según la TREC. PIQUANT consta de un pipeline típico con
 tecnología de punta, logrando un rango del 33\% de respuestas
 correctas en las evaluaciones TREC-QA. Los requerimientos de la
 evaluación de TREC son muy distintos de los de Jeopardy: TREC ofrece
@@ -520,7 +518,7 @@ restricciones temporales son, por mucho, más amplias (por ejemplo:
 una semana para responder 500 preguntas). En Jeopardy, además de las
 restricciones ya mencionadas, un requerimiento fue que el sistema
 trabaje sobre datos locales y no acceda a la web en tiempo real. El
-intento de adaptar PIQUANT al problema de Jeopardy dio pésimos en
+intento de adaptar PIQUANT al problema de Jeopardy dio pésimos resultados en
 comparación con los necesarios: 47\% de precisión sobre el 5\% de
 respuestas con mayor confiabilidad y 13\% de precisión en general.
 
@@ -528,7 +526,7 @@ Por otro lado, el equipo intentó adaptar el sistema OpenEphyra \footnote{\url{h
 CMU (Carnegie Mellon University) basado en Ephyra (no libre), diseñado también para la evaluación TREC. OpenEphyra logra un 45\% de respuestas correctas sobre el set de datos de evaluación TREC
 2002, usando búsqueda web. La adaptación resultó aún peor que la de PIQUANT (con menos del 15\% de respuestas correctas y una mala estimación de la confiabilidad).
 
-Se probaron dos adaptaciones de estos sistemas. una basada en búsquedas de texto puro y otra basada en reconocimiento de entidades. En la primera, la base de conocimiento se modeló de manera no
+Se probaron dos adaptaciones de estos sistemas, una basada en búsquedas de texto puro y otra basada en reconocimiento de entidades. En la primera, la base de conocimiento se modeló de manera no
 estructurada y las preguntas se interpretaron como términos de una query, mientras que en la segunda se modeló una base de conocimientos estructurada y las preguntas se analizaron semánticamente para
 reconocer entidades y relaciones, para luego buscarlos en la base. Comparando ambos enfoques en base al porcentaje de respuestas dadas, el primero dio mejores resultados para el 100\% de las respuestas,
 mientras que la confiabilidad general era baja; por otro lado, el segundo enfoque logró altos valores de confiabilidad, pero sólo en los casos en que efectivamente logra identificar entidades. De aquí
@@ -579,7 +577,7 @@ dominio del problema.
 
 En este proceso se clasifica el tipo de la pregunta (los tipos están
 determinados por el show: puzzles, matemáticos, etc). También se
-busca el tipo de respuesta esperada, dónde los tipos manejados son
+busca el tipo de respuesta esperada, dónde los tipos manejados
 por Watson son los LATs extraídos de las preguntas de ejemplo. El LAT
 determina el {\textquotedblleft}tipo{\textquotedblright} de la
 respuesta, qué clase de entidad \textit{es} la respuesta (una fecha, un
@@ -587,7 +585,7 @@ hombre, una relación, etc). El equipo de IBM intentó adaptar
 distintos algoritmos de clasificación preexistentes, pero después
 de intentar entrenarlos para el dominio de tipos de Jeopardy, llegaron
 a la conclusión de que su eficacia era dependiente del  sistema de
-tipos default, y que la mejor forma de adaptación era mappear su
+tipos default, y que la mejor forma de adaptación era mapear su
 output a los tipos utilizados por Watson (un enfoque similar fue
 utilizado en esta tesis con respecto al clasificador de Stanford). Otra
 anotación importante es el
@@ -597,7 +595,7 @@ convierte en una afirmación cerrada.
 
 Por ejemplo, para {\textquotedblleft}El hombre que escribió Romeo y
 Julieta{\textquotedblright}, el foco es {\textquotedblleft}El hombre
-que{\textquotedblright}. Este fragmento suele contener información
+que{\textquotedblright} (notar que esta definición de foco según los autores de IBM es diferente a la dada anteriormente en este capítulo). Este fragmento suele contener información
 importante sobre la respuesta y al reemplazarlo por una respuesta
 candidata se obtiene una afirmación fáctica que puede servir para
 evaluar distintos candidatos y recolectar evidencia. Por ejemplo,
@@ -618,11 +616,7 @@ mientras que la detección de relaciones como approach general a un
 problema de question answering de dominio amplio es un área de
 investigación abierta.
 
-Una particularidad ya señalada de las preguntas de Jeopardy son las
-pistas con subpistas no relacionadas. Para atacar este problema, Watson
-genera distintas particiones y resuelve todas en paralelo, sintetizando
-las respuesta de cada partición generada mediante algoritmos ad-hoc
-de ponderación de confiabilidad y otras características. \newline
+\medskip
 
 \textbf{Generación de hipótesis}\newline
 
@@ -653,10 +647,7 @@ recall sobre la precisión, con el supuesto de que el resto del
 pipeline logrará filtrar la respuesta correcta correctamente. Watson
 genera varios cientos de hipótesis candidatas en este paso. \newline
 
-\textbf{Filtrado (soft filtering)}\newline
-
-
-Para optimizar recursos, se realiza un filtrado liviano de respuestas
+Para optimizar recursos, se realiza un filtrado liviano (soft filtering) de respuestas
 antes de pasar a la recopilación de evidencia y al scoring de
 hipótesis. Un filtrado liviano es, por ejemplo, comprobar similaridad
 de la respuesta candidata con el LAT esperado de la respuesta. Aquellas
