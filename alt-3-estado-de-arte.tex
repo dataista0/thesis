@@ -181,9 +181,11 @@ En esta tesis utilizamos como marco teórico el desarrollado por Ana-Maria Popes
 
 En estos trabajos, Ana María Popescu et. al. definen la noción de pregunta \textit{semánticamente tratable} en el contexto de una base de datos concreta. Proponen, así mismo, un modelo teórico para identificar este tipo de preguntas y una forma de transformarlas en consultas de SQL, así como también un sistema concreto que implementa el modelo, llamado PRECISE. Popescu argumenta que una interfaz a una base de datos en lenguaje natural puede no identificar una pregunta, pero que jamás debe mal interpretarla activamente, es decir, interpretar algo distinto a lo preguntado y dar una respuesta que no se condice con la necesidad de información del usuario. Una mala interpretación de una pregunta reducirá la confianza del usuario en el sistema, volviéndolo inusable. En cambio, identificando una pregunta como intratable, se puede disparar un proceso de reformulación o especificación asistida de la pregunta, lo cual no es tan costoso en términos de confianza en el sistema.
 
+La idea principal que guía a sus trabajos es proponer una clase de preguntas específica que sea 1) suficientemente sencilla para ser interpretada por un modelo computacional y, a la vez, suficientemente abarcadora de las preguntas generalmente hechas por humanos. La intuición detrás de este enfoque es que, mientras, en el caso general, una pregunta puede ser compleja, ambigüa y difícil de comprender (incluso por un humano), también hay preguntas simples, unívocas y con una interpretación sencilla incluso para una máquina (por ejemplo: ``¿Qué restaurantes de comida china hay en Belgrano?''). La \textit{tratabilidad semántica}, cualidad de una pregunta para una base de datos dada, cuya definición intentaremos reconstruir a continuación, define esta clase de preguntas simples.
+
 En lo que resta de esta sección, describiremos con detalle el modelo teórico propuesto por Popescu en sus publicaciones, así como también el sistema concreto implementado por sus autores con ese modelo como guía.
 
-\subsubsection*{Definiciones iniciales: elementos, compatibilidad, token, correspondencia, tipado de tokens.}
+\subsubsection*{Definiciones iniciales: elementos, compatibilidad, token, correspondencia, tipado de tokens, marcador sintáctico}
 
 Según el modelo relacional usual, una base de datos está compuesta de tres tipos de \textbf{elementos}: \textit{valores, atributos y relaciones}. Cada elemento es distinto y único. Por relación nos referimos a lo que usualmente llamamos tabla (por ejemplo: Universidades), por atributo a una columna de una tabla (por ejemplo: Dirección), y por valor a un dato particular de una fila de una columna (Por ejemplo: Figueroa Alcorta 1234).
 
@@ -215,7 +217,7 @@ Las \textbf{qwords}, recordemos, son los pronombres interrogativos, palabras tí
 Por otro lado, se introduce una noción de \textbf{token}, diferente de la que dimos en \allref{sec:terminologia}.
 En el contexto de este modelo, un token es un conjunto de lemas de palabras (Ver \allref{subsec:otras-tareas-pnl}) que corresponden a un elemento de la base de datos. Por ejemplo, \{experiencia, requerir\} y \{experiencia, necesario\} son tokens que corresponden al atributo “Experiencia Requerida” de una base de datos.
 
-Otra definición inicial importante es el concepto de correspondencia\footnote{Traducimos aquí \textit{to match} por \textit{corresponder}}, que no está definido teóricamente sino operacionalmente al describir el sistema PRECISE. El procedimiento utilizado es el siguiente (Utilizaremos el atributo “Experiencia Requerida” como ejemplo para ilustrar cada paso):
+Otra definición inicial importante es el concepto de \textbf{correspondencia}\footnote{Traducimos aquí \textit{to match} por \textit{corresponder}}, que no está definido teóricamente sino operacionalmente al describir el sistema PRECISE. El procedimiento utilizado es el siguiente (Utilizaremos el atributo “Experiencia Requerida” como ejemplo para ilustrar cada paso):
 
 \begin{itemize}
   \item Cada elemento de la base de datos se separa en palabras individuales:
@@ -242,24 +244,35 @@ Otra definición inicial importante es el concepto de correspondencia\footnote{T
   \end{itemize}
 \end{itemize}
 
-Con este procedimiento se construye un diccionario de elementos de la base de datos en listas de tokens. Finalmente, basándose en este diccionario, se construye la función \textbf{correspondencia}, que va de tokens en elementos de la base de datos. Dado un token, se obtienen todos los elementos de la base de datos a los que ese token corresponde, esto es, todos los elementos para los cuales el token en cuestión pertenece al conjunto de tokens generado según el procedimiento recién enunciado. Notar que un token puede corresponder a más de un elemento de la base de datos.
+Con este procedimiento se construye un diccionario de elementos de la base de datos en listas de tokens ``sinónimos'', llamado \textbf{lexicon}. Finalmente, basándose en este diccionario, se construye la función \textbf{correspondencia}, que va de tokens en elementos de la base de datos.
+Dado un token, se obtienen todos los elementos de la base de datos a los que ese token corresponde, esto es, todos los elementos para los cuales el token en cuestión pertenece al conjunto de tokens generado según el procedimiento recién enunciado. Notar que un token puede corresponder a más de un elemento de la base de datos.
 
 Los tipos de elementos a los que un token corresponde determinan el conjunto de \textbf{tipos posibles de un token} dado: token de relación, token de atributo, token de valor. Qué tipo tome un token dentro de sus tipos posibles dependerá de la correspondencia utilizada en el contexto dado.
 
+Finalmente, un \textbf{marcador sintáctico} se define como un token perteneciente a una lista fija, independiente de la base de datos concreta, de tokens que no hacen ninguna contribución semántica a la interpretación de la pregunta (como ``the'', ``are'' y ``on'').
 
 \subsubsection*{Tokenización completa, asociación sintáctica, traducción válida, tratabilidad semántica}
 
-El conjunto de preguntas que este trabajo rescata como semánticamente tratables es un conjunto conceptualmente simple pero prácticamente muy abarcador. Esto significa que se abordan preguntas formuladas de forma sencilla, pero que corresponden a una gran cantidad de preguntas de las que realmente se deberá ocupar un sistema de interfaz en lenguaje natural a una base de datos. En cualquier caso, como ya dijimos antes, existe siempre la posibilidad de pedirle al usuario una reformulación de la pregunta. La definición de tratabilidad semántica se basa en -e intenta formalizar- la observación de que muchas preguntas formuladas en lenguaje natural constan de una especificación de pares atributo/valor así como también de valores sueltos, donde el atributo asociado está implícito. Por su parte, un atributo podría estar asociado, también a una qword.  Por ejemplo, consideremos la pregunta: “¿Qué carreras se dictan en universidades localizadas en Buenos Aires?” en el contexto de una base simplificada que conste de una sola relación Universidades con atributos (Nombre, Dirección, Director, Cantidad de Alumnos, Carreras). En este caso, la palabra “localizada” está relacionada con el atributo Dirección, y está asociada a los términos “Buenos Aires”, también relacionado con el atributo Dirección (como valor), el término universidades está relacionado con la relación Universidades, mientras que la qword “Qué” y el término “carreras” refieren, ambos, al atributo Carreras.
+El conjunto de preguntas que este trabajo rescata como semánticamente tratables es un conjunto conceptualmente simple pero prácticamente muy abarcador. Esto significa que se abordan preguntas formuladas de forma sencilla, pero que corresponden a una gran cantidad de preguntas de las que realmente se deberá ocupar un sistema de interfaz de lenguaje natural a una base de datos. En cualquier caso, como ya dijimos antes, existe siempre la posibilidad de pedirle al usuario una reformulación de la pregunta.
 
-Para definir la tratabilidad semántica es necesario introducir antes dos definiciones más.
 
-Considerando la definición de token recién enunciada, se define como una \textbf{tokenización completa de una pregunta \textit{q}} a cualquier conjunto de tokens en los que cada término no filtrado de $q$ aparece en exactamente un token del mismo. El filtrado de términos, por su parte, es uno de los primeros pasos del procesamiento en la implementación y, como veremos en la próxima sección, consiste en eliminar marcadores sintácticos y términos que no aportan información relevante a la pregunta. En el caso del ejemplo del párrafo anterior, serían los términos \dq{se}, \dq{dictan}, \dq{en}.
+La definición de tratabilidad semántica se basa en -e intenta formalizar- la observación de que muchas preguntas formuladas en lenguaje natural constan de una especificación de pares atributo/valor así como también de valores sueltos, donde el atributo asociado está implícito.Un atributo puede, además, estar asociado a una qword.
 
-Por su parte, decimos que dos tokens están \textbf{sintácticamente asociados}\footnote{Traducimos aquí \textit{syntactic attachment} como \textit{asociación sintáctica}} en el contexto de una pregunta $q$ cuando estos dos tokens cumplen ciertas condiciones sintácticas en algún árbol sintáctico de la pregunta.
+\medskip
+
+Tomando el ejemplo de Popescu, consideremos la pregunta: \textit{“What French restaurants are located downtown?”} en el contexto de una base de datos simplificada que conste de una sola relación \textbf{Restaurants} con atributos \textbf{Name}, \textbf{Cuisine} y \textbf{Location}. En este caso, la palabra “French” refiere al valor French del atributo de la base de datos \textit{implícito} Cuisine, mientras que las palabras  “located”  y “downtown” refieren al atributo \textit{explícito} Location y a su valor Downtown. Finalmente, la palabra “restaurant” refiere a la relación Restaurants, como así también la qword “What”.
+
+\medskip
+
+Para definir la tratabilidad semántica es necesario introducir antes dos definiciones más: \textbf{tokenización completa} y \textbf{asociación sintáctica}.
+
+Considerando las definiciones recién enunciada, se define como una \textbf{tokenización completa de una pregunta \textit{q}} a cualquier conjunto de tokens en los que cada término que no es un marcador sintáctico de $q$ aparece en exactamente un token del conjunto.
+
+Por su parte, decimos que dos tokens están \textbf{sintácticamente asociados}\footnote{Traducimos aquí \textit{syntactic attachment} como \textit{asociación sintáctica}} en el contexto de una pregunta $q$ cuando estos dos tokens cumplen ciertas restricciones en el árbol sintáctico de la pregunta.
 % Reemplacé "parse tree" por "árbol sintáctico y eliminé una referencia a una sección parse-tree"
-La función $attachment$, que modela la asociación sintáctica, tiene como dominio un par de palabras o lemas (y la oración en la que aparecen) y como imagen Verdadero o Falso. En la implementación presentada por los investigadores (Precise), como veremos en la sección siguiente, se utiliza un Charniak Parser para modelar esta función.
+La función $attachment$, que modela la asociación sintáctica, tiene como dominio un par de palabras o lemas (y la oración en la que aparecen) y como imagen verdadero o falso. En la implementación presentada por los investigadores (Precise), como veremos en la sección siguiente, se utiliza un Charniak Parser para modelar esta función, aunque los detalles de las condiciones implementadas no se presentan nunca.
 
-Con estos conceptos definidos, podemos dar finalmente la definición de \textbf{traducción válida}\footnote{Traducimos aquí \textit{valid mapping} por \textit{traducción válida}}. Una traducción válida de una pregunta $q$ en un conjunto de elementos $E$ de una base de datos es una relación entre alguna tokenización completa de $q$ con elementos de $E$ que cumple las siguientes tres condiciones (notar que los términos \textit{correspondencia}, \textit{compatibilidad} y \textit{asociación sintáctica} están usados según las definiciones técnicas recién reconstruidas):
+Con estos conceptos definidos, podemos dar finalmente la definición de \textbf{traducción válida}\footnote{Traducimos aquí \textit{valid mapping} por \textit{traducción válida}}. Una traducción válida de una pregunta $q$ en un conjunto de elementos $E$ de una base de datos es una correspondencia de alguna tokenización completa de $q$ en elementos de $E$ que cumple las siguientes tres condiciones (notar que los términos \textit{correspondencia}, \textit{compatibilidad} y \textit{asociación sintáctica} están usados según las definiciones técnicas recién reconstruidas):
 \begin{enumerate}
   \item Cada token se corresponde con un único elemento de $E$.
   \item Cada token de atributo se relaciona con un único token de valor, cumpliendo las siguientes condiciones:
@@ -276,199 +289,123 @@ Con estos conceptos definidos, podemos dar finalmente la definición de \textbf{
 
 Notar que no se exigen condiciones sobre los tokens de valor (esto captura la intuición de que los valores pueden aparecer con su atributo asociado implícito).
 
-Si una pregunta tiene al menos una traducción válida en la que todos los tokens son distintos y en la que al menos unos de sus tokens de valor es una qword, entonces la pregunta es \textbf{semánticamente tratable}.
+Si una pregunta tiene al menos una traducción válida en la que todos los tokens son distintos y en la que al menos unos de sus tokens de valor es una qword, entonces la pregunta es \textbf{semánticamente tratable}. Que una pregunta sea \textit{semánticamente tratable} significa que existe una traducción válida de los tokens significativos de la pregunta a elementos de la base de datos con ciertas condiciones y, como veremos en la siguiente sección, este conjunto de elementos puede traducirse, de una manera trivial, en una consulta SQL.
 
-Con estas definiciones queda definido el marco teórico necesario para el tratamiento de preguntas formuladas en algún lenguaje natural por un sistema de question answering estructurado: que una pregunta sea \textit{semánticamente tratable} significa que existe una traducción válida de los tokens significativos de la pregunta a elementos de la base de datos. Como veremos en la siguiente sección al exponer la implementación del sistema Precise, la traducción de elementos de la base de datos a una consulta para la misma es trivial.
-
-\bigskip
-
-Consideremos ahora, antes de discutir la implementación concreta propuesta pors los autores, dos ejemplos del procedimiento implícito en el marco teórico para la traducción de la pregunta en una serie de elementos de una base de datos.
-
-En primer lugar, asumamos la base de datos con una única relación, Universidades, con atributos (Nombre, Dirección, Director, Cantidad de Alumnos, Carreras) y, como filas de la base de datos, una serie de universidades nacionales.
-
-Consideremos ahora una posible construcción de tokens asociados a la relación (el término “Universidades”) y a los atributos - obviaremos la reconstrucción de los tokens para los posibles valores. Para la generación de sinónimos utilizamos aquí sinonimos.com.
-
-\medskip
-
-Universidades se lematiza como “Universidad” y tiene como sinónimos: \{universidad, facultad, colegio, instituto, academia\}.
-
-Dirección es su propio lema y tiene tres acepciones con diferente sinónimos: \{1) consejo, enseñanza, orientación, tutela, guía, patrocinio, amparo, adiestramiento, 2) domicilio, residencia, localización, 3) rumbo, destino, camino, ruta, trayectoria, sentido, orientación, tendencia\}. Notar que la polisemia del término introduce un problema, dado que por contexto el único sentido - y los sinónimos asociados que nos interesaría conservar - es el 2) domicilio, residencia. En el paper no se hace hincapie en este problema. Una opción es realizar un filtrado de los sentidos a mano, lo cual puede ser una tarea tediosa y larga si el esquema de la base de datos es muy grande.
-
-Para el caso de Cantidad de Alumnos, el procedimiento sugiere: primero, quitar “de”, luego generar sinónimos para las palabras Cantidad y Alumno (lema de Alumnos) y luego hacer una combinación de todos con todos. Para Cantidad obtenemos: \{cantidad, cuantía, suma, total, importe, coste, número, conjunto, tanto\}, para Alumno: \{alumno, estudiante, colegial, escolar, discípulo, becario\}. Entonces, los tokens para Cantidad de Alumnos serían: {(cantidad, alumno), (cantidad, estudiante), (cantidad, colegial), (cantidad, escolar), (cantidad, discípulo), (cantidad, becario), (cuantía, estudiante), (cuantía, colegial),...}.
-
-Los tokens para Nombre, Director y Carrera pueden verse en la siguiente tabla.
-
-\begin{center}
-\begin{table}[h]
-\centering
-\begin{tabular}{| l |  p{12cm} |}
-\hline
-Elemento & Conjunto de tokens \\ \hline
-Universidades &  universidad, facultad, colegio, instituto, academia\\ \hline
-Nombre &  nombre, fama, nombradía, marca, membrete, firma, patronímico, apelativo, denominación, apellido, designación, apodo, alias\\ \hline
-Dirección & dirección, consejo, enseñanza, orientación, tutela, guía, patrocinio, amparo, adiestramiento, domicilio, residencia, localización, rumbo, destino, camino, ruta, trayectoria, sentido, orientación, tendencia\\ \hline
-Director & director, administrador, rector, jefe, presidente, encargado, dirigente, directivo, dignatario\\ \hline
-Cantidad de Alumnos & Todas las combinaciones de un término de {cantidad, cuantía, suma, total, importe, coste, número, conjunto, tanto} con un término de {alumno, estudiante, colegial, escolar, discípulo, becario}\\ \hline
-Carreras & carrera, corrida, carretilla, correteo, galopada, curso, trayecto, trayectoria, recorrido, camino, profesión, licenciatura, estudios, puesto, prueba competición, lucha, pugna\\ \hline
-\end{tabular}
-\caption{Tokens para la relación Universidades y sus atributos}
-\label{table:temas}
-\end{table}
-\end{center}
-
-Por otro lado, corresponde asociar a cada atributo y a cada relación, si tiene sentido, una lista de Qwords compatibles. Nosotros proponemos la siguiente relación de compatibilidad:
-
-\begin{center}
-\begin{table}[h]
-\centering
-\begin{tabular}{| l |  p{12cm} |}
-\hline
-Atributo & Conjunto de Qwords compatibles \\ \hline
-Nombre &  Qué, Cuál\\ \hline
-Dirección & Dónde\\ \hline
-Director & Quién\\ \hline
-Cantidad de Alumnos & Cuánto, Qué\\ \hline
-Carreras & Qué \\ \hline
-\end{tabular}
-\caption{Compatibilidad de Qwords para los atributos}
-\label{table:temas}
-\end{table}
-\end{center}
-
-Consideremos ahora la pregunta utilizada anteriormente: “¿Qué carreras se dictan en universidades localizadas en Buenos Aires?”. En primer lugar, corresponde filtrar las palabras sin significado en nuestro contexto y lematizar el resto de las mismas: \{qué, carrera, universidad, localización, buen, aire\}.
-
-Luego, tomamos estos términos y vemos a qué conjuntos de tokens pertenecen y, a partir de allí, a qué elementos de la DB pueden corresponderse.
-
-
-A fines ilustrativos, asumimos que existe una universidad localizada en Buena Vista, Catamarca, para obtener una ambigüedad en un término.
-
-\begin{center}
-\begin{table}[h]
-\centering
-\begin{tabular}{| l | l |  p{8cm} | }
-\hline
-Término & Tokens & Elementos \\ \hline
-Qué &  Qué - qword & Token de valor compatible con: Nombre (atributo), Cantidad de Alumnos (atributo), Carreras (atributo)\\ \hline
-Carreras & carrera & Carreras (atributo) \\ \hline
-Universidades &  universidad & Universidades (relación)\\ \hline
-localizadas & localización & Dirección (atributo)\\ \hline
-Buenos & (buen, aire), (buen, vista) & Buenos Aires (valor) y Buena Vista (valor)\\ \hline
-Aires & (buen, aire) & Buenos Aires (valor)\\ \hline
-\end{tabular}
-\caption{Términos, tokens y elementos asociados}
-\label{table:temas}
-\end{table}
-\end{center}
-
-Existen, como puede verse, dos tokenizaciones: \{qué, universidad, localización, (buen, vista), (buen, aire)\} y \{qué, universidad, localización, (buen, aire)\}. Pero la primera no cumple la condición de que cada término debe aparecer en un solo token. Por lo tanto, la única tokenización completa en la que cada término aparece en uno y solo un token de la tokenización es la segunda.
-
-Veamos ahora si, a partir de esta tokenización completa y su relación con elementos de la base de datos, podemos obtener una traducción válida.
-
-Veamos las reglas:
-
-\begin{enumerate}
-  \item Cada token se corresponde con un único elemento de $E$.
-  \begin{itemize}
-      \item Esta regla se cumple para todos los tokens.
-  \end{itemize}
-  \item Cada token de atributo se relaciona con un único token de valor, cumpliendo las siguientes condiciones: 1) el atributo de la base de datos que corresponde al token de atributo y el valor de la base de datos que corresponde al token de valor son compatibles y 2) ambos tokens están sintácticamente asociados
-  \begin{itemize}
-    \item Tenemos dos tokens de atributos: localización y carrera y los tokens de valor son qué y (buen, aire). Debemos ver si localización y carrera se relacionan con alguno de los dos de la manera descripta. El atributo que corresponde a localización en la base de datos es Dirección, mientras que el valor que corresponde a (buen, aire) es \dq{Buenos Aires}, y ambos son compatibles (pues Buenos Aires es un valor del atributo Dirección). Por otro lado, la qword qué no es compatible con el atributo Dirección, que solo es compatible con la qword Dónde. Pasaremos por alto aquí la condición relativa a la asociación sintáctica por ser demasiado técnica (la veremos en las próximas secciones), pero baste decir que localización y (buen, aire) está sintácticamente relacionado según algún árbol sintáctico. Entonces, localización se relaciona con (buen, aire). Veamos ahora que carrera no se relaciona con (buen, aire), pues Carreras y \dq{Buenos Aires} no son compatibles, pero sí se relaciona con el token de valor \dq{qué}, por lo que esta condición se cumple.
-   \end{itemize}
-  \item Cada token de relación está relacionado a un token de atributo o bien a un token de valor, cumpliendo las siguientes condiciones: 1) la relación de la base de datos que corresponde al token de relación y el elemento de la base de datos que corresponde al token de atributo o token de valor son compatibles, 2) ambos tokens (token de relación - token de atributo o bien token de relación - token de valor) están sintácticamente asociados
-  \begin{itemize}
-    \item Solo hay un token de relación: universidad y es compatible con todos los tokens posibles (localización, carrera y qué) y tiene una relación sintáctica fuerte con localización, por lo que esta regla se cumple también.
-  \end{itemize}
-\end{enumerate}
-
-
-Entonces, tenemos una traducción válida de la pregunta en elementos de la base de datos con par atributo-valor Dirección, Buenos Aires), el atributo Carreras asociado a una qword y la mención de la relación Universidades. Según el procedimiento que detallaremos en la próxima sección, esto implica que la pregunta “¿Qué carreras se dictan en universidades localizadas en Buenos Aires?” se traduce en la query: “SELECT Carreras FROM Universidades WHERE Direccion=\sq{Buenos Aires}”.
-
-
+En el próximo título veremos la implementación concreta de este marco teórico por sus autores, comenzando con un ejemplo que permitirá consolidar los conceptos recién definidos.
 
 \subsubsection*{Implementación: Precise}
 
-En esta sección describiremos la estructura general del modelo implementado en los trabajos citados y las soluciones dadas al problema de la traducción desde una tokenización completa a un conjunto de elementos y de este conjunto a una consulta computacionalmente tratable. En la implementación propia sobre la base de datos estructurada del proyecto Mitic, presentada en \allref{chap:4}, se podrá ver una implementación simplificada de este modelo.
+Dada una pregunta $q$, Precise determina si es semánticamente tratable y si lo es, genera la consulta SQL correspondiente. Si no lo es, rechaza la pregunta pidiendo al usuario una reformulación. El problema de encontrar una correspondencia de una tokenización completa de $q$ en un conjunto de elementos de la base de datos que cumpla las condiciones 1, 2 y 3 es traducido a un problema de matching de grafos y resuelto aplicando un algoritmo de max-flow (flujo máximo). Cada solución del algoritmo de max-flow corresponde a una interpretación semántica posible de la pregunta. Precise recolecta todas estas soluciones, descartando aquellas que no cumplen con la función $attachment$ y con las restantes genera consultas SQL que corresponden a la pregunta $q$: si hay más de una consulta, pregunta al usuario cual de ellas formuló. Si hay una sola, retorna el resultado.
+Siguiendo al paper original, presentaremos aquí, en primer lugar, un ejemplo del sistema funcionando y, luego, describiremos los módulos del mismo en mayor detalle. En la implementación propia sobre la base de datos estructurada del proyecto Mitic, presentada en \allref{chap:4}, se podrá ver una implementación simplificada de este modelo.
 
-El sistema consta de los siguientes módulos:
+\medskip
+
+Comencemos con el ejemplo: veamos los pasos por los cuales Precise traduce la pregunta \textit{``What are the HP jobs on a Unix system?''} en una consulta SQL. Esta pregunta fue elegida para ilustrar la clase de ambigüedades que el modelo puede resolver automáticamente. Por brevedad y claridad, asumamos que la base de datos consta de una sola relación (\textbf{Jobs}) con atributos \textbf{Description}, \textbf{Platform} y  \textbf{Company}. En primer lugar, el tokenizador produce una única tokenización completa de la pregunta: \{what, HP, job, Unix, system\}. Notar que el tokenizer elimina marcadores sintácticos tales como ``the'' y ``a''.
+
+Buscando estos tokens en el lexicón, Precise obtiene la lista de los elementos de la base de datos que se corresponden con cada token (ver Figura \ref{fig:popescu-example}).
+
+\begin{figure}
+  \centering
+    \includegraphics[scale=1.0]{graficos/popescu-example}
+  \caption{La transformación de la pregunta ``What are the HP jobs on a Unix system?'' a una consulta SQL}
+  \label{fig:popescu-example}
+\end{figure}
+
+
+El siguiente paso es el Matcher, que construye el grafo de atributos y valores presentados en la Figura \ref{fig:popescu-example-2}. Para comprender el significado de cada nodo en el grafo es útil leerlo columna por columna de izquierda a derecha. El nodo más a la izquierda, $S$ es el nodo fuente. La columna ``Value Tokens'' consiste en los tokens que corresponden con valores de la base de datos (que, a su vez, aparecen en la columna ``DB Values''). Por ejemplo, el token HP es ambigüo y puede corresponder tanto con un valor del atributo \textbf{Company} como con un valor del atributo \textbf{Platform}. Se agregan aristas entre tokens de valor y valores de la base de datos para cada una de estas posibles correspondencias. Las aristas sólidas representan el flujo final obtenido por el algoritmo, mientras que las aristas punteadas representan flujos alternativos posibles.
+
+El Matcher conecta cada valor de la base de datos con su atributo correspondiente. Cada atributo es luego conectado con el token de atributo correspondiente y también con el nodo $I$, que representa atributos  \textit{implícitos}. Finalmente, todos los tokens de atributo son conectados con el nodo $E$, que representa a los atributos \textit{explíticos}. Finalmente, tanto $E$ como $I$ son conectados con $T$, el nodo destino.
+
+Las segunda columna de ``DB attributes'', donde cada atributo de la base de datos es conectado consigo mismo por una arista de flujo máximo 1, garantiza que cada atributo sea usado, a lo sumo, una vez. Estas aristas son necesarias ya que más de un valor puede ser compatible con un atributo dado, y un atributo puede corresponder con más de un token de atributo, pero la definición de traducción válida dada exige que cada atributo de la base de datos sea utilizado a lo sumo una vez.
+
+
+\begin{figure}
+  \centering
+    \includegraphics[scale=0.5]{graficos/popescu-example-2}
+  \caption{El grafo de atributos y valores creado por Precise para la pregunta ``What are the HP jobs on a Unix system?''}
+  \label{fig:popescu-example-2}
+\end{figure}
+
+
+
+El grafo es interpretado como una red de flujo en la que cada arista tiene capacidad 1, a menos que se indique lo contrario. La capacidad de la arista de $E$ a $T$ es el número de tokens de atributo (en este ejemplo, 1). La capacidad de la arista de $I$ a $T$ es el número de tokens de valor menos el número de tokens de atributo, en este ejemplo: 2. Estas capacidades fuerzan al algoritmo a enviar una unidad de flujo de cada token de valor hacia cada atributo explítico. El Matcher ejecuta el algoritmo de max-flow sobre este grafo buscando una solución entera (el flujo máximo que puede pasar por la red desde el nodo $S$ al nodo $T$ respetando las capacidades de cada arista). En este ejemplo, el flujo máximo es 3. De hecho, el flujo máximo del grafo de atributos y valores construido por Precise es siempre el número de tokens de valor, porque cada token de valor tiene que participar en el emparejamiento construido por el algoritmo.
+
+Las flechas sólidas representan el camino elegido por el algoritmo de max-flow. Notar que la ambigüedad sobre si HP era el nombre de una compañia o una plataforma fue automáticamente resuelto al maximizar el flujo. El algoritmo decidió que HP era una plataforma, porque de otro modo no hubiera habido una interpretación posible para el token ``Unix'' y el flujo final hubiera sido 2.
+
+Después de que todos los atributos y valores fueron apareados con elementos de la base de datos, el sistema verifica que todos los tokens de relación se corresponden con un token de valor o con uno de atributo. En este caso, con un único token de relación (job), esto se reduce a verificar si alguna de las relaciones de la base de datos relacionadas con el token contienen algún atributo que se corresponda con algún token de atributo. Como en el ejemplo job solo se corresponde con la única relación existente (Job), todos los atributos están contenidos por ella y la condición se hace verdadera. Finalmente, el algoritmo encontró una correspondencia uno a uno entre los tokens de la pregunta y elementos de la base de datos que satisfacen las condiciones semánticas requeridas en la definición de tratabilidad semántica. En este punto, Precise verifica que los tokens emparejados satisfacen las condiciones sintácticas modeladas en la función $attachment$ para los pares de tokens (what, job), (HP, job) y (Unix, system). Si esto es así, entonces una \textit{traducción válida} ha sido encontrada y el sistema retorna la consulta SQL que puede verse en la base de la Figura \ref{fig:popescu-example}. En el trabajo se presenta también un ejemplo sobre preguntas cuya traducción a consultas SQL implica la aparición de clausulas JOIN. Nosotros omitiremos esa parte ya que en nuestra implementación del modelo estructurado no soportamos esa funcionalidad. Baste mencionar que la implementación consta de otra red de flujo, más simple que la recién presentada, para desambiguar tokens de relación.
+
+\bigskip
+
+Pasemos ahora revista de los diferentes módulos del sistema,  que son los siguientes:
+
 \begin{itemize}
   \item Lexicon: encargado de generar, para cada elemento de la base de datos, el conjunto de tokens sinónimos que se utilizará para verificar correspondencia.
   \item Tokenizer: encargado de generar todas las tokenizaciones completas de la pregunta y, para cada token, consultar al lexicon y retornar la lista de elementos de la base de datos que le corresponden.
-  \item Matcher: encargado de verificar que las tokenizaciones completas y los elementos generados por el tokenizer cumplan las condiciones 1 a 3 utilizando un modelo de grafos y el algoritmo max-flow.
+  \item Matcher: encargado de verificar que las tokenizaciones completas y los elementos correspondientes generados por el tokenizer cumplan las condiciones 1 a 3 utilizando el modelo de grafos y el algoritmo max-flow recién ilustrado.
   \item Parser plug-in: el módulo computa la función de asociación sintáctica, basándose en el parse tree de Charniak.
   \item Query generator: dado el conjunto de elementos de la base de datos traducido de la pregunta, genera una query SQL.
   \item Equivalence Checker: verifica si diferentes queries son la misma formulada de diferentes maneras.
 \end{itemize}
 
-Comenzaremos describiendo las responsabilidades de cada módulo, para luego ver la interacción general de los mismos con un ejemplo tomado de \cite{QADB2}.
-
-El Lexicon es un módulo que se construye offline, como una derivación de la base de datos, siguiendo el procedimiento enunciado en la sección anterior al describir la función de \textit{correspondencia}.
-La interfaz del módulo, utilizada por el Tokenizador, consta de dos operaciones:
+El \textbf{Lexicon} es un módulo que se construye offline, como una derivación de la base de datos, siguiendo el procedimiento enunciado en la sección anterior al describir la función de \textit{correspondencia}. La interfaz del módulo, utilizada por el Tokenizer, consta de dos operaciones:
 \begin{enumerate}
   \item Dado un lema, devolver el conjunto de tokens que lo contienen
   \item Dado un token, devolver el conjunto de elementos de la base de datos que le \textit{corresponden}, según la definición de correspondencia dada en la sección anterior de esta tesis.
 \end{enumerate}
 
-Para construir el lexicon a partir de la base de datos, se sigue el siguiente procedimiento: a cada elemento de la base de datos se le asocia un conjunto de lemas (este paso puede ser simplemente lematizando los términos o agregando, a mano, un \dq{conjunto aumentado} de lemas). A partir de estos lemas se construye una lista de sinónimos, utilizando una ontología (como, por ejemplo, Wordnet), obteniendo los sinónimos de cada palabra y luego generando los conjuntos de pares ordenados pertinentes (Ver el algoritmo en detalle en la sección anterior).
+Para construir el Lexicon a partir de la base de datos, se sigue el siguiente procedimiento: a cada elemento de la base de datos se le asocia un conjunto de lemas (este paso puede ser simplemente lematizando los términos o agregando, a mano, un \dq{conjunto aumentado} de lemas). A partir de estos lemas se construye una lista de sinónimos, utilizando una ontología (como, por ejemplo, Wordnet), obteniendo los sinónimos de cada palabra y luego generando los conjuntos de pares ordenados pertinentes (Ver el algoritmo en detalle en la sección anterior).
 
-Por su parte, el Tokenizador es el punto de entrada del sistema. Recibe como input una pregunta en lenguaje natural y genera como resultado un conjunto de todas las posibles tokenizaciones completas de la misma. Para ello:
+Por su parte, el \textbf{Tokenizer} es el punto de entrada del sistema. Recibe como input una pregunta en lenguaje natural y genera como resultado un conjunto de todas las posibles tokenizaciones completas de la misma. Para ello:
 \begin{itemize}
+  \item lematiza las palabras
   \item elimina los marcadores sintácticos,
-  \item lematiza las palabras restantes
   \item para cada lema, consulta al Lexicon por el conjunto de tokens que lo contienen
   \item para cada token potencial, verifica que los demás lemas del token estén presentes en el conjunto de lemas
   \item para cada partición completa de los lemas en listas de tokens (es decir, para cada tokenización), busca los elementos de la base de datos que corresponden a cada uno de los tokens que la componen.
 \end{itemize}
 
-De este modo, el Tokenizador genera diferentes particiones del conjunto de lemas (tokenizaciones de $q$), cada una con una traducción de cada token a todos los elementos de la base de datos que le corresponden. Será responsabilidad del Matcher decidir que tokenizaciones completas son traducciones válidas.
+De este modo, el Tokenizer genera diferentes particiones del conjunto de lemas (tokenizaciones de $q$), cada una con una traducción de cada token a todos los elementos de la base de datos que le corresponden. Será responsabilidad del Matcher decidir que tokenizaciones completas son traducciones válidas.
 
-El Matcher toma como input una tokenización completa de $q$, con todos los posibles elementos de la DB que corresponden a cada token. Más claramente:
+El \textbf{Matcher} representa la innovación central de Precise, reduciendo el problema de encontrar una interpretación semántica de una pregunta formulada en un lenguaje natural ambigüo en un conjunto de elementos de la base de datos a un problema de matching de grafos. En concreto, el módulo toma como input una tokenización completa de $q$, con todos los posibles elementos de la DB que corresponden a cada token. Más claramente:
 \begin{itemize}
   \item Una lista de tokens en donde cada palabra de $q$ pertenece a un y solo un token
   \item Para cada uno de los tokens de la lista, un conjunto de elementos $E$ de la base de datos (los elementos que le \textit{corresponden}, en el sentido técnico de corresponder)
 \end{itemize}
 
-Este módulo es el encargado de verificar qué conjunto de elementos $E$ de entre los disponibles cumple con las condiciones semánticas 1 a 3 (de la definición de traducción válida). El problema es modelado como un problema de matching (apareamiento) de grafos y resuelto con un algoritmo de max-flow. Cada solución dada por el algoritmo es una posible interpretación semántica de la pregunta. Veremos el modelo y su funcionamiento al presentar el ejemplo en lo que sigue de esta sección.
+Este módulo es el encargado de verificar qué conjunto de elementos $E$ de entre los disponibles cumple con las condiciones semánticas 1 a 3 (de la definición de traducción válida). El problema es modelado como un problema de matching (apareamiento) de grafos y resuelto con un algoritmo de max-flow, tal como acabamos de presentar en el ejemplo. Cada solución dada por el algoritmo es una posible interpretación semántica de la pregunta. Veremos el modelo y su funcionamiento al presentar el ejemplo en lo que sigue de esta sección.
 
-El Matcher debe verificar, como parte de las condiciones, que ciertas palabras estén sintácticamente asociadas. Esta tarea es responsabilidad del módulo de Parsing (Parse plug-in). Internamente, este módulo utiliza un \textit{Charniak parser} para extraer relaciones entre palabras en la oración. Solo las traducciones que satisfagan las condiciones de asociación sintáctica son traducciones válidas.
+Luego, el \textbf{Parser Plug-in} verifica la parte sintáctica de las condiciones, tal como mencionamos en el ejemplo anterior. Este módulo utiliza un \textit{Charniak parser} para extraer relaciones entre palabras en la oración. Solo las traducciones que satisfagan las condiciones de asociación sintáctica son traducciones válidas.
 %TODO Expandir charniak parser
 
-Comenzaremos describiendo la interacción de los componentes desde una vista de alto nivel, basándonos en el ejemplo dado en el trabajo \cite{QADB1}, para luego entrar en más detalle a la implementación de cada módulo.
-
-Consideremos la siguiente pregunta $q$, en inglés: \dq{What are the HP jobs on a Unix System?} en una base de datos simplificada con una sola relación \textit{Jobs}, con atributos (Description, Platform y Company).
-
-El primer módulo que toma la pregunta como input es el Tokenizador. En primer lugar, se eliminan los marcadores sintácticos (Los \textbf{marcadores sintácticos} se definen como una lista de palabras, independientes de la base de datos, que no aportan información semántica a la pregunta. Este conjunto contiene lo que usualmente se define como \textbf{stop-words}\footnote{La traducción española de \textit{stop word} es \textit{palabra vacía}. Conservaremos en este trabajo el término inglés.}: artículos, pronombres, preposiciones y otras palabras funcionales que no aportan contenido). En este ejemplo, los marcadores sintácticos, como se puede ver en \ref{fig:popescu-example}, son un verbo y tres preposiciones: \textit{are, the, on, a}.
-
-El resto de las palabras, lematizadas, son el conjunto: \textit{job, system, HP, Unix, what}. El Tokenizador busca para este conjunto, generar una tokenización completa de $q$, es decir, un conjunto de tokens en los que cada término de $q$ aparece en exactamente un token del conjunto y cada token corresponde a un y solo un elemento de la base de datos.
-
-El \textit{Tokenizer}  produce una única tokenización completa de la pregunta: (what, HP, job, Unix, system).
-
-\begin{figure}
-  \centering
-    \includegraphics[scale=1.0]{graficos/popescu-example}
-  \caption{Ejemplo de Popescu}
-  \label{fig:popescu-example}
-\end{figure}
+El \textbf{Query Generator} toma como input los elementos de la base de datos selecionado por el Matcher y los convierte en una consulta SQL, con las reglas presentada en la tabla \ref{table:db-to-sql}. Omitimos, de nuevo aquí, la construcción de la cláusula JOIN.
 
 
+\begin{center}
+\begin{table}[h]
+\centering
+\begin{tabular}{| l |  p{12cm} |}
+\hline
+Sección de la consulta & Pares de elementos \\ \hline
+SELECT &  Elementos apareados con qwords \\ \hline
+WHERE & Pares de atributos y valores generados por el Matcher\\ \hline
+FROM & Todas las relaciones mencionadas \\ \hline
+\end{tabular}
+\caption{Traducción de pares de elementos de la base de datos en una consulta SQL}
+\label{table:db-to-sql}
+\end{table}
+\end{center}
 
-Matcher.
-Relaciones.
+El \textbf{Equivalence Checker} elimina, en el caso de soluciones múltiples, soluciones repetidas generadas de manera distinta (por ejemplo, los pares atributo/valor aparecen en otro orden). Si Precise encuentra dos consultas SQL distintas, no genera una respuesta sino que pide al usuario por una desambigüación. Por ejemplo, en la pregunta ```Qué trabajos de analista en sistemas existen en Buenos Aires?'', ``analista en sistemas'' puede ser el nombre de un trabajo, mientra que también puede ocurrir que ``analista'' sea el nombre del trabajo mientras que ``sistemas'' sea el área. En este caso, Precise no logra desambigüar la situación y necesita que el usuario lo haga por él mismo.
 
-Alcance y limitaciones
+\bigskip
 
+Hagamos un breve resumen de esta sección a modo de cierre.
 
+El paper no presenta las condiciones sintácticas modeladas con $attachment$.
 
+%TODO: completar
 
-
-%% Ver no se entiende mucho el ejemplo dado.
-Ilustremos todos estos conceptos con un ejemplo: consideremos una base de datos $D$ con información sobre universidades y la siguiente pregunta $q$: \dq{¿Cuántos años tienen de docentes en estado activo que trabajan en la UBA?}, una traducción completa es el siguiente conjunto de \tradqd es: $\{\{\text{cuántos}, \text{años}, \text{tienen}\}_{attr=edad}, \{\text{docentes}\}_{rel=profesores}, \newline \{estado\}_{attr}, \{activo\}_{val}, \{trabajan\}_{attr=universidad}, \{UBA\}_{val=\text{Universidad de Buenos Aires}}\}$.
-
-En esta traducción, quedan de lado las stopwords \{de, en, que, en, la\}, y se agrupan los tres primero tokens en la \tradqd\ $\{\{\text{cuántos}, \text{años}, \text{tienen}\}$ que mapea al atributo de $D$ \textit{edad}, y se mapea la \tradqd\ unitaria \{\dq{docentes}\} con la tabla \textit{profesores}, etc.
-
-
-
-Por otro lado, es importante notar las limitaciones del modelo teórico recién expuesto. En principio, la navegación a través del modelo de datos no está contemplada y el manejo de relaciones se limita a relaciones de un grado.
+Por otro lado, es importante notar las limitaciones del modelo teórico recién expuesto. En principio, la navegación a través del modelo de datos no está contemplada y el manejo de relaciones se limita a relaciones de un grado (la exposición de la implementación de este manejo fue omitida por simplicidad).
 
 En la próxima sección veremos un caso de éxito de un proyecto de question answering híbrido implementado por IBM y en el próximo capítulo describiremos la implementación de un modelo de question answering de dominio cerrado en el que utilizamos este marco como orientación.
 
