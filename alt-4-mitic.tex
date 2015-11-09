@@ -47,8 +47,98 @@ Para nuestro proyecto, renombramos algunos de los elementos:
 \item El atributo IndepYear de la relación Country fue renombrado a IndependenceYear
 \end{itemize}
 
-En las tablas X, Y, Z pueden verse algunas filas de ejemplo de cada una de las tablas y, en la tabla W, el total de filas de cada una.
+En las tablas \ref{tab:country-data}, \ref{tab:country-data-2}, \ref{table:countrylanguage-data} y \ref{table:city-data} pueden verse algunas filas de ejemplo de cada una de las tablas y, en la tabla W, el total de filas de cada una.
 %TODO: HACER TABLAS!!!
+
+%
+% Data: countrylanguage
+%
+ \begin{longtable}{|l|l|l|l|}
+ \hline \endhead \hline \endfoot \hline
+ \caption{Algunas filas de la tabla CountryLanguage} \label{table:countrylanguage-data} \\\hline \multicolumn{1}{|c|}{\textbf{CountryCode}} & \multicolumn{1}{|c|}{\textbf{Language}} & \multicolumn{1}{|c|}{\textbf{IsOfficial}} & \multicolumn{1}{|c|}{\textbf{Percentage}} \\ \hline \hline  \endfirsthead
+\caption{Content of table countrylanguage (continued)} \\ \hline \multicolumn{1}{|c|}{\textbf{CountryCode}} & \multicolumn{1}{|c|}{\textbf{Language}} & \multicolumn{1}{|c|}{\textbf{IsOfficial}} & \multicolumn{1}{|c|}{\textbf{Percentage}} \\ \hline \hline \endhead \endfoot
+ABW & Dutch & T & 5.3 \\ \hline
+ABW & English & F & 9.5 \\ \hline
+ABW & Papiamento & F & 76.7 \\ \hline
+ABW & Spanish & F & 7.4 \\ \hline
+AFG & Balochi & F & 0.9 \\ \hline
+AFG & Dari & T & 32.1 \\ \hline
+AFG & Pashto & T & 52.4 \\ \hline
+AFG & Turkmenian & F & 1.9 \\ \hline
+AFG & Uzbek & F & 8.8 \\ \hline
+AGO & Ambo & F & 2.4 \\ \hline
+AGO & Chokwe & F & 4.2 \\ \hline
+AGO & Kongo & F & 13.2 \\ \hline
+AGO & Luchazi & F & 2.4 \\ \hline
+ \end{longtable}
+
+\clearpage % Las tablas se ubican mal, no se xq
+%
+% Data: city
+%
+  \begin{longtable}{|l|l|l|l|l|}
+ \hline \endhead \hline \endfoot \hline
+ \caption{Algunas filas de la relación City} \label{table:city-data} \\\hline \multicolumn{1}{|c|}{\textbf{ID}} & \multicolumn{1}{|c|}{\textbf{Name}} & \multicolumn{1}{|c|}{\textbf{CountryCode}} & \multicolumn{1}{|c|}{\textbf{District}} & \multicolumn{1}{|c|}{\textbf{Population}} \\ \hline \hline  \endfirsthead
+\caption{Algunas filas de la tabla city} \\ \hline \multicolumn{1}{|c|}{\textbf{ID}} & \multicolumn{1}{|c|}{\textbf{Name}} & \multicolumn{1}{|c|}{\textbf{CountryCode}} & \multicolumn{1}{|c|}{\textbf{District}} & \multicolumn{1}{|c|}{\textbf{Population}} \\ \hline \hline \endhead \endfoot
+129 & Oranjestad & ABW & – & 29034 \\ \hline
+1 & Kabul & AFG & Kabol & 1780000 \\ \hline
+56 & Luanda & AGO & Luanda & 2022000 \\ \hline
+61 & South Hill & AIA & – & 961 \\ \hline
+34 & Tirana & ALB & Tirana & 270000 \\ \hline
+55 & Andorra la Vella & AND & Andorra la Vella & 21189 \\ \hline
+33 & Willemstad & ANT & Curaçao & 2345 \\ \hline
+64 & Dubai & ARE & Dubai & 669181 \\ \hline
+69 & Buenos Aires & ARG & Distrito Federal & 2982146 \\ \hline
+126 & Yerevan & ARM & Yerevan & 1248700 \\ \hline
+53 & Tafuna & ASM & Tutuila & 5200 \\ \hline
+63 & Saint John's & ATG & St John & 24000 \\ \hline
+130 & Sydney & AUS & New South Wales & 3276207 \\ \hline
+ \end{longtable}
+
+\bigskip
+%
+% Data: country
+%
+\begin{footnotesize}
+ \begin{longtable}{|l|l|l|l|l|l|}
+ \hline \endhead \hline \endfoot \hline
+ \caption{Algunas filas de la tabla Country} \label{tab:country-data} \\\hline \multicolumn{1}{|c|}{\textbf{Code}} & \multicolumn{1}{|c|}{\textbf{Name}} & \multicolumn{1}{|c|}{\textbf{Continent}} & \multicolumn{1}{|c|}{\textbf{Region}} & \multicolumn{1}{|c|}{\textbf{SurfaceArea}} & \multicolumn{1}{|c|}{\textbf{IndepYear}} \\ \hline \hline  \endfirsthead
+\caption{Algunas filas de la tabla Country} \\ \hline \multicolumn{1}{|c|}{\textbf{Code}} & \multicolumn{1}{|c|}{\textbf{Name}} & \multicolumn{1}{|c|}{\textbf{Continent}} & \multicolumn{1}{|c|}{\textbf{Region}} & \multicolumn{1}{|c|}{\textbf{SurfaceArea}} & \multicolumn{1}{|c|}{\textbf{IndepYear}} \\ \hline \hline \endhead \endfoot
+ABW & Aruba & North America & Caribbean & 193.00 & \textit{NULL} \\ \hline
+AFG & Afghanistan & Asia & Southern and Central Asia & 652090.00 & 1919 \\ \hline
+AGO & Angola & Africa & Central Africa & 1246700.00 & 1975 \\ \hline
+AIA & Anguilla & North America & Caribbean & 96.00 & \textit{NULL} \\ \hline
+ALB & Albania & Europe & Southern Europe & 28748.00 & 1912 \\ \hline
+AND & Andorra & Europe & Southern Europe & 468.00 & 1278 \\ \hline
+ANT & Netherlands Antilles & North America & Caribbean & 800.00 & \textit{NULL} \\ \hline
+ARE & United Arab Emirates & Asia & Middle East & 83600.00 & 1971 \\ \hline
+ARG & Argentina & South America & South America & 2780400.00 & 1816 \\ \hline
+ARM & Armenia & Asia & Middle East & 29800.00 & 1991 \\ \hline
+ASM & American Samoa & Oceania & Polynesia & 199.00 & \textit{NULL} \\ \hline
+ATA & Antarctica & Antarctica & Antarctica & 13120000.00 & \textit{NULL} \\ \hline
+ATF & French Southern territories & Antarctica & Antarctica & 7780.00 & \textit{NULL} \\ \hline
+ \end{longtable}
+  \end{footnotesize}
+
+\begin{footnotesize}
+ \begin{longtable}{|l|l|p{2cm}|l|p {3cm}| p {3cm}|l|}
+ \hline \endhead \hline \endfoot \hline
+ \caption{Algunas filas de la tabla Country (continuación)} \label{tab:country-data-2} \\\hline \multicolumn{1}{|c|}{\textbf{Code}} & \multicolumn{1}{|c|}{\textbf{Population}} & \multicolumn{1}{|p{2cm}|}{\textbf{Life Expectancy}} & \multicolumn{1}{|c|}{\textbf{GNP}} & \multicolumn{1}{|p {3cm}|}{\textbf{GovernmentForm}} & \multicolumn{1}{|p {3cm}|}{\textbf{HeadOfState}} & \multicolumn{1}{|c|}{\textbf{Capital}} \\ \hline \hline  \endfirsthead
+\caption{Algunas filas de la tabla Country (continuación)} \\ \hline \multicolumn{1}{|c|}{\textbf{Code}} & \multicolumn{1}{|c|}{\textbf{Population}} & \multicolumn{1}{|c|}{\textbf{LifeExpectancy}} & \multicolumn{1}{|c|}{\textbf{GNP}} & \multicolumn{1}{|c|}{\textbf{GovernmentForm}} & \multicolumn{1}{|c|}{\textbf{HeadOfState}} & \multicolumn{1}{|c|}{\textbf{Capital}} \\ \hline \hline \endhead \endfoot
+ABW & 103000 & 78.4 & 828.00 & Nonmetropolitan Territory of The Netherlands & Beatrix & 129 \\ \hline
+AFG & 22720000 & 45.9 & 5976.00 & Islamic Emirate & Mohammad Omar & 1 \\ \hline
+AGO & 12878000 & 38.3 & 6648.00 & Republic & José Eduardo dos Santos & 56 \\ \hline
+AIA & 8000 & 76.1 & 63.20 & Dependent Territory of the UK & Elisabeth II & 62 \\ \hline
+ALB & 3401200 & 71.6 & 3205.00 & Republic & Rexhep Mejdani & 34 \\ \hline
+AND & 78000 & 83.5 & 1630.00 & Parliamentary Coprincipality &  & 55 \\ \hline
+ANT & 217000 & 74.7 & 1941.00 & Nonmetropolitan Territory of The Netherlands & Beatrix & 33 \\ \hline
+ARE & 2441000 & 74.1 & 37966.00 & Emirate Federation & Zayid bin Sultan al-Nahayan & 65 \\ \hline
+ARG & 37032000 & 75.1 & 340238.00 & Federal Republic & Fernando de la Rúa & 69 \\ \hline
+ARM & 3520000 & 66.4 & 1813.00 & Republic & Robert Kotšarjan & 126 \\ \hline
+ \end{longtable}
+ \end{footnotesize}
+
+
 
 Incorporando estos datos al modelo teórico, hasta aquí tenemos definidos: la base de datos, sus elementos ($E$) y el tipo de sus elementos.
 
@@ -284,8 +374,6 @@ El procedimiento para generar una query a partir de una traducción válida es e
 
 Finalmente, el punto de entrada de todo el sistema es uba.app.MainProcessor, que puede utilizarse especificando el parámetro -q QUESTION en cuyo caso responderá a esa pregunta y retornará el control o bien sin parámetros, en cuyo caso ingresa en un loop de preguntas-respuestas. El resultado para cada pregunta es cero, una o más queries de SQL.
 Agregamos la opción de desambiguación para que el usuario elija entre dos o más queries si no se pudo generar una y también una presentación de las respuestas una vez determinada la query final, pero es más bien experimental y poco sólido.
-
-
 
 \subsection{Ejemplos}
 \label{subsec:popescu-ejemplos}
