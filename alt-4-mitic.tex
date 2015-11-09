@@ -3,13 +3,13 @@
 En este capítulo, finalmente, nos toca hablar del primero de los dos sistemas implementados en este trabajo.
 El sistema en cuestión implementa, con algunas limitaciones que mencionaremos, el modelo de Popescu descripto en \cite{QADB1} y \cite{QADB2} y reseñados por nosotros en \ref{subsec:closed-domain}.
 
+Nuestro código está accesible públicamente en la siguiente dirección: github. Allí pueden encontrarse, además del código en sí mismo, los procedimientos de instalación, ejemplos de ejecución y una lista con los principales puntos técnicos que pueden mejorarse (ver, también, \allref{subsec:popescu-cierre}).
 
-Cabe notar que, al igual que muchos otros trabajos de área, los que utilizamos describen, con mayor o menor detalle, una implementación del modelo teórico, pero el código en sí mismo no es accesible. Nuestro código, por su parte, está accesible públicamente en la siguiente dirección: github. Allí pueden encontrarse, además del código en sí mismo, los procedimientos de instalación, ejemplos de ejecución y una lista con los principales puntos técnicos que pueden mejorarse (ver, también, \allref{subsec:popescu-cierre}).
-
+%TODO: github
 
 Testeamos este sistema sobre la base de datos World, en inglés, ofrecida por MySQL\footnote{Ver \url{http://dev.mysql.com/doc/world-setup/en/index.html} y \url{http://dev.mysql.com/doc/index-other.html}} que consta de información geográfica básica sobre países, ciudades e idiomas.
 
-Cabe mencionar que el scope original de este sistema era ser bilingüe y ejecutarse sobre una base de datos sobre universidades, empresas e investigación nacional del ámbito de la informática. Lamentablemente, por una cuestión de tiempos y de errores a la hora de estimar esfuerzos, no pudimos completar este plan original. En la sección \allref{subsec:popescu-cierre} presentamos un roadmap para estas adaptaciones.
+Cabe mencionar que el scope original de este sistema era ser bilingüe y ejecutarse sobre una base de datos sobre universidades, empresas e investigación nacional del ámbito de la informática. Lamentablemente, por una cuestión de tiempos y de errores a la hora de estimar esfuerzos, no pudimos completar este plan original.
 
 La estructura del capítulo es como sigue: En \ref{sec:popescu-db} pasamos revista de la base de datos que utilizamos para testear el sistema y en \ref{sec:popescu-implementacion} discutimos la implementación. \ref{subsec:popescu-codigo} se divide, a su vez, en \ref{subsec:popescu-ejemplos}, donde discutimos la implementación en sí misma, 4.2.2, donde mostramos y comentamos algunos ejemplos de ejecuciones y \ref{subsec:popescu-cierre} donde analizamos los alcances, los límites y el trabajo futuro.
 
@@ -48,7 +48,6 @@ Para nuestro proyecto, renombramos algunos de los elementos:
 \end{itemize}
 
 En las tablas \ref{tab:country-data}, \ref{tab:country-data-2}, \ref{table:countrylanguage-data} y \ref{table:city-data} pueden verse algunas filas de ejemplo de cada una de las tablas y, en la tabla W, el total de filas de cada una.
-%TODO: HACER TABLAS!!!
 
 %
 % Data: countrylanguage
@@ -146,18 +145,13 @@ Incorporando estos datos al modelo teórico, hasta aquí tenemos definidos: la b
 \section{Implementación}
 \label{sec:popescu-implementacion}
 
-El código de la implementación está disponible en github: acá. Está implementado en java e implementa, con la mayor fidelidad posible, el sistema propuesto por Popescu y descripto en \allref{subsec:closed-domain}.
-%TODO: acá
+El código de la implementación está disponible en github: github. Está implementado en java e implementa, con la mayor fidelidad posible, el sistema propuesto por Popescu y descripto en \allref{subsec:closed-domain}.
+%TODO: github
 
-Estructuramos esta sección como sigue. Primero (\ref{subsec:popescu-codigo}), discutimos la implementación en sí misma, analizando los módulos más importantes del sistema  (Fill me, Neddy!), luego (\ref{subsec:popescu-ejemplos}) mostramos y comentamos algunos ejemplos de ejecuciones y, finalmente ((\ref{subsec:popescu-cierre})), analizamos analizamos alcances, límites y trabajo futuro.
-%TODO: completar las referencias a subsubsections
+Estructuramos esta sección como sigue. Primero (\ref{subsec:popescu-codigo}), discutimos la implementación en sí misma, analizando los módulos más importantes del sistema, luego (\ref{subsec:popescu-ejemplos}) mostramos y comentamos algunos ejemplos de ejecuciones y, finalmente ((\ref{subsec:popescu-cierre})), analizamos analizamos alcances, límites y trabajo futuro.
 
 \subsection{Código}
 \label{subsec:popescu-codigo}
-
-Estructura general y librerías usadas y principales módulos
-Lexicon: (wordnet + edu.mit.jwi)
-%TODO: Hace intro de código
 
 \subsubsection*{Lexicón}
 \label{subsubsec:lexicon}
@@ -173,9 +167,24 @@ En el centro la construcción del lexicón se encuentra Wordnet (una base de dat
 
 El input del algoritmo es la lista de los elementos de la base de datos (relaciones, atributos y valores) como strings. El primer paso es eliminar el camel case y separar y lematizar las palabras (la tokenizamos en el sentido dado por Popescu a token). Por ejemplo, después de este paso, el elemento GovernmentForm se convierte en el token \{government, form\}. En este paso eliminamos también las stopwords (por ejemplo, HeadOfState se convierte en \{head, state\}).
 
-Luego, los datos paran por el TokenAugmenter, que simplemente agrega algunos sinónimos escritos a mano a algunos de estos elementos. Por ejemplo, para el elemento region (atributo de la relación country), agregamos el término location, para el elemento surface area agregamos los términos total size y square kilometers. Este paso es llevado a cabo por la clase uba.db.TokenAugmenter y su intención es mejorar las chances de obtener sinónimos útiles a partir de wordnet, ampliando su input de trabajo. Al salir del TokenAugmenter tenemos, para cada elemento de la base de datos, un conjunto (que puede tener un solo string si el TokenAugmenter no tenía ningún sinónimo) de tokens (que son, a su vez, listas de lemas).
+Luego, los datos pasan por el TokenAugmenter, que simplemente agrega algunos sinónimos escritos a mano a algunos de estos elementos (ver tabla \ref{table:token-augmenter}. Por ejemplo, para el elemento region (atributo de la relación country), agregamos el término location, para el elemento surface area agregamos los términos total size y square kilometers. Este paso es llevado a cabo por la clase uba.db.TokenAugmenter y su intención es mejorar las chances de obtener sinónimos útiles a partir de wordnet, ampliando su input de trabajo. Al salir del TokenAugmenter tenemos, para cada elemento de la base de datos, un conjunto (que puede tener un solo string si el TokenAugmenter no tenía ningún sinónimo) de tokens (que son, a su vez, listas de lemas).
 
-%TODO: tal vez, agregar tabla de TokenAugmenter.
+\begin{center}
+\begin{table}[h]
+\centering
+\begin{tabular}{| l |  p{12cm} |}
+\hline
+Elemento original & Sinónimos \\ \hline
+head of state & president, leader, emperor, king \\ \hline
+region & location\\ \hline
+surface area & size, total size, square kilometers, km2\\ \hline
+independence year & independent, independency\\ \hline
+When & IndependenceYear\\ \hline
+\end{tabular}
+\caption{Sinónimos introducidos por el Token Augmenter}
+\label{table:token-augmenter}
+\end{table}
+\end{center}
 
 El tercer paso es el central: en este se obtienen, para cada uno de estos tokens, tokens sinónimos. Para esto obtenemos una lista de sinónimos y palabras relacionadas para cada lema del token, luego los combinamos formando todos los sinónimos ordenados. Por ejemplo, si el token original consistía de los lemas (A, B) y para A obtuvimos los sinónimos \{A1, A2\} y para B los sinónimos \{B1 y B2\}, el resultado serán todas las combinaciones ordenadas posibles: \{(A, B), (A, B1), (A, B2), (A1, B), (A1, B1), (A1, B2), (A2, B), (A2, B1), (A2, B2)\}.
 
@@ -191,12 +200,12 @@ Vale mencionar que en este índice invertido agregamos también tokens para cada
 \begin{tabular}{| l |  p{12cm} |}
 \hline
 Qword & Atributos relacionados \\ \hline
-What & Name, District, Population, Code, Continent, SurfaceArea, LifeExpectancy, GNP, LocalName, GovernmentForm,
+What & \textbf{Name}, District, Population, Code, Continent, SurfaceArea, LifeExpectancy, GNP, LocalName, GovernmentForm,
                          Capital, IsOfficial, Percentage, Region \\ \hline
 Which & Los mismos que para what\\ \hline
-Where & Region, Continent, Capital, District\\ \hline
-Who & HeadOfState\\ \hline
-When & IndependenceYear\\ \hline
+Where & \textbf{Region}, Continent, Capital, District\\ \hline
+Who & \textbf{HeadOfState}\\ \hline
+When & \textbf{IndependenceYear}\\ \hline
 \end{tabular}
 \caption{Atributos compatibles con cada Qword}
 \label{table:atributos-qwords}
@@ -338,6 +347,7 @@ En las figuras \ref{fig:word-tags} y \ref{fig:syntax-tags} pueden verse los dife
 
 Las reglas que construimos son las siguientes. Notar que presentamos flechas unidireccionales (y los nombres dados indican lo mismo) pero las relaciones son simétricas.
 
+%TODO: hacer esto lindo
 \begin{enumerate}
 \item Hermanos: NNx <==> NNx <==> Wx si tienen el mismo padre
 \item Qwords a sustantivo:
@@ -358,10 +368,9 @@ El resultado de este módulo es una lista de Mappings (una estructura que contie
 \subsubsection*{MappingFilter}
 \label{subsubsec:mapping-filter}
 
-La clase uba.app.MappingFilter contiene una serie de reglas para filtrar traducciones válidas que utilizamos de manera experimental, de las cuales solo conservamos la eliminación de traducciones repetidas. Para eliminar las traducciones repetidas, las transformamos en queries y simplemente comparamos por igualdad, ya que el generador de queries ordena las cláusulas generando, para inputs iguales pero diferentemente ordenados, la misma query.
-
-%TODO: La regla del preferred implicit.
-
+La clase $uba.app.MappingFilter$ es responsable, en primer lugar, de quitar las traducciones válidas repetidas y, en segundo lugar, de aplicar una serie de reglas también de filtrado. Para eliminar las traducciones repetidas, las transformamos en queries y simplemente comparamos por igualdad, ya que el generador de queries ordena las cláusulas generando, para inputs iguales pero diferentemente ordenados, la misma query.
+Además de este filtro, aplicamos dos reglas más. En primer lugar, eliminamos ``semi duplicados'', que consisten en atributos similares en la base de datos, en concreto, en para esta base de datos, consideramos semi-duplicada a una query que consulta por Country.Name y por Country.LocalName solamente. En segundo lugar, en el caso en que exista más de una traducción válida en la cual la qword esté asociada con un atributo \textit{implícito}, por como está el sistema definido, también estará asociado con todos los atributos que pueda estarlo (ver tabla \allref{table:atributos-qwords} para las compatibilidades definidas).
+En ese caso, solo conservamos la traducción en la que se utilizó el ``atributo implícito preferido''. El atributo implicito preferido está marcado en negrita en la tabla \ref{table:atributos-qwords}.
 
 \subsubsection*{QueryGenerator}
 \label{subsubsec:query-generator}
@@ -378,6 +387,24 @@ Agregamos la opción de desambiguación para que el usuario elija entre dos o m�
 \subsection{Ejemplos}
 \label{subsec:popescu-ejemplos}
 
+%TODO: hacer
 
 \subsection{Limitaciones y Trabajo Futuro}
 \label{subsec:popescu-cierre}
+
+Las diferentes limitaciones y mejoras de nuestra implementación actual fueron mencionadas durantes la exposición del mismo que realizamos a lo largo de este capítulo: esta sección las presenta juntas para facilitar el acceso.
+
+En un nivel técnico, habría una enorme mejora de performance implementando el lexicón sobre una base de datos relacional. Los archivos json sirven para un modelo de escala pequeña, pero no permiten escalar ya que genera un tiempo de carga innecesario, así como también uso de memoria. Existen también una serie de clases con datos dentro del código que deberían separar archivos de configuración de códigos. Estas son TokenAugmenter, WhGenerator y Config. Estas clases requieren editar el código para aplicarlo sobre una nueva base de datos, cuando en realidad solo es necesario editar definiciones.
+
+Más allá de estas mejoras técnicas, las siguientes mejoras permitirían incrementar la usabilidad y la eficacia del sistema:
+
+\begin{itemize}
+\item En el Lexicón, no generar sinónimos para nombres propios. Wordnet posee sinónimos para, por ejemplo \textit{Hugo} (Victor Hugo, etc) introduciendo ruido innecesario y fácilmente eliminable.
+\item Lexicon: Desambiguador de sentidos para los sinónimos de los tokens. Este es un problema complejo de NLP e integrar una solución del mismo dentro del modelo ya definido podría redundar en un avance teórico. Desde un nivel más técnico y con mejor complejidad, también sería posible implementar un desambiguador supervisado.
+\item Soportar desambiguación de relaciones en el Matcher.
+\item Interfaz con el usuario: como mencionamos, el resultado es una query y la desambiguación es entre dos o más queries. Que el resultado sea una respuesta presentada en un formato amigable y que la desambiguación sea, también, presentada en un formato amigable es una mejora de usabilidad necesaria para utilizar el sistema en la vida real.
+\item CharniakParseTree: evaluando con un lingüista profesional las reglas utilizadas para definir la \textit{asociación sintáctica} seguramente se obtengan reglas más eficaces.
+\end{itemize}
+
+Con esta lista terminamos la presentación de nuestro sistema closed domain en inglés. En el próximo capitulo daremos vuelta la página y presentaremos nuestro sistema open domain multilingüe.
+
