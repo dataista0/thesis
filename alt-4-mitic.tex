@@ -59,7 +59,7 @@ Incorporando estos datos al modelo teórico, hasta aquí tenemos definidos: la b
 El código de la implementación está disponible en github: acá. Está implementado en java e implementa, con la mayor fidelidad posible, el sistema propuesto por Popescu y descripto en \allref{subsec:closed-domain}.
 %TODO: acá
 
-Estructuramos esta sección como sigue. Primero (\ref{subsec:popescu-codigo}), discutimos la implementación en sí misma, analizando los módulos más importantes del sistema  (\ref{subsubsec:lexicon}, etc), luego (\ref{subsec:popescu-ejemplos}) mostramos y comentamos algunos ejemplos de ejecuciones y, finalmente ((\ref{subsec:popescu-cierre})), analizamos analizamos alcances, límites y trabajo futuro.
+Estructuramos esta sección como sigue. Primero (\ref{subsec:popescu-codigo}), discutimos la implementación en sí misma, analizando los módulos más importantes del sistema  (Fill me, Neddy!), luego (\ref{subsec:popescu-ejemplos}) mostramos y comentamos algunos ejemplos de ejecuciones y, finalmente ((\ref{subsec:popescu-cierre})), analizamos analizamos alcances, límites y trabajo futuro.
 %TODO: completar las referencias a subsubsections
 
 \subsection{Código}
@@ -130,9 +130,160 @@ Buscando en sinonimos.com obtenemos los siguientes sinónimos, separados en dos 
 
 Nuestro sistema no introduce ningún desambiguador de sentido: utilizamos todo los sinónimos disponibles de tipo sustantivo, introduciendo potenciales errores de interpretación en este punto, con la salvedad recién mencionada.
 
+
 Finalmente, agregamos también derivaciones léxicas lematizadas. Una derivación léxica es una variación de la palabra original que da otro sentido (relacionado) a la palabra original. Por ejemplo: existir, existencia, existencial, existiendo, existente son una serie de variaciones de la misma raíz.  Esta opción es experimental y puede activarse o desactivarse desde el archivo de configuración (uba.app.Config)
 
+En la tabla \ref{table:sinonimos} pueden verse algunos ejemplos de los resultados.
 
+\begin{center}
+\begin{table}[h]
+\centering
+\begin{tabular}{| l |  p{9.5cm} | p{4cm} |} \hline
+Lema & Sinónimos & Derivaciones léxicas\\ \hline
+city 	&	metropolis, (urban, center)	&	citify, metropolitan\\ \hline
+country	&	state, nation, land, commonwealth, (res, publica), (body, politic), (rural, area), area	&	--\\ \hline
+language	&	language, linguistic communication, speech, speech communication, spoken communication, spoken language, voice communication, oral communication, lyric, words, linguistic process, terminology, nomenclature & lyricist, lyric, speak, terminological \\ \hline
+region	&	region, part, area, neighborhood, realm	&	--\\ \hline
+location	&	location, placement, locating, position, positioning, emplacement, localization, localisation, fix	&	locate, position, posit, emplace, localize, localise\\ \hline
+continent	&	--	&	continental\\ \hline
+gnp	&	gross national product	&	--\\ \hline
+government	&	government, authorities, regime, governing, governance, government activity, administration, politics, political science	&	govern, political scientist\\ \hline
+form	&	form, word form, signifier, descriptor, kind, sort, variety, shape, pattern, configuration, contour, conformation, human body, physical body, material body, soma, build, figure, physique, anatomy, bod, chassis, frame, flesh, cast, variant, strain, var., phase, class, grade, course, mannequin, manikin, mannikin, manakin	&	signify, sort, form, shape, pattern, contour, anatomic, anatomist, anatomical, shapely, variant\\ \hline
+\end{tabular}
+\caption{Lemas, sinónimos y derivaciones léxicas}
+\label{table:sinonimos}
+\end{table}
+\end{center}
+
+\subsubsection*{Tokenizer}
+\label{subsubsec:tokenizer}
+
+El Tokenizer en el modelo de Popescu, recordemos, es el encargado de generar todas las tokenizaciones completas de la pregunta y, para cada token, consultar al Lexicon y retornar la lista de elementos de la base de datos que le corresponden.
+
+\medskip
+
+El Tokenizer sigue el siguiente procedimiento:
+\begin{enumerate}
+\item Separar la pregunta en palabras, eliminar puntuaciones y pasar a lower case.
+\item Lematizar las palabras. Para esto usamos Freeling
+\item Eliminar marcadores sintácticos.
+\item Para cada lema, obtener todos los tokens que lo contienen del Lexicon (método getTokens).
+\item Para cada token potencial (resultado del paso anterior) verificar que todos sus lemas están presentes en el conjunto de lemas de la pregunta original.
+\item Generar el conjunto de partes de todos los tokens hasta aquí obtenidos\footnote{El conjunto de partes de un conjunto dado es otro conjunto formado por todos los subconjuntos del mismo. Por ejemplo, el conjunto de partes de A = \{1, 2, 3\} es: \{ $\varnothing$, \{1\}, \{2\}, \{3\}, \{1, 2\}, \{2, 3\}, \{1, 3\}, \{1, 2, 3\} \}}. \\ \\
+	Probando con cada elemento del conjunto de partes en lugar de utilizar solamente el conjunto original podemos obtener subconjuntos que cumplan también la condiciones requeridas para considerarse una tokenización completa (evaluados en 7).
+\item Para cada uno de estos subconjuntos, verificar 1) que sus tokens cubran completamente los lemas significativos de la pregunta original y 2) que no haya stems repetidos entre los tokens.
+\end{enumerate}
+
+El resultado será un conjunto de tokenizaciones completas. Como se ve, respetamos casi al pie de la letra la implementación sugerida por Popescu. La obtención de los elementos de la base de datos que corresponden a los elementos, por una cuestión implementativa, quedó en manos del Matcher y no del Tokenizer. La implementación, de todos modos, del servicio, está en el Lexicon. Con este conjunto de tokenizaciones completas como input, será responsabilidad del Matcher decidir cuáles de ellas son traducciones válidas.
+
+\subsubsection*{Matcher}
+\label{subsubsec:matcher}
+
+El Matcher, por su parte, toma las tokenizaciones completas generadas por Tokenizer y construye el grafo que expusimos con detalle en la sección \ref{subsec:closed-domain} y ejecuta el algoritmo de max flow. El problema de max-flow es un problema de grafos que consiste en “enviar” el máximo flujo posible a través de un grafo dirigido con dos nodos especiales (fuente o source y sumidero o sink) y aristas con cierta capacidad mayor o igual que cero. Este flujo debe ir desde el nodo fuente al nodo sumidero, respetando las capacidades de las aristas y respetando que, para cada nodo, el flujo saliente no puede ser mayor al flujo entrante.
+
+Existen diferentes algoritmos para resolver este problema. En nuestra implementación, tomamos un código libre disponible en internet (aquí: \url{http://web.mit.edu/~ecprice/acm/acm08/MaxFlow.java}).
+
+Las aristas implicadas en el flujo máximo posible asocian 1) los tokens de valor y de atributo y los correspondientes elementos (valores y atributos, respectivamente) de la base de datos y 2) pares de valores y atributos entre sí.
+
+Después de esto, buscamos otras soluciones posibles de máximo flujo, dado que cualquier solución que tenga como valor para el máximo flujo la cantidad de tokens de valor en la pregunta es, potencialmente, una traducción válida. Para hacer esto retiramos, ordenadamente, las aristas del grafo que ocurren entre la columna 2 y 3 (tokens de valor y valores de la db).
+
+Cabe notarse aquí, como ya mencionamos anteriormente, que no soportamos en nuestra implementación la desambiguación de tokens de relación. Esto significa que: asumimos que un token de relación tiene un solo elemento relación asociado y no será necesario decidir si refiere a una relación u a otra. En todos los ejemplos de bases de datos que consideramos, esta asunción era verdadera (es decir, no existía un token de relación que necesite ser desambiguado) y por ello no implementamos esta capacidad del sistema, que quedará como trabajo futuro.
+
+\medskip
+
+Finalmente, verificamos cuales de las soluciones con máximo flujo cumplen las condiciones requeridas para ser una traducción válida según enunciamos en \ref{subsec:closed-domain}:
+
+\begin{enumerate}
+\item Todos  los tokens de la tokenización tienen un único elemento de la base de datos asociado y no hay elementos de la base de datos repetidos. (Mapping.meetsConditionOne())
+\item Cada token de atributo se relaciona con un único token de valor respetando que: (Mapping.meetsConditionTwo))
+\begin{enumerate}
+\item el atributo relacionado con el token de atributo y el valor relacionado con el token de valor son compatibles (esta condición está garantizada por el max-flow mismo)
+\item ambos tokens están sintácticamente asociados
+\end{enumerate}
+\item Cada token de relación está relacionado a un token de atributo o bien a un token de valor, cumpliendo las siguientes condiciones: (Mapping.meetsConditionThree())
+\begin{enumerate}
+\item	la relación de la base de datos que corresponde al token de relación y el elemento de la base de datos que corresponde al token de atributo o token de valor son compatibles
+\item ambos tokens (token de relación - token de atributo o bien token de relación - token de valor) están sintácticamente asociados
+\end{enumerate}
+\item La pregunta tiene una qword (Mapping.oneWhValue())
+\end{enumerate}
+
+Notemos que la condición 3 implica que para cada token de relación exista algún token de atributo o de valor a) compatible y b) sintácticamente asociado. La condición a) no está verificada por el algoritmo de máximo flujo y es verificada en el método Mapping.valid()
+
+Para verificar las condiciones de asociación sintáctica (2.b y 3.b) utilizamos la implementación oficial del árbol sintáctico de Charniak (\url{github.com/BLLIP/bllip-parser}), con un wrapper en java que es la clase uba.nlp.CharniakParseTree. Las reglas sintácticas utilizadas por los creadores del modelo no están especificadas en sus trabajos, por lo que creamos nuestras propias reglas tomando los ejemplos de asociaciones sintácticas dadas en los trabajos, evaluando los resultados de diferentes ejemplos y extrapolando reglas a partir de allí.
+
+
+Veamos, en primer lugar, algunos ejemplos del parse tree:
+
+``What are the HP jobs on a Unix system?''
+
+(S1 (SBARQ (WHNP (WP What)) (SQ (VP (AUX are) (NP (DT the) (NNP HP) (NNS jobs)) (PP (IN on) (NP (DT a) (NNP Unix) (NN system))))) (. ?)))
+
+``What are the capitals of the US states?''
+(S1 (SBARQ (WHNP (WP What)) (SQ (VP (AUX are) (NP (NP (DT the) (NNS capitals)) (PP (IN of) (NP (DT the) (NNP US) (NNS states)))))) (. ?)))
+
+
+``What are the names of cities of Argentina?''
+(S1 (SBARQ (WHNP (WP What)) (SQ (VP (AUX are) (NP (NP (DT the) (NNS names)) (PP (IN of) (NP (NP (NNS cities)) (PP (IN of) (NP (NNP Argentina)))))))) (. ?)))
+
+En las figuras \ref{fig:word-tags} y \ref{fig:syntax-tags} pueden verse los diferentes tags para hojas y para nodos intermedios (respectivamente).
+
+
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=12.823cm,height=8.004cm]{graficos/fuentes/WordTags.png}
+  \caption{POS tags de Penn Treebank}
+  \label{fig:word-tags}
+\end{figure}
+
+
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=12.823cm,height=8.004cm]{graficos/fuentes/SyntaxTags.png}
+  \caption{Conjunto de tags para nodos intermedios del árbol sintáctico}
+  \label{fig:syntax-tags}
+\end{figure}
+
+
+
+Las reglas que construimos son las siguientes. Notar que presentamos flechas unidireccionales (y los nombres dados indican lo mismo) pero las relaciones son simétricas.
+
+\begin{enumerate}
+\item Hermanos: NNx <==> NNx <==> Wx si tienen el mismo padre
+\item Qwords a sustantivo:
+a.	Una Wx dentro de un WHNP ==> un NNx dentro de un NP dentro de un VP dentro de un SQ
+\item Sintagma nominal a sintagma preposicional:
+a.	NNx dentro de un NP ==> NNx dentro de un NP dentro de un PP del mismo padre que el NP original
+\item Sintagma nominal a sintagma verbal
+a.	NNx dentro de un NP ==> NNx dentro de un NP dentro de un VP del mismo padre que el NP original
+\end{enumerate}
+
+La definición de las reglas se hizo a prueba y error y es posible que sea simple, para alguien con mayores conocimientos lingüísticos, mejorarlas. El sistema ofrece también la opción de no evaluar las asociaciones sintácticas en absoluto ($Config.DO_NOT_CHECK_CHARNIAK$), en cuyo caso se mejora la performance pero aparecen nuevas traducciones válidas que podrían haber sido filtradas por estas condiciones, que el usuario deberá desambiguar manualmente).
+
+Finalmente, todos los resultados de max-flow que cumplen con las condiciones de 1 a  4 son traducciones válidas, que pasan al MappingFilter, que realiza ciertos filtrados que describiremos, de nuevo, en un título aparte.
+
+El resultado de este módulo es una lista de Mappings (una estructura que contiene 1) una tokenización completa de la pregunta original y 2) un mapeo válido entre cada token de la misma en un elemento de la base de datos). Cada mapeo es una traducción válida de la pregunta. Si existe solo uno, entonces este mapeo se traducirá en una query que generará el resultado. Si no, corresponde al MappingFilter realizar filtrados inteligentes de las múltiples soluciones y, en caso de que continuen existiendo múltiples soluciones, entonces se consultará al usuario qué quiso preguntar. Por otro lado, si no fue posible generar ninguna traducción válida, se retornará al usuario sin respuesta, pidiéndole que vuelva a escribir su pregunta de otro modo.
+
+
+\subsubsection*{MappingFilter}
+\label{subsubsec:mapping-filter}
+
+La clase uba.app.MappingFilter contiene una serie de reglas para filtrar traducciones válidas que utilizamos de manera experimental, de las cuales solo conservamos la eliminación de traducciones repetidas. Para eliminar las traducciones repetidas, las transformamos en queries y simplemente comparamos por igualdad, ya que el generador de queries ordena las cláusulas generando, para inputs iguales pero diferentemente ordenados, la misma query.
+
+%TODO: La regla del preferred implicit.
+
+
+\subsubsection*{QueryGenerator}
+\label{subsubsec:query-generator}
+
+El procedimiento para generar una query a partir de una traducción válida es exactamente el mismo que se desarrollo en \ref{subsec:closed-domain} y está implementado en el método Mapping.query().
+
+
+\subsubsection*{MainProcessor}
+\label{subsubsec:main-processor}
+
+Finalmente, el punto de entrada de todo el sistema es uba.app.MainProcessor, que puede utilizarse especificando el parámetro -q QUESTION en cuyo caso responderá a esa pregunta y retornará el control o bien sin parámetros, en cuyo caso ingresa en un loop de preguntas-respuestas. El resultado para cada pregunta es cero, una o más queries de SQL.
+Agregamos la opción de desambiguación para que el usuario elija entre dos o más queries si no se pudo generar una y también una presentación de las respuestas una vez determinada la query final, pero es más bien experimental y poco sólido.
 
 
 
