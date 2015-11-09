@@ -4,76 +4,76 @@
 
 \section{Stanford Question Classifier}
 \label{sec:stanford-qc}
-El Question Classifier de Stanford \cite{QC2} es un sistema de clasificación de preguntas basado en machine learning que utiliza la arquitectura de aprendizaje SNoW. Es un sistema jerárquico guiado por una semántica de dos niveles que permite la clasificación en categorías granulares. Según los tests de los autores, el proceso logra una efectividad del 90\% sobre 50 diferentes clases finales, utilizando features sintácticos y semánticos. 
+El Question Classifier de Stanford \cite{QC2} es un sistema de clasificación de preguntas basado en machine learning que utiliza la arquitectura de aprendizaje SNoW. Es un sistema jerárquico guiado por una semántica de dos niveles que permite la clasificación en categorías granulares. Según los tests de los autores, el proceso logra una efectividad del 90\% sobre 50 diferentes clases finales, utilizando features sintácticos y semánticos.
 
 El clasificador dispone de una taxonomía de dos capas basada en los tipos de respuesta típicos de la TREC. Las clases superiores son seis: abreviatura, entidad, descripción, humano, lugar y numérico; divididas a su vez en 50 subclases más finas no solapadas (50 en total). La motivación de la existencia de clases superiores es doble: por un lado, ellas preservan compatibilidad y coherencia con las clases usadas en trabajos previos de clasificación de preguntas. Por otro, se esperaba obtener mejoras de performance aplicando dos fases de clasificación, pero esta intención no se corroboró en la experiencia
 
-La tabla siguiente muestra la taxonomía de clasificación dividida en clases y subclases \footnote{Puede encontrarse en esta url: \url{http://cogcomp.cs.illinois.edu/Data/QA/QC/definition.html} y está explicada en \cite{QC2} y \cite{QC3}} 
+La tabla siguiente muestra la taxonomía de clasificación dividida en clases y subclases \footnote{Puede encontrarse en esta url: \url{http://cogcomp.cs.illinois.edu/Data/QA/QC/definition.html} y está explicada en \cite{QC2} y \cite{QC3}}
 
 
 \begin{center}
 \begin{longtable}{| l | l |}
 \hline
 Clase y subclase & Definición \\ \hline
-ABBREVIATION &  abbreviation \\ \hline 
-  abb & abbreviation\\ \hline 
-  exp & expression abbreviated\\ \hline 
-ENTITY  & entities\\ \hline 
-  animal  & animals\\ \hline 
-  body & organs of body\\ \hline 
-  color & colors\\ \hline 
-  creative & inventions, books and other creative pieces\\ \hline 
-  currency & currency names\\ \hline 
-  dis.med. & diseases and medicine\\ \hline 
-  event & events\\ \hline 
-  food & food\\ \hline 
-  instrument & musical instrument\\ \hline 
-  lang & languages\\ \hline 
-  letter & letters like a-z\\ \hline 
-  other & other entities\\ \hline 
-  plant & plants\\ \hline 
-  product & products\\ \hline 
-  religion  & religions\\ \hline 
-  sport & sports\\ \hline 
-  substance & elements and substances\\ \hline 
-  symbol & symbols and signs\\ \hline 
-  technique & techniques and methods\\ \hline 
-  term  & equivalent terms\\ \hline 
-  vehicle & vehicles\\ \hline 
-  word & words with a special property\\ \hline 
-DESCRIPTION & description and abstract concepts\\ \hline 
-  definition & definition of sth.\\ \hline 
-  description & description of sth.\\ \hline 
-  manner & manner of an action\\ \hline 
-  reason & reasons\\ \hline 
+ABBREVIATION &  abbreviation \\ \hline
+  abb & abbreviation\\ \hline
+  exp & expression abbreviated\\ \hline
+ENTITY  & entities\\ \hline
+  animal  & animals\\ \hline
+  body & organs of body\\ \hline
+  color & colors\\ \hline
+  creative & inventions, books and other creative pieces\\ \hline
+  currency & currency names\\ \hline
+  dis.med. & diseases and medicine\\ \hline
+  event & events\\ \hline
+  food & food\\ \hline
+  instrument & musical instrument\\ \hline
+  lang & languages\\ \hline
+  letter & letters like a-z\\ \hline
+  other & other entities\\ \hline
+  plant & plants\\ \hline
+  product & products\\ \hline
+  religion  & religions\\ \hline
+  sport & sports\\ \hline
+  substance & elements and substances\\ \hline
+  symbol & symbols and signs\\ \hline
+  technique & techniques and methods\\ \hline
+  term  & equivalent terms\\ \hline
+  vehicle & vehicles\\ \hline
+  word & words with a special property\\ \hline
+DESCRIPTION & description and abstract concepts\\ \hline
+  definition & definition of sth.\\ \hline
+  description & description of sth.\\ \hline
+  manner & manner of an action\\ \hline
+  reason & reasons\\ \hline
 %\end{tabular}
 %\begin{tabular}{| l | l |}
 %\hline
-HUMAN & human beings\\ \hline 
-  group & a group or organization of persons\\ \hline 
-  ind & an individual\\ \hline 
-  title & title of a person\\ \hline 
-  description & description of a person\\ \hline 
-LOCATION & locations\\ \hline 
-  city & cities\\ \hline 
-  country & countries\\ \hline 
-  mountain & mountains\\ \hline 
-  other & other locations\\ \hline 
-  state & states\\ \hline 
-NUMERIC & numeric values\\ \hline 
-  code  & postcodes or other codes\\ \hline 
-  count & number of sth.\\ \hline 
-  date  & dates\\ \hline 
-  distance &  linear measures\\ \hline 
-  money & prices\\ \hline 
-  order & ranks\\ \hline 
-  other & other numbers\\ \hline 
-  period  & the lasting time of sth.\\ \hline 
-  percent & fractions\\ \hline 
-  speed & speed\\ \hline 
-  temp & temperature\\ \hline 
-  size & size, area and volume\\ \hline 
-  weight & weight\\ \hline 
+HUMAN & human beings\\ \hline
+  group & a group or organization of persons\\ \hline
+  ind & an individual\\ \hline
+  title & title of a person\\ \hline
+  description & description of a person\\ \hline
+LOCATION & locations\\ \hline
+  city & cities\\ \hline
+  country & countries\\ \hline
+  mountain & mountains\\ \hline
+  other & other locations\\ \hline
+  state & states\\ \hline
+NUMERIC & numeric values\\ \hline
+  code  & postcodes or other codes\\ \hline
+  count & number of sth.\\ \hline
+  date  & dates\\ \hline
+  distance &  linear measures\\ \hline
+  money & prices\\ \hline
+  order & ranks\\ \hline
+  other & other numbers\\ \hline
+  period  & the lasting time of sth.\\ \hline
+  percent & fractions\\ \hline
+  speed & speed\\ \hline
+  temp & temperature\\ \hline
+  size & size, area and volume\\ \hline
+  weight & weight\\ \hline
 \end{longtable}
 \end{center}
 
@@ -85,7 +85,7 @@ Uno de los principales problemas que tuvieron los autores al enfrentarse a clase
 \end{itemize}
 La primer pregunta puede pertenecer a la clase \textit{definición} o bien a la clase \textit{enfermedad / medicina} y la segunda a \textit{comida}, \textit{planta} o \textit{animal}. Para abordar este problema, el clasificador asigna diferentes clases ponderadas y no una única clase.
 
-Los dos niveles de clasificación están implementados como dos clasificadores simples en secuencia, ambos utilizando el algoritmo Winnow de SNoW. El primero etiqueta la pregunta en función de las clases más generales y el segundo asigna las clases más finas (dentro de las suclases determinadas por la clase del primero). 
+Los dos niveles de clasificación están implementados como dos clasificadores simples en secuencia, ambos utilizando el algoritmo Winnow de SNoW. El primero etiqueta la pregunta en función de las clases más generales y el segundo asigna las clases más finas (dentro de las suclases determinadas por la clase del primero).
 El modelo para el algoritmo de aprendizaje representa las preguntas como listas de características (\textit{features}) tanto sintácticos como semánticos. Los features utilizando son, en total, más de 200.000, siendo casi todos combinaciones complejas de un set acotado de features simples basados en palabras, pos tags, chunks (componentes constitucionales de la oración), chunks principales (por ejemplo: componente nominal principal), entidades nombradas y palabras semánticamente relacionadas a ciertas clases. De estos seis tipos de features primitivos, tres son sintácticos (pos tags, chunks, chunks principales) mientras que otros son semánticos (named entities, palabras relacionadas).
 
 El clasificador, al igual que el resto de las herramientas de nlp de Stanford, está implementado en java.
@@ -94,10 +94,10 @@ El clasificador, al igual que el resto de las herramientas de nlp de Stanford, e
 \section{Stanford POS \& NER Taggers}
 \label{sec:stanford-pos}
 \label{sec:stanford-both}
-El POS tagger de Stanford es un algortimo basado en entropía máxima (\textit{maximum entropy}), implementado en java originalmente en \cite{POS2}, con algunos agregados y mejoras técnicas realizadas en \cite{POS1}. Al descargar el paquete, también está disponible uno más complejo con soporte para los idiomas árabe, chino y alemán. En este trabajo utilizamos el paquete sencillo, que consta de dos modelos entrenados para inglés, usando, como señalamos en \allref{subsec:pos} el tagset de Penn Treebank. 
+El POS tagger de Stanford es un algortimo basado en entropía máxima (\textit{maximum entropy}), implementado en java originalmente en \cite{POS2}, con algunos agregados y mejoras técnicas realizadas en \cite{POS1}. Al descargar el paquete, también está disponible uno más complejo con soporte para los idiomas árabe, chino y alemán. En este trabajo utilizamos el paquete sencillo, que consta de dos modelos entrenados para inglés, usando, como señalamos en \allref{subsec:pos} el tagset de Penn Treebank.
 
 
-Por su parte, el NER tagger de Stanford, es una implementación general de 
+Por su parte, el NER tagger de Stanford, es una implementación general de
 
 It comes with well-engineered feature extractors for Named Entity Recognition, and many options for defining feature extractors. Included with the download are good named entity recognizers for English, particularly for the 3 classes (PERSON, ORGANIZATION, LOCATION), and we also make available on this page various other models for different languages and circumstances, including models trained on just the CoNLL 2003 English training data. The distributional similarity features in some models improve performance but the models require considerably more memory.
 
@@ -107,13 +107,13 @@ The CRF code is by Jenny Finkel. The feature extractors are by Dan Klein, Christ
 
 Jenny Rose Finkel, Trond Grenager, and Christopher Manning. 2005. Incorporating Non-local Information into Information Extraction Systems by Gibbs Sampling. Proceedings of the 43nd Annual Meeting of the Association for Computational Linguistics (ACL 2005), pp. 363-370. http://nlp.stanford.edu/~manning/papers/gibbscrf3.pdf
 The software provided here is similar to the baseline local+Viterbi model in that paper, but adds new distributional similarity based features (in the -distSim classifiers). The big models were trained on a mixture of CoNLL, MUC-6, MUC-7 and ACE named entity corpora, and as a result the models are fairly robust across domains.
-Named Entity Recognition Stanford Named Entity Recognizer (Finkel, 
-Grenager and Manning 2005) 
+Named Entity Recognition Stanford Named Entity Recognizer (Finkel,
+Grenager and Manning 2005)
 
-Finkel, Jenny Rose, Trond Grenager, and Christopher Manning. "Incorporating 
-Non-local Information into Information Extraction Systems by Gibbs Sampling." 
-roceedings of the 43nd Annual Meeting of the Association for Computational 
-Linguistics. 2005. 
+Finkel, Jenny Rose, Trond Grenager, and Christopher Manning. "Incorporating
+Non-local Information into Information Extraction Systems by Gibbs Sampling."
+roceedings of the 43nd Annual Meeting of the Association for Computational
+Linguistics. 2005.
 
 
 
@@ -121,18 +121,18 @@ Linguistics. 2005.
 \label{sec:freeling}
 \label{subsec:freeling-pos}
 \label{subsec:freeling-mods}
-Freeling es una librería de c\'odigo abierto que provee distintas herramientas de 
-procesamiento de lenguaje natural, desarrollada y mantenida por el Centre de Tecnologies 
-i Aplicacions del Llenguatge i la Parla (TALP) de la Universidad Politécnica de Catalu\~na (UPC). 
+Freeling es una librería de c\'odigo abierto que provee distintas herramientas de
+procesamiento de lenguaje natural, desarrollada y mantenida por el Centre de Tecnologies
+i Aplicacions del Llenguatge i la Parla (TALP) de la Universidad Politécnica de Catalu\~na (UPC).
 Freeling está dise\~nado para ser usada como una librería externa y ofrece un API en distintos lenguajes
-de programaci\'on. Su principal virtud es ser multilingüe, esto es, los diferentes analizadores que provee funcionan 
+de programaci\'on. Su principal virtud es ser multilingüe, esto es, los diferentes analizadores que provee funcionan
 para un conjunto bastante amplio de idiomas. La última versi\'on a la fecha (3.1) soporta los siguientes idiomas:
 
 \begin{itemize}
 \item Asturian (as)
-\item Catalan (ca) 
+\item Catalan (ca)
 \item English (en)
-\item French (fr) 
+\item French (fr)
 \item Galician (gl)
 \item Italian (it)
 \item Portuguese (pt)
@@ -155,7 +155,7 @@ Freeling 3.1 ofrece los siguientes analizadores lingüisticos:
 \item NER y NEC (Detecci\'on y Clasificaci\'on de Entidades Nombradas)
 \item Reconocimiento de fechas, números, magnitudes físicas, monedas
 \item Codificaci\'on fonética
-\item POS tagging, 
+\item POS tagging,
 \item Shallow parsing
 \item Dependency parsing
 \item Wordnet-based sense annotation
@@ -164,36 +164,28 @@ Freeling 3.1 ofrece los siguientes analizadores lingüisticos:
 \end{itemize}
 
 
-El módulo de POS tagging de Freeling dispone de dos tagger. El primero, $hmm\_tagger$, es un algoritmo clásico que utiliza Hidden Markov Models (HMMs) con tri-gramas. La descripción del algoritmo de tagging basado en HMM se encuentra con detalle en  en \cite{POS0}. Por otro lado, el módulo incorpora un método llamado $relax\_tagger$ que permite la creación de un sistema híbrido que permite reglas escritas a mano y modelos estadísticos. 
-
-
-\section{Lang Detect de Cybozu Labs}
-\label{sec:cybozu}
-
-Librería de Cybozu Labs - una compañía japonesa -, implementado en Java y liberado bajo Apache License 2.0. En la práctica, este paquete dio excelentes resultados. Soporta 53 idiomas con \%99 de precisión para todos ellos (según sus tests). El detector se basa en perfiles de idiomas generados a partir de las distintas wikipedias y detecta el idioma de los textos usando un filtro bayesiano ingenuo (\textit{naive bayesian}).
-El código está disponible, actualmente, en google-code (El link está en la sección de bibliografía \cite{nakatani2010langdetect})
-
+El módulo de POS tagging de Freeling dispone de dos tagger. El primero, $hmm\_tagger$, es un algoritmo clásico que utiliza Hidden Markov Models (HMMs) con tri-gramas. La descripción del algoritmo de tagging basado en HMM se encuentra con detalle en  en \cite{POS0}. Por otro lado, el módulo incorpora un método llamado $relax\_tagger$ que permite la creación de un sistema híbrido que permite reglas escritas a mano y modelos estadísticos.
 
 \section{Apache Lucene}
 \label{sec:lucene}
-Lucene es una librería de information retrieval, de c\'odigo abierto, escrita en Java y distribuida 
+Lucene es una librería de information retrieval, de c\'odigo abierto, escrita en Java y distribuida
 bajo la licencia Apache Software License por la Apache Software Foundation. No está pensada para
 usuarios finales sino para ser integrada dentro de proyectos informáticos, resolviendo
 la parte de bajo nivel y brindando servicios a través de un API en diferentes lenguajes de programaci\'on.
 Su core es un índice invertido como el que describimos anteriormente. La implementaci\'on de un sistema
 que utiliza Lucene consta de dos pasos separados:
 \begin{itemize}
-\item La \textbf{creaci\'on} del índice, es por lo general un proceso offline en el cual 
-se incorporan distintas fuentes de informaci\'on al índice 
-\item La \textbf{búsqueda} de documentos en el índice creado en el paso anterior, a partir de una query 
+\item La \textbf{creaci\'on} del índice, es por lo general un proceso offline en el cual
+se incorporan distintas fuentes de informaci\'on al índice
+\item La \textbf{búsqueda} de documentos en el índice creado en el paso anterior, a partir de una query
 ingresada por el usuario final. Este proceso se incorpora dentro del flujo `online' del sistema.
-El resultado de esta búsqueda es una lista de documentos rankeados con un cierto puntaje. 
+El resultado de esta búsqueda es una lista de documentos rankeados con un cierto puntaje.
 \end{itemize}
 
-Es importante señalar que si bien el proceso de creaci\'on del índice suele estar desacoplado del resto 
+Es importante señalar que si bien el proceso de creaci\'on del índice suele estar desacoplado del resto
 del sistema, las fuentes de informaci\'on no tiene por que ser `offline' en el sentido de ser documentos
-en un disco local. De hecho, Nutch, otro proyecto de c\'odigo abierto de la Apache Software Foundation es 
-un motor de búsqueda web basado en Lucene que incorpora un crawler para indexar sitios web. Lucene soporta 
+en un disco local. De hecho, Nutch, otro proyecto de c\'odigo abierto de la Apache Software Foundation es
+un motor de búsqueda web basado en Lucene que incorpora un crawler para indexar sitios web. Lucene soporta
 cualquier fuente de informaci\'on que pueda convertirse en texto mediante algoritmia.
 \newline
 Los conceptos fundamentales de Lucene son: índice, documento, campo, término y query.
@@ -215,7 +207,7 @@ Los conceptos fundamentales de Lucene son: índice, documento, campo, término y
 
 Dada la frecuencia en la que resultaba necesario comparar dos string,
 decidimos reificar la operación de comparación como una familia de
-clases que implementan Comparadores. 
+clases que implementan Comparadores.
 
 
 Gracias a esto se hace posible cambiar las nociones de igualdad o
@@ -225,11 +217,11 @@ interfaz permite a los distintos comparadores tomar valores binarios
 así como también valores entre 0 y 1. A su vez, esta considerada la
 posibilidad de configurar un umbral (threshold) a partir del cual
 redondear un valor entre 0 y 1 a un valor binario. Otro factor que tuvo
-mucha utilidad fue la capacidad de anidar comparadores. 
+mucha utilidad fue la capacidad de anidar comparadores.
 El concepto de comparador incluye cualquier operación que tome dos
-strings y genere un resultado booleano o analógico. Es decir, es posible 
+strings y genere un resultado booleano o analógico. Es decir, es posible
 incorporar análisis lingüísticos o queries a la base de datos en ellos.
-También se incorpora la posibilidad de ignorar o no ignorar la diferencia de mayúsculas, 
+También se incorpora la posibilidad de ignorar o no ignorar la diferencia de mayúsculas,
 y obviar o no las tildes y otros signos problemáticos. Los comparadores sirven,
 en general, para comparar tanto strings representando palabras como
 string representado listas de palabras (oraciones o textos). Algunos,
@@ -240,13 +232,13 @@ que finalmente utilizamos en esta tesis son los siguientes.
 \begin{tabular}{| l | p {8cm} |}
 \hline
 \multicolumn{2}{|c|}{Comparadores de Strings} \\ \hline
-Nombre & Descripción\\ \hline 
-Equal & Compara por igualdad estricta \\ \hline 
+Nombre & Descripción\\ \hline
+Equal & Compara por igualdad estricta \\ \hline
 EqualNoPunct &  Compara por igualdad, eliminando signos de
 puntuación y normalizando acentos y otras posibles diferencias que no
-deberían tenerse en cuenta. \\ \hline 
-Contains & Verifica si un string contiene a otro. Puede usar Equal o EqualNoPunct \\ \hline 
-EditDistance & Verifica cuan similares son dos string contando la mínima cantidad de operaciones requeridas para transformar un string en el otro \\ \hline 
+deberían tenerse en cuenta. \\ \hline
+Contains & Verifica si un string contiene a otro. Puede usar Equal o EqualNoPunct \\ \hline
+EditDistance & Verifica cuan similares son dos string contando la mínima cantidad de operaciones requeridas para transformar un string en el otro \\ \hline
 \end{tabular}
 \end{center}
 
@@ -255,20 +247,20 @@ los Scorers del proyecto Qanus. Todos devuelven valores reales entre
 0 y 1 y sirven para comparar secuencias de tokens (y no sólo palabras). Estos
 comparadores, al igual que Contains, no son simétricos. Para
 distinguir, llamaremos primer string al buscado y segundo string a
-aquel en el cual se busca el primero. 
+aquel en el cual se busca el primero.
 
 \begin{center}
 \begin{tabular}{| l | l | p {8cm} |}
 \hline
 \multicolumn{3}{|c|}{Comparadores de Secuencias de Tokens} \\ \hline
-Abreviatura & Nombre &  Descripción\\ \hline 
+Abreviatura & Nombre &  Descripción\\ \hline
 Freq & Frequencia & Computa la cantidad de veces que los tokens del primer
 string ocurren en el segundo string. Esta suma se divide por la
-longitud del segundo string, dando un valor entre 0 y 1. \\ \hline 
+longitud del segundo string, dando un valor entre 0 y 1. \\ \hline
 Covr & Cobertura &  Computa cuantos tokens del primer string aparecen al
 menos una vez en el segundo, y divide esta suma por el total de tokens
-del \textit{primer} string.\\ \hline 
-Prox & Proximidad &  Computa la distancia entre dos strings en un tercero. Ver abajo.   \\ \hline 
+del \textit{primer} string.\\ \hline
+Prox & Proximidad &  Computa la distancia entre dos strings en un tercero. Ver abajo.   \\ \hline
 Span & Distancia entre tokens & Computa la distancia media entre términos del primer string en el segundo. Ver abajo. \\ \hline
 \end{tabular}
 \end{center}
