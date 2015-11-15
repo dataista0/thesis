@@ -148,7 +148,7 @@ Incorporando estos datos al modelo teórico, hasta aquí tenemos definidos: la b
 El código de la implementación está disponible en github: github. Está implementado en java e implementa, con la mayor fidelidad posible, el sistema propuesto por Popescu y descripto en \allref{subsec:closed-domain}.
 %TODO: github
 
-Estructuramos esta sección como sigue. Primero (\ref{subsec:popescu-codigo}), discutimos la implementación en sí misma, analizando los módulos más importantes del sistema, luego (\ref{subsec:popescu-ejemplos}) mostramos y comentamos algunos ejemplos de ejecuciones y, finalmente ((\ref{subsec:popescu-cierre})), analizamos analizamos alcances, límites y trabajo futuro.
+Estructuramos esta sección como sigue. Primero (\ref{subsec:popescu-codigo}), discutimos la implementación en sí misma, analizando los módulos más importantes del sistema, luego (\ref{subsec:popescu-ejemplos}) mostramos y comentamos algunos ejemplos de ejecuciones y, finalmente (\ref{subsec:popescu-cierre}), analizamos analizamos alcances, límites y trabajo futuro.
 
 \subsection{Código}
 \label{subsec:popescu-codigo}
@@ -312,18 +312,25 @@ Notemos que la condición 3 implica que para cada token de relación exista alg�
 Para verificar las condiciones de asociación sintáctica (2.b y 3.b) utilizamos la implementación oficial del árbol sintáctico de Charniak (\url{github.com/BLLIP/bllip-parser}), con un wrapper en java que es la clase uba.nlp.CharniakParseTree. Las reglas sintácticas utilizadas por los creadores del modelo no están especificadas en sus trabajos, por lo que creamos nuestras propias reglas tomando los ejemplos de asociaciones sintácticas dadas en los trabajos, evaluando los resultados de diferentes ejemplos y extrapolando reglas a partir de allí.
 
 
-Veamos, en primer lugar, algunos ejemplos del parse tree:
+Veamos, en primer lugar, ejemplos del parse tree para tres preguntas:
 
+
+\begin{center}
+\Tree [.S1 [.SBARQ [.WHNP [.WP What ] ] [.SQ [.VP [.AUX are ] [.NP [.DT the ] [.NNP HP ] [.NNS jobs ] ] [.PP [.IN on ] [.NP [.DT a ] [.NNP Unix ] [.NN system ] ] ] ] ] [.. ? ] ] ] \\
 ``What are the HP jobs on a Unix system?''
+\end{center}
 
-(S1 (SBARQ (WHNP (WP What)) (SQ (VP (AUX are) (NP (DT the) (NNP HP) (NNS jobs)) (PP (IN on) (NP (DT a) (NNP Unix) (NN system))))) (. ?)))
+\begin{center}
 
+\Tree [.S1 [.SBARQ [.WHNP [.WP What ] ] [.SQ [.VP [.AUX are ] [.NP [.NP [.DT the ] [.NNS capitals ] ] [.PP [.IN of ] [.NP [.DT the ] [.NNP US ] [.NNS states ] ] ] ] ] ] [.. ? ] ] ] \\
 ``What are the capitals of the US states?''
-(S1 (SBARQ (WHNP (WP What)) (SQ (VP (AUX are) (NP (NP (DT the) (NNS capitals)) (PP (IN of) (NP (DT the) (NNP US) (NNS states)))))) (. ?)))
+\end{center}
 
 
+\begin{center}
+\Tree [.S1 [.SBARQ [.WHNP [.WP What ] ] [.SQ [.VP [.AUX are ] [.NP [.NP [.DT the ] [.NNS names ] ] [.PP [.IN of ] [.NP [.NP [.NNS cities ] ] [.PP [.IN of ] [.NP [.NNP Argentina ] ] ] ] ] ] ] ] [.. ? ] ] ]\\
 ``What are the names of cities of Argentina?''
-(S1 (SBARQ (WHNP (WP What)) (SQ (VP (AUX are) (NP (NP (DT the) (NNS names)) (PP (IN of) (NP (NP (NNS cities)) (PP (IN of) (NP (NNP Argentina)))))))) (. ?)))
+\end{center}
 
 En las figuras \ref{fig:word-tags} y \ref{fig:syntax-tags} pueden verse los diferentes tags para hojas y para nodos intermedios (respectivamente).
 
@@ -345,32 +352,54 @@ En las figuras \ref{fig:word-tags} y \ref{fig:syntax-tags} pueden verse los dife
 
 
 
-Las reglas que construimos son las siguientes. Notar que presentamos flechas unidireccionales (y los nombres dados indican lo mismo) pero las relaciones son simétricas.
+Las reglas que construimos son las siguientes (notar que los nombres pueden denotar una direccionalidad, pero las relaciones son simétricas.
+Utilizamos NNx para denotar cualquier hoja sustantivo, adjetivo o adverbio (JJ, JJR, JJS, NN, NNS, NNP, NNPS, RB, RBR, RBS, CD), NN para denotar estrictamente sustantivos (NN, NNS, NNP, NNPS) y Nx para denotar cualquier sintagma relacionado a estos tipos de hojas (nodos intermedios): (ADJP, ADVP, NP, S)
 
 %TODO: hacer esto lindo
 \begin{enumerate}
-\item Hermanos: NNx <==> NNx <==> Wx si tienen el mismo padre
+\item Hermanos:
+  \begin{itemize}
+    \item  NNx $\Leftrightarrow$ NNx $\Leftrightarrow$ Wx si comparten el mismo el mismo padre
+  \end{itemize}
 \item Qwords a sustantivo:
-a.	Una Wx dentro de un WHNP ==> un NNx dentro de un NP dentro de un VP dentro de un SQ
+  \begin{itemize}
+    \item Una Wx dentro de un WHNP $\Rightarrow$ un NN dentro de uno o más Nx dentro de un VP dentro de un SQ con el mismo SBARQ como padre.
+  \end{itemize}
 \item Sintagma nominal a sintagma preposicional:
-a.	NNx dentro de un NP ==> NNx dentro de un NP dentro de un PP del mismo padre que el NP original
+  \begin{itemize}
+    \item NN dentro de un Nx $\Rightarrow$ NNx dentro de uno o más Nx dentro de un PP con el mismo padre que el NP original
+  \end{itemize}
 \item Sintagma nominal a sintagma verbal
-a.	NNx dentro de un NP ==> NNx dentro de un NP dentro de un VP del mismo padre que el NP original
+    \begin{itemize}
+      \item NN dentro de un Nx $\Rightarrow$ NNx dentro de uno o más Nx dentro de un VP del mismo padre que el NP original
+    \end{itemize}
+\item Sintagma preposicional a sintagma preposicional:
+  \begin{itemize}
+    \item NNx dentro de un PP $\Rightarrow$ NNx dentro de uno o más Nx dentro de un PP con el mismo padre que el NP original
+  \end{itemize}
+  \item Términos a tokens:
+  \begin{itemize}
+    \item Dos tokens están asociados si cualquier término de uno está asociado a cualquier término de otro.
+  \end{itemize}
 \end{enumerate}
 
-La definición de las reglas se hizo a prueba y error y es posible que sea simple, para alguien con mayores conocimientos lingüísticos, mejorarlas. El sistema ofrece también la opción de no evaluar las asociaciones sintácticas en absoluto ($Config.DO_NOT_CHECK_CHARNIAK$), en cuyo caso se mejora la performance pero aparecen nuevas traducciones válidas que podrían haber sido filtradas por estas condiciones, que el usuario deberá desambiguar manualmente).
+En los ejemplos presentados, los pares de términos asociados según estas reglas son los siguientes. Para el primero, (hp, jobs), (unix, system)  (regla 1), (what, hp), (what, jobs) (regla 2) y, finalmente, (hp, unix), (hp, system), (job, unix), (jobs, system) (regla 3). Para el segundo, (us, states) (regla 1), (what, capitals) (regla 2) y (capitals, us) y (capitals, states) (regla 3). Para el tercero, (what, names) (regla 2), (names, cities) y (cities, argentina) (regla 3).
+\newline
+
+La definición de las reglas se hizo a prueba y error y es posible que sea simple, para alguien con mayores conocimientos lingüísticos, mejorarlas. Probablemente tenga sentido diferenciar entre sustantivos principal y modificador (Unix y system, por ejemplo) y modificar las reglas 3 y 4 para conectar solo los principales, entre otras mejoras. El sistema ofrece también la opción de no evaluar las asociaciones sintácticas en absoluto, en cuyo caso se mejora la performance pero aparecen nuevas traducciones válidas que podrían haber sido filtradas por estas condiciones, que el usuario deberá desambiguar manualmente).
+
+Además, estas reglas seguramente sean insuficientes y estén dejando afuera varias preguntas que deberían poder procesarse.
 
 Finalmente, todos los resultados de max-flow que cumplen con las condiciones de 1 a  4 son traducciones válidas, que pasan al MappingFilter, que realiza ciertos filtrados que describiremos, de nuevo, en un título aparte.
 
 El resultado de este módulo es una lista de Mappings (una estructura que contiene 1) una tokenización completa de la pregunta original y 2) un mapeo válido entre cada token de la misma en un elemento de la base de datos). Cada mapeo es una traducción válida de la pregunta. Si existe solo uno, entonces este mapeo se traducirá en una query que generará el resultado. Si no, corresponde al MappingFilter realizar filtrados inteligentes de las múltiples soluciones y, en caso de que continuen existiendo múltiples soluciones, entonces se consultará al usuario qué quiso preguntar. Por otro lado, si no fue posible generar ninguna traducción válida, se retornará al usuario sin respuesta, pidiéndole que vuelva a escribir su pregunta de otro modo.
 
-
 \subsubsection*{MappingFilter}
 \label{subsubsec:mapping-filter}
 
 La clase $uba.app.MappingFilter$ es responsable, en primer lugar, de quitar las traducciones válidas repetidas y, en segundo lugar, de aplicar una serie de reglas también de filtrado. Para eliminar las traducciones repetidas, las transformamos en queries y simplemente comparamos por igualdad, ya que el generador de queries ordena las cláusulas generando, para inputs iguales pero diferentemente ordenados, la misma query.
-Además de este filtro, aplicamos dos reglas más. En primer lugar, eliminamos ``semi duplicados'', que consisten en atributos similares en la base de datos, en concreto, en para esta base de datos, consideramos semi-duplicada a una query que consulta por Country.Name y por Country.LocalName solamente. En segundo lugar, en el caso en que exista más de una traducción válida en la cual la qword esté asociada con un atributo \textit{implícito}, por como está el sistema definido, también estará asociado con todos los atributos que pueda estarlo (ver tabla \allref{table:atributos-qwords} para las compatibilidades definidas).
-En ese caso, solo conservamos la traducción en la que se utilizó el ``atributo implícito preferido''. El atributo implicito preferido está marcado en negrita en la tabla \ref{table:atributos-qwords}.
+Además de este filtro, aplicamos tres reglas más, de creación propia. En primer lugar, eliminamos ``semi duplicados'', que consisten en atributos similares en la base de datos, en concreto, en para esta base de datos, consideramos semi-duplicada a una query que consulta por Country.Name y por Country.LocalName solamente. La segunda y la tercera regla, están basadas en la misma idea: en el caso en que exista más de una traducción válida en la cual la qword esté asociada con un atributo \textit{implícito}, por como está el sistema definido, también estará asociado con todos los atributos que pueda estarlo (ver tabla \allref{table:atributos-qwords} para las compatibilidades definidas). Esto implica que, por ejemplo, para cualquier pregunta cuya qword sea 'what' y no tenga su atributo asociado explícito, habrá 16 diferentes traducciones válidas. En los trabajos sobre los que basamos nuestro proyecto este problema no está mencionado y en los ejemplos presentados no es visible. Lo que hicimos en este caso es aplicar dos conceptos de preferencia. La segunda regla, prefiere, entre los atributos implícitos posibles, aquellos cuya relación está mencionada en la pregunta (si hubiera alguna). La tercer regla, señala un orden de preferencia entre los atributos mismos, una vez especificada la relación. El atributo implicito preferido está marcado en negrita en la tabla \ref{table:atributos-qwords}. Si tras aplicar estar reglas siguen existiendo más de una traducción válida, entonces damos al usuario el control, pidiendo por una desambiguación.
+
 
 \subsubsection*{QueryGenerator}
 \label{subsubsec:query-generator}
@@ -387,12 +416,307 @@ Agregamos la opción de desambiguación para que el usuario elija entre dos o m�
 \subsection{Ejemplos}
 \label{subsec:popescu-ejemplos}
 
-%TODO: hacer
+\subsubsection*{Ejemplo 1: ``Who is the head of state of Zimbabwe?''}
+
+Consideremos nuestro primer ejemplo, una corrida trivial: ``Who is the head of state of Zimbabwe?''.
+
+El primer paso es el tokenizer que, según expusimos, consta de los siguientes 7 pasos:
+
+\begin{enumerate}
+  \item Separar la pregunta en palabras, eliminar puntuaciones y pasar a lower case:
+  \begin{itemize}
+    \item \{who, is, the, head, of, state, of, zimbabwe\}
+  \end{itemize}
+  \item Lematizar las palabras:
+  \begin{itemize}
+    \item Todas las palabras ya están en su forma lematizada
+  \end{itemize}
+  \item Eliminar marcadores sintácticos:
+  \begin{itemize}
+    \item \{who, head, state, zimbabwe\}
+  \end{itemize}
+  \item Obtener tokens para cada lema ($Lexicon.getTokens()$)
+  \begin{itemize}
+    \item $getTokens(who)\ \rightarrow \{$'who'$\}$
+    %\item $getTokens(head)\ \rightarrow \{$'head country', 'head teacher body politic', 'head body politic', 'head teacher land', 'read / write head dos', 'heading provincial', 'heading state', 'heading commonwealth', 'head teacher dos', 'head teacher country', 'read / write head body politic', 'head word land', ... TODO: this$\}$
+\item $getTokens(head)\ \rightarrow \{$ 'head country', 'head teacher body politic', 'head body politic', 'head teacher land', 'read / write head dos', 'heading provincial', 'heading state', 'heading commonwealth', 'head teacher dos', 'head teacher country', 'read / write head body politic', 'head word land', 'head state of matter', 'read / write head provincial', 'read / write head state department', 'read / write head department of state', 'head province', 'heading body politic', 'heading res publica', 'read / write head nation', (51 más)...$\}$
+
+    \item $getTokens(state)\ \rightarrow  \{$'heart eastern united states', 'centre eastern united states', 'central eastern united states', 'centrical eastern united states', 'midsection eastern united states', 'midriff eastern united states', 'centric eastern united states', 'center eastern united states', 'middle eastern united states', 'eye eastern united states', 'camellia state yaman', 'frederick north western united states', 'compass north western united states', 'north western united states', 'second earl of guilford western united states', 'magnetic north western united states', 'northward western united states', 'due north western united states', 'union western united states', (702 más)...$\}$
+    \item $getTokens(zimbabwe)\ \rightarrow \{$'zimbabwe', 'republic of zimbabwe', 'capital of zimbabwe'$\}$
+  \end{itemize}
+  \item Para cada token potencial (resultado del paso anterior) verificar que todos sus lemas están presentes en el conjunto de lemas de la pregunta original.
+  \begin{itemize}
+    \item $getTokens(who)\ \rightarrow \{$'who'$\}$
+    \item $getTokens(head)\ \rightarrow \{$'head state', 'heading state', 'head of state' $\}$
+    \item $getTokens(state)\ \rightarrow  \{$  'state', 'head state', 'heading state', 'head of state'$\}$
+    \item $getTokens(zimbabwe)\ \rightarrow \{$'zimbabwe'$\}$
+  \end{itemize}
+  \item Generar el conjunto de partes de todos los tokens hasta aquí obtenidos.
+  \newline
+  \{ $\emptyset$, \{'head of state', 'zimbabwe'\}, \{'zimbabwe', 'state'\}, \{'zimbabwe', 'heading state', 'state', 'head state', 'who'\}, \{'head of state', 'zimbabwe', 'who'\}, \{'head of state', 'zimbabwe', 'heading state', 'head state', 'who'\}, \{'head of state', 'zimbabwe', 'heading state', 'who'\}, \{'head of state', 'zimbabwe', 'heading state', 'state'\}, \{'head of state', 'zimbabwe', 'heading state', 'state', 'who'\}, \{'who'\}, \{'head of state', 'heading state', 'head state'\}, \{'head of state'\}, \{'state', 'who'\}, \{'head of state', 'zimbabwe', 'heading state', 'head state'\}, \{'heading state', 'state', 'who'\}, \{'heading state', 'state'\}, \{'heading state', 'who'\}, \{'head of state', 'who'\}, \{'head of state', 'zimbabwe', 'state', 'who'\}, \{'head of state', 'state', 'head state'\}, \{'zimbabwe', 'heading state', 'state', 'who'\}, \{'zimbabwe', 'head state', 'who'\}, \{'zimbabwe', 'heading state', 'who'\}, \{'head of state', 'heading state', 'who'\}, \{'state', 'head state', 'who'\}, \{'head state'\}, \{'heading state', 'state', 'head state'\}, \{'head of state', 'state', 'who'\}, \{'zimbabwe'\}, \{'state', 'head state'\}, \{'state'\}, \{'head of state', 'heading state', 'state'\}, \{'zimbabwe', 'state', 'who'\}, \{'zimbabwe', 'state', 'head state'\}, \{'head of state', 'zimbabwe', 'heading state', 'state', 'head state'\}, \{'head of state', 'zimbabwe', 'heading state', 'state', 'head state', 'who'\}, \{'head of state', 'zimbabwe', 'state', 'head state', 'who'\}, \{'heading state', 'head state', 'who'\}, \{'heading state'\}, \{'head of state', 'zimbabwe', 'state'\}, \{'head of state', 'zimbabwe', 'head state', 'who'\}, \{'head of state', 'heading state', 'state', 'who'\}, \{'head of state', 'zimbabwe', 'state', 'head state'\}, \{'head of state', 'zimbabwe', 'heading state'\}, \{'head of state', 'zimbabwe', 'head state'\}, \{'head of state', 'heading state', 'state', 'head state'\}, \{'head state', 'who'\}, \{'head of state', 'state'\}, \{'head of state', 'heading state', 'head state', 'who'\}, \{'head of state', 'heading state', 'state', 'head state', 'who'\}, \{'zimbabwe', 'heading state'\}, \{'head of state', 'head state'\}, \{'heading state', 'state', 'head state', 'who'\}, \{'zimbabwe', 'state', 'head state', 'who'\}, \{'heading state', 'head state'\}, \{'head of state', 'head state', 'who'\}, \{'head of state', 'heading state'\}, \{'zimbabwe', 'heading state', 'state'\}, \{'zimbabwe', 'heading state', 'head state', 'who'\}, \{'zimbabwe', 'who'\}, \{'zimbabwe', 'head state'\}, \{'zimbabwe', 'heading state', 'head state'\}, \{'zimbabwe', 'heading state', 'state', 'head state'\}, \{'head of state', 'state', 'head state', 'who'\} \}
+  \item Para cada uno de estos subconjuntos, verificar 1) que los lemas de sus tokens cubran completamente
+los lemas significativos de la pregunta original y 2) que no haya lemas repetidos
+entre los tokens.
+  \begin{itemize}
+    \item Los lemas significativos son los obtenidos en el bullet 4: \{who, head, state, zimbabwe\}
+    \item Las tokenizaciones que los cubren sin repetir lemas son: \{'who', 'head state', 'zimbabwe'\},
+    \{'who', 'heading state', 'zimbabwe'\} y  \{'who', 'head of state', 'zimbabwe'\}, con lo que queda eliminado el token 'state' y las repeticiones de los tokens que refieren tanto a 'head' como a 'state', quedando solo las diferentes formulaciones sinónimas del mismo elemento de la base de datos.
+  \end{itemize}
+\end{enumerate}
+
+Es decir, el Tokenizer encontró tres conjuntos de tokens completos para la pregunta, Tokenizer.generateCompleteTokenizations(``Who is the head of state of Zimbabwe?'') $\rightarrow$ [\{ `who', `head state', `zimbabwe'\}, \{`who', `heading state', `zimbabwe'\}, \{`who', `head of state', `zimbabwe'\}].
+
+El siguiente paso es el Matcher, que construye el grafo de atributos y valores para cada uno de las tokenizaciones completas y decide si existe un conjunto de elementos de la base de datos que permita establecer la traducción. Presentamos aquí solamente el grafo para la primer tokenización completa, que puede verse en la figura \ref{grafo-1}. Las otras tokenizaciones tienen un grafo análogo y generaran el mismo resultado, que será filtrado luego por el EquivalenceChecker. Notar que no es esta repetición de tokenizaciones lo que filtra el Matcher, sino la ambigüedad introducida por un token que puede referir a dos o más elementos de la base de datos (este problema no ocurre en este primer ejemplo).
+ Para construirlo, primero, se consulta al Lexicón por el tipo y los elementos asociados de cada token mediante el servicio $getMatchingElements$:
+\begin{center}
+\begin{table}[h]
+\centering
+\begin{tabular}{| p{3cm} | l | l | p{6cm} |}
+\hline
+Token & Tipos & Elementos & Detalle \\ \hline
+zimbabwe & Value & Zimbabwe & Valor del Atributo Name de la tabla Country\\ \hline
+head state, head of state, heading state & Attribute & HeadOfState & Atributo de la tabla Country\\ \hline
+who & WhValue/Value & Who & Q-valor compatible con: Atributo HeadOfState de la tabla Country\\ \hline
+\end{tabular}
+\caption{Resultados de $getMatchingElements$ para ``Who is the head of state of Zimbabwe?''}
+\label{table:get-matching-elements-1}
+\end{table}
+\end{center}
+
+En este primer ejemplo el grafo no desambigua ninguna relación token-elemento ya que no hay ningún token con más de un elemento asociado, por lo que el grafo de max-flow no tiene ningun atractivo especial y es construido siguendo el procedimiento reseñado en \ref{subsec:closed-domain} Al ejecutar el algoritmo de max-flow sobre el grafo, se obtiene que el flujo máximo es 2 y los pares (Who, Country.HeadOfState), (Country.Name, Zimbabwe), sin generar ningún otro flujo alternativo.
+
+
+
+\begin{figure}
+\hspace*{-1.2cm}
+\centering
+\begin{tikzpicture}
+\small
+\matrix [column sep=3mm, row sep=5mm] {
+   & \node (title1) [] {Tokens Valor};
+   & \node (title) [] {Valores DB};
+   & \node (title) [] {Atributos DB};
+   & \node (title) [] {Atributos DB-2};
+   & \node (title) [] {Tokens Atributo};& &
+
+  \\
+     &  \node (token_zimbabwe) [draw, shape=rectangle] {zimbabwe}; & \node (value_zimbabwe) [draw, shape=rectangle] {Name=Zimbabwe}; & \node (attr_name_1) [draw, shape=rectangle] {Name}; &  \node (attr_name_2) [draw, shape=rectangle] {Name};& & \node (i) [draw, shape=circle] {I}; &
+
+  \\
+  \node (source) [draw, shape=circle] {S}; & & & & & & & &\node (sink) [draw, shape=circle] {T};
+  \\
+   &  \node (token_who) [draw, shape=rectangle] {who}; & \node (value_who) [draw, shape=rectangle] {HeadOfState=Who}; & \node (attr_head_1) [draw, shape=rectangle] {HeadOfState}; &  \node (attr_head_2) [draw, shape=rectangle] {HeadOfState};&
+   \node (token_head) [draw, shape=rectangle] {head state}; &
+   \node (e) [draw, shape=circle] {E}; &
+
+   \\
+};
+\draw[->, thick] (source) -- (token_zimbabwe);
+\draw[->, thick] (token_zimbabwe) -- (value_zimbabwe);
+\draw[->, thick] (value_zimbabwe) -- (attr_name_1);
+\draw[->, thick] (attr_name_1) -- (attr_name_2);
+\draw[->, thick] (attr_name_2) -- (i);
+\draw[->, thick] (source) -- (token_who);
+\draw[->, thick] (token_who) -- (value_who);
+\draw[->, thick] (value_who) -- (attr_head_1);
+\draw[->, thick] (attr_head_1) -- (attr_head_2);
+\draw[->, thick] (attr_head_2) -- (token_head);
+\draw[->, thick] (token_head) -- (e);
+
+\draw[->, thick] (i) -- (sink) node [near end, fill=white, above] {f=1};
+\draw[->, thick] (e) -- (sink) node [near end, fill=white, below] {f=1};
+\end{tikzpicture}
+\caption{Grafo de atributo-valor para la primer tokenización completa de ``Who is the head of state of Zimbabwe?''}
+\label{grafo-1}
+\end{figure}
+
+El próximo paso es evaluar que los términos del par de tokens (`who', `head state') estén sintácticamente asociados en el
+parse tree generado por el algoritmo de Charniak según nuestras reglas. El arbol sintáctico para la pregunta es:
+
+\begin{center}[h]
+\Tree [.S1 [.SBARQ [.WHNP [.WP \textbf{Who} ] ] [.SQ [.VP [.AUX is ] [.NP [.NP [.DT the ] [.NN \textbf{head} ] ] [.PP [.IN of ] [.NP [.NN state ] ] ] [.PP [.IN of ] [.NP [.NNP Zimbabwe ] ] ] ] ] ] [.. ? ] ] ] \\
+``Who is the head of state of Zimbabwe?''
+\end{center}
+
+La regla 2 (q-word a sustantivo) vincula los términos 'who' con 'head', mientras que la 6 (términos a tokens), asocia los tokens 'who' con 'head state', cumpliendo las condiciones sintácticas requeridas por la definición de traducción válida. Por su parte, el atributo Name es implícito, lo que significa que no posee ningún token asociado y, por lo tanto, no debe cumplir la regla de traducciones válidas. Además, como no hay ninguna relación mencionada explicitamente, los tokens cubren todos los términos significativos de la pregunta y no hay ningún término repetido entre los tokens, esto significa que tenemos una (única) traducción válida para esta tokenización completa, constando de los siguiente elementos de la base de datos apareados: (Atributo Country.Name, Valor Country.Name$=$Zimbabwe), (Atributo Country.HeadOfState, Q-Valor Who).
+
+Las otras dos tokenizaciones generan la misma traducción y sus repeticiones son eliminadas por el $EquivalenceChecker$.
+Finalmente, esta única traducción pasa al $QueryGenerator$ que la traduce univocamente en una query, aplicando las reglas descriptas en \ref{subsec:closed-domain}:
+
+``\textbf{SELECT} Country.HeadOfState \textbf{FROM} Country \textbf{WHERE} Country.Name$=$`Zimbabwe''', cuyo resultado es ``Robert G. Mugabe''.
+
+\subsubsection*{Ejemplo 2: ``What caribbean countries are also considered north american?''}
+
+Consideremos nuestro segundo ejemplo, una corrida trivial: ``What caribbean countries are also considered north american?''.
+
+El primer paso es el tokenizer que, según expusimos, consta de los siguientes 7 pasos:
+
+\begin{enumerate}
+  \item Separar la pregunta en palabras, eliminar puntuaciones y pasar a lower case:
+  \begin{itemize}
+    \item \{what, caribbean, countries, are, also, considered, north, american\}
+  \end{itemize}
+  \item Lematizar las palabras:
+  \begin{itemize}
+    \item \{what, caribbean, country, is, also, consider, north, american\}
+  \end{itemize}
+  \item Eliminar marcadores sintácticos:
+  \begin{itemize}
+    \item \{what, caribbean, country, north, american\}
+  \end{itemize}
+  \item Obtener tokens para cada lema ($Lexicon.getTokens()$)
+  \begin{itemize}
+    \item $getTokens(what)\ \rightarrow \{$'what'$\}$
+    \item $getTokens(caribbean)\ \rightarrow \{$'caribbean sea', 'caribbean', 'micronesia caribbean sea', 'federated states of micronesia caribbean', 'tt caribbean sea', 'micronesia / caribbean', 'tt caribbean', 'micronesia caribbean', 'federated states of micronesia caribbean sea'$\}$
+    \item $getTokens(country)\ \rightarrow  \{$'country codification', 'country computer code', 'country codify', 'country code', 'baltic country', 'baltic language country', 'baltic sea country', 'north germanic language country', 'norse country', 'nordic country', 'scandinavian country', 'scandinavian language country', 'north germanic country', 'independent christian church country', 'free lance christian church country', 'self - employed person church building country', 'freelance church country', 'independent church service country', 'freelancer churchly country', 'free - lance churchly country', (149 más)...$\}$
+    \item $getTokens(north)\ \rightarrow \{$'jabir aluminum ahmad aluminum jabir heart of dixie north borneo', 'jabir alabama ahmad camellia state jabir aluminum north borneo', 'jabir aluminize ahmad aluminise jabir aluminous north borneo', 'jabir aluminium ahmad camellia state jabir aluminize north borneo', 'jabir aluminize ahmad camellia state jabir aluminise north borneo', 'jabir al ahmad al jabir aluminium north borneo', 'jabir aluminous ahmad al jabir aluminise north borneo', 'jabir heart of dixie ahmad aluminous jabir camellia state north borneo', 'jabir aluminous ahmad camellia state jabir aluminous north borneo', 'jabir aluminium ahmad al jabir aluminize north borneo', 'jabir al ahmad aluminize jabir alabama north borneo', 'jabir aluminous ahmad al jabir heart of dixie north borneo', 'jabir aluminum ahmad aluminous jabir aluminum north borneo', 'jabir aluminum ahmad alabama jabir al north borneo', 'jabir heart of dixie ahmad aluminise jabir aluminous north borneo', 'jabir atomic number 13 ahmad aluminum jabir atomic number 13 north borneo', 'jabir aluminise ahmad alabama jabir aluminum north borneo', 'jabir aluminum ahmad aluminize jabir aluminize north borneo', 'jabir aluminium ahmad al jabir aluminous north borneo', 'jabir aluminous ahmad aluminium jabir camellia state north borneo', (2237 más)...$\}$
+    \item $getTokens(american)\ \rightarrow \{$ 'american virgin islands', 'southward american', 'south american', 'due south american', 's american', 'dixieland american', 'dixie american', 'confederate states of america american', 'confederacy american', 'confederate states american', 'northward american', 'due north american', 'frederick north american', 'n american', 'second earl of guilford american', 'union american', 'north american', 'compass north american', 'magnetic north american', 'american - indian language spoken language', (169 más)...$\}$
+  \end{itemize}
+  \item Para cada token potencial (resultado del paso anterior) verificar que todos sus lemas están presentes en el conjunto de lemas de la pregunta original.
+  \begin{itemize}
+    \item $getTokens(what)\ \rightarrow \{$'what'$\}$
+    \item $getTokens(caribbean)\ \rightarrow \{$'caribbean'$\}$
+    \item $getTokens(country)\ \rightarrow  \{$'country'$\}$
+    \item $getTokens(north)\ \rightarrow \{$'north american'$\}$
+    \item $getTokens(american)\ \rightarrow \{$'north american', 'american'$\}$
+  \end{itemize}
+  \item Generar el conjunto de partes de todos los tokens hasta aquí obtenidos.
+  \newline
+   \{ $\emptyset$, \{'north american'\}, \{'what', 'american', 'country'\}, \{'north american', 'what', 'american', 'country'\}, \{'american', 'caribbean'\}, \{'north american', 'what', 'american'\}, \{'what', 'country'\}, \{'north american', 'what', 'american', 'caribbean', 'country'\}, \{'caribbean'\}, \{'north american', 'what', 'caribbean'\}, \{'north american', 'american', 'country'\}, \{'north american', 'what'\}, \{'american'\}, \{'north american', 'american', 'caribbean', 'country'\}, \{'north american', 'what', 'caribbean', 'country'\}, \{'american', 'country'\}, \{'what', 'american', 'caribbean', 'country'\}, \{'north american', 'country'\}, \{'what', 'american'\}, \{'what', 'caribbean', 'country'\}, \{'american', 'caribbean', 'country'\}, \{'north american', 'caribbean'\}, \{'country'\}, \{'north american', 'what', 'american', 'caribbean'\}, \{'north american', 'caribbean', 'country'\}, \{'north american', 'what', 'country'\}, \{'what', 'caribbean'\}, \{'north american', 'american', 'caribbean'\}, \{'what'\}, \{'north american', 'american'\}, \{'what', 'american', 'caribbean'\}, \{'caribbean', 'country'\}\}
+  \item Para cada uno de estos subconjuntos, verificar 1) que los lemas de sus tokens cubran completamente
+los lemas significativos de la pregunta original y 2) que no haya lemas repetidos
+entre los tokens.
+  \begin{itemize}
+    \item Los lemas significativos son los obtenidos en el bullet 4: \{what, caribbean, country, north, american\}
+    \item Solo una tokenización los cubren sin repetir lemas: \{'north american', 'what', 'caribbean', 'country'\}, con lo que queda eliminado el token 'american'.
+  \end{itemize}
+\end{enumerate}
+
+Es decir, el Tokenizer encontró un conjunto de tokens completo para la pregunta, Tokenizer.generateCompleteTokenizations(``What caribbean countries are also considered north american?'') $\rightarrow$ [ \{what, caribbean, country, north, american\}].
+
+El siguiente paso es el grafo del Matcher, que en este caso sí desambigua un token de valor\ref{grafo-2}, como puede verse en \ref{table:get-matching-elements-2}, al token 'north american' le corresponde
+\begin{center}
+\begin{table}[h]
+\centering
+\begin{tabular}{| p{2cm} | p{2cm} | p{2cm} | p{6cm} |}
+\hline
+Token & Tipos & Elementos & Detalle \\ \hline
+north american & Value & North America & Valor de los Atributo Region y Continent de la tabla Country\\ \hline
+caribbean & Value & Caribbean & Valor del Atributo Region de la tabla Country\\ \hline
+country & Relation & Country & Relación Country\\ \hline
+what & WhValue / Value & What & Q-valor compatible con: Atributos GovernmentForm, Population, GNP, Name, Capital, LocalName, Continent, Region, Code, LifeExpectancy y SurfaceArea de la tabla Country, District, Population y Name de la tabla City e ISOfficial y Percentage de la tabla Language\\ \hline
+\end{tabular}
+\caption{Resultados de $getMatchingElements$ para ``What caribbean countries are also considered north american?''}
+\label{table:get-matching-elements-2}
+\end{table}
+\end{center}
+
+En este ejemplo el grafo decide entre dos interpretaciones posibles para el token 'caribbean', que puede ser un valor tanto del atributo Region como del atributo Continent. Teniendo presente el token 'north american', que solo puede tomar el atributo Continent, para maximizar el flujo el algoritmo asigna 'caribean' a Region, obteniendo un flujo de 3, que es el máximo.
+
+\begin{figure}
+\hspace*{-1.5cm}
+\centering
+\begin{tikzpicture}
+\footnotesize
+\matrix [column sep=3mm, row sep=5mm] {
+   & \node (title1) [] {Tokens Valor};
+   & \node (title) [] {Valores DB};
+   & \node (title) [] {Atributos DB};
+   & \node (title) [] {Atributos DB-2};
+   & \node (title) [] {Tokens Atributo};& & \\
+
+   &  \node (token_what) [draw, shape=rectangle] {what}; & \node (value_what) [draw, shape=rectangle] {Country.Name[i]*=What}; & \node (attr_name_1) [draw, shape=rectangle] {Name[i]}; &  \node (attr_name_2) [draw, shape=rectangle] {Name[i]}; & & \node (e) [draw, shape=circle] {E};  & \\
+
+   \node (source) [draw, shape=circle] {S}; & & \node (value_caribbean_2) [draw, shape=rectangle] {Continent=Caribbean}; & \node (attr_continent_1) [draw, shape=rectangle] {Continent}; &  \node (attr_continent_2) [draw, shape=rectangle] {Continent}; & & &\node (sink) [draw, shape=circle] {T}; \\
+
+   & \node (token_caribbean) [draw, shape=rectangle] {caribbean};
+   & \node (value_caribbean) [draw, shape=rectangle] {Region=Caribbean};
+   & \node (attr_region_1) [draw, shape=rectangle] {Region};
+   & \node (attr_region_2) [draw, shape=rectangle] {Region};
+   & & \node (i) [draw, shape=circle] {I}; & \\
+
+
+   & \node (token_north) [draw, shape=rectangle] {north american}; & \node (value_north) [draw, shape=rectangle] {Continent=North America}; &  & & & & \\
+};
+
+\draw[->, thick] (source) -- (token_caribbean);
+\draw[->, thick] (token_caribbean) -- (value_caribbean);
+\draw[->, thick] (value_caribbean) -- (attr_region_1);
+\draw[->, thick] (attr_region_1) -- (attr_region_2);
+\draw[->, thick] (attr_region_2) -- (i);
+
+\draw[->, dashed] (token_caribbean) -- (value_caribbean_2);
+\draw[->, dashed] (value_caribbean_2) -- (attr_continent_1);
+\draw[->, thick] (attr_continent_1) -- (attr_continent_2);
+\draw[->, thick] (attr_continent_2) -- (i);
+
+\draw[->, thick] (source) -- (token_north);
+\draw[->, thick] (token_north) -- (value_north);
+\draw[->, thick] (value_north) -- (attr_continent_1);
+
+
+\draw[->, thick] (source) -- (token_what);
+\draw[->, thick] (token_what) -- (value_what);
+\draw[->, dashed] (token_what) -- (value_caribbean);
+\draw[->, dashed] (token_what) -- (value_caribbean_2);
+\draw[->, dashed] (token_what) -- (value_north);
+\draw[->, thick] (value_what) -- (attr_name_1);
+\draw[->, thick] (attr_name_1) -- (attr_name_2);
+\draw[->, thick] (attr_name_2) -- (i);
+
+\draw[->, thick] (i) -- (sink) node [near end, fill=white, below] {f=3};
+\end{tikzpicture}
+\caption{Grafo de atributo-valor para la primer tokenización completa de ``What caribbean countries are also considered north american?''}
+\label{grafo-1}
+\end{figure}
+
+
+Como no hay tokens de atributo explícitos, solo queda verificar la regla relacionada con los tokens de relación: Country es compatible con todos los tokens de valor que aparecen en la pregunta y, en particular, está sintácticamente asociada a what (regla 2), por lo que las condiciones de traducción válida se cumplen.
+
+Esto nos da una única traducción válida, pero en realidad el $Matcher$ genera 16, una por cada atributo implícito posible compatible con la q-word 'What'. Notar que Country.Name no tiene ninguna particularidad especial, al menos para el $Matcher$, sobre las demás posibilidades listadas en \ref{table:get-matching-elements-2}. Pero de esto se ocupa el $MappingFilter$ con las tres reglas especiales que agregamos. Dado que la relación $country$ está presente en la pregunta y no así las otras dos, aplicando las reglas de preferencia de atributos implícitos nos quedamos solo con la asociación Country.Name$=$What.
+
+\begin{center}
+\Tree
+[.S1 [.SBARQ [.WHNP [.WP What ] ] [.SQ [.NP [.JJ caribbean ] [.NNS countries ] ] [.VP [.AUX are ] [.ADVP [.RB also ] ] [.VP [.VBN considered ] [.S [.ADJP [.JJ north ] [.JJ american ] ] ] ] ] ] [.. ? ] ] ]
+ \\
+Charniak parse tree para ``What caribbean countries are also considered north american?''
+\end{center}
+
+Esta única traducción pasa al $QueryGenerator$ que la traduce univocamente en una query, aplicando las reglas descriptas en \ref{subsec:closed-domain}:
+``\textbf{SELECT DISTINCT} Country.Name \textbf{FROM} Country \textbf{WHERE} Country.Continent $=$ 'North America' \textbf{AND} Country.Region $=$ 'Caribbean''' cuyo resultado es la siguiente lista:
+
+\begin{itemize}
+ \item Aruba
+ \item Anguilla
+ \item Netherlands Antilles
+ \item Antigua and Barbuda
+ \item Bahamas
+ \item Barbados
+ \item Cuba
+ \item Cayman Islands
+ \item Dominica
+ \item Dominican Republic
+ \item Guadeloupe
+ \item Grenada
+ \item Haiti
+ \item Jamaica
+ \item Saint Kitts and Nevis
+ \item Saint Lucia
+ \item Montserrat
+ \item Martinique
+ \item Puerto Rico
+ \item Turks and Caicos Islands
+ \item Trinidad and Tobago
+ \item Saint Vincent and the Grenadines
+ \item Virgin Islands, British
+ \item Virgin Islands, U.S.
+\end{itemize}
+
 
 \subsection{Limitaciones y Trabajo Futuro}
 \label{subsec:popescu-cierre}
 
-Las diferentes limitaciones y mejoras de nuestra implementación actual fueron mencionadas durantes la exposición del mismo que realizamos a lo largo de este capítulo: esta sección las presenta juntas para facilitar el acceso.
+Las diferentes limitaciones y mejoras de nuestra implementación actual fueron mencionadas durantes la exposición de la misma que realizamos a lo largo de este capítulo: esta sección las presenta juntas para facilitar el acceso.
 
 En un nivel técnico, habría una enorme mejora de performance implementando el lexicón sobre una base de datos relacional. Los archivos json sirven para un modelo de escala pequeña, pero no permiten escalar ya que genera un tiempo de carga innecesario, así como también uso de memoria. Existen también una serie de clases con datos dentro del código que deberían separar archivos de configuración de códigos. Estas son TokenAugmenter, WhGenerator y Config. Estas clases requieren editar el código para aplicarlo sobre una nueva base de datos, cuando en realidad solo es necesario editar definiciones.
 
