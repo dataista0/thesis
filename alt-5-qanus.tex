@@ -284,7 +284,7 @@ correctamente.\newline
 En esta sección de la tesis adoptamos el framework Qanus y adaptamos el sistema QA-sys para 1) incorporar Freeling como librería de herramientas de procesamiento del lenguaje permitiendo un funcionamiento multilenguaje, 2) trabajar sobre el corpus de datos y preguntas de los ejercicios de CLEF '07 de español y portugués descriptos en \allref{sec:ejercicio-de-clef} y, finalmente, 3) incorporamos y evaluamos diferentes mejoras tomadas de la reseña a la literatura científica del apartado anterior \allref{sec:literatura}.
 
 \subsection{Implementación baseline}
-
+\label{subsec:baseline}
 El código está escrito en java y mantiene una interfaz común a
 todos los pasos: un controller cuyas responsabilidades son cargar los
 componentes y un engine que utiliza los componentes para leer el input,
@@ -531,6 +531,7 @@ Se implementa el mismo algoritmo que el caso anterior. \newline
 
 
 \subsection{Modificaciones}
+\label{subsec:modificaciones}
 
 Además de los cambios realizados para convertir al baseline de qanus en un sistema multilingüe basado en la librería freeling, realizamos algunos agregados mínimos a la lógica. En esta sección describiremos diferentes modificaciones realizadas y en la siguiente veremos la evaluación comparativa entre la performance del sistema baseline y las modificaciones en las diferentes tareas que realizan los submódulos.
 
@@ -1057,7 +1058,9 @@ $MRR_{25}$ & 12.55 & 12.62 & 13.78 & 16.72 & 18.00 & 18.06  \\ \hline
 \end{center}
 \end{table}
 
-
+\subsection{Limitaciones y Trabajo Futuro}
+\label{sec:clef-cierre}
+%TODO: Hacer
 
 
 % \chapter{Implementación}
