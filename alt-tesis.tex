@@ -6,7 +6,10 @@
 
 \usepackage{color}
 \usepackage{array}
-
+\usepackage{tikz}
+\usepackage{tikz-qtree}
+\usetikzlibrary{positioning}
+\usetikzlibrary{babel}
 \usepackage[T1]{fontenc}
 \usepackage{longtable}
 \usepackage{graphicx}
@@ -22,6 +25,7 @@
 %\usepackage{sectsty}
 \usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage{rotating} % to rotate table in 4
 
 %header configuration
 \usepackage{titlesec}%Para configurar el formato de los headers (section, subsection, etc)
@@ -66,9 +70,9 @@
 
 %%%% CARATULA
 \def\autor{Julián Peller}
-\def\titulo{Question answering multilingüe}
-\def\runtitulo{Question answering multilingüe}
-\def\runtitle{Question answering multilingüe}
+\def\titulo{Question answering open y closed domain}
+\def\runtitulo{Question answering open y closed domain}
+\def\runtitle{Question answering open y closed domain}
 \def\director{José Castaño}
 %\def\codirector{Master Yoda}
 \def\lugar{Buenos Aires, 2013}
@@ -96,12 +100,12 @@
 
 %%%% ACA VA EL CONTENIDO DE LA TESIS
 
-%\input{alt-1-introduccion.tex}
-%\input{alt-2-marco-teorico.tex}
+\input{alt-1-introduccion.tex}
+\input{alt-2-marco-teorico.tex}
 \input{alt-3-estado-de-arte.tex}
-%\input{alt-4-mitic.tex}
-%\input{alt-5-qanus.tex}
-%\input{alt-6-conclusion.tex}
+\input{alt-4-mitic.tex}
+\input{alt-5-qanus.tex}
+\input{alt-6-conclusion.tex}
 
 % \appendix
 \nocite{*}

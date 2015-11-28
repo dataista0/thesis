@@ -61,7 +61,7 @@ Los features aparecen en muchos contextos, por ejemplo: en \allref{chap:5} nosot
 A modo de ilustración, reproducimos los ejemplos que se pueden encontrar en \\ \cite{NER1} sobre dimensiones de features típicas para el proceso de reconocimiento de entidades. Veremos más sobre reconocimiento de entidades en breve (\ref{subsec:nerc}), pero, rápidamente, lo que se busca es encontrar entidades nombradas como \dq{Buenos Aires} o \dq{Juan Pérez} en oraciones. En este proceso podrían usarse, por ejemplo, tres tipos de features basados en propiedades de las palabras mismas, su ocurrencia en listas o {\em gazeteers} conocidos y en propiedades de los documentos del corpus.
 
 \begin{center}
-
+\begin{table}
 \begin{tabular}{|p {4cm} |p {10cm} |}
 \hline
 \multicolumn{2}{|c|}{Features a nivel palabra} \\ \hline
@@ -84,7 +84,7 @@ Part-of-speech & nombre propio, sustantivo, verbo, etc \\ \hline
 
 \begin{tabular}{|p {4cm} |p {10cm} |}
 \hline
-\multicolumn{2}{|c|}{Features sobre listas  conocidas} \\ \hline
+\multicolumn{2}{|c|}{Features sobre listas conocidas} \\ \hline
 Features & Ejemplo \\ \hline
 \multirow{4}{*}{Lista General} & Diccionario general \\
  &  Stop words \\
@@ -114,6 +114,8 @@ Features & Ejemplo \\ \hline
  &  Co-ocurrencia \\
  &  Permanencia de una unidad de varias palabras \\ \hline
 \end{tabular}
+\caption{Diferentes tipos de features}
+\end{table}
 \end{center}
 
 
@@ -227,6 +229,7 @@ de los tokens. Como ejemplo introductorio, consideremos la siguiente oración y 
 El resultado de un POS-tagger podría ser el siguiente:%\newline
 
 \begin{center}
+\begin{table}
 \begin{tabular}{| l | l |}
  \hline
 Token & Etiqueta Gramatical (POS-tag) \\ \hline
@@ -237,6 +240,8 @@ la  & Determinante, artículo femenino singular \\ \hline
 escalera & Nombre común femenino singular (sustantivo) \\ \hline
 .  & Punto final\\ \hline
 \end{tabular}
+\caption{Ejemplo de resultado de un POS-tagger}
+\end{table}
 \end{center}
 
 La asignación de etiquetas no es un proceso trivial debido a la ambigüedad de roles posibles que tienen muchas palabras. Por ejemplo, la palabra
@@ -245,6 +250,7 @@ Un algoritmo de pos-tagging debe resolver estas ambigüedades seleccionando la c
 
 Existen diferentes formas de clasificar gramaticalmente a las palabras. El esquema más general y reconocido de categorías gramaticales tal vez sea el siguiente, de 9 clases:
 \begin{center}
+\begin{table}
 \begin{tabular}{| l | l |}
  \hline
 Categoría General & Ejemplos \\ \hline
@@ -258,6 +264,8 @@ Verbo & cantamos, corrió, bailarán\\ \hline
 Adjetivo & alegre, bonita, pésimos, desnuda\\ \hline
 Adverbio & despacio, hábilmente, posteriormente\\ \hline
 \end{tabular}
+\caption{Categorías gramaticales}
+\end{table}
 \end{center}
 
 Mientras a algunas de estas categorías se les puede agregar más información, como \textit{género} y \textit{número} a los sustantivos, otras son categorías que no toleran modificaciones. Veremos esto con más detalle al hablar del tagset propuesto por el grupo EAGLES en breve.
@@ -279,6 +287,7 @@ Por su parte, el POS-tagger español de Freeling, por su naturaleza multilingüe
 A continuación presentamos la especificación para el conjunto de tags relacionados con sustantivos y un ejemplo de su aplicación.
 
 \begin{center}
+\begin{table}
 \begin{tabular}{| l | l | l | l |}
  \hline
  \multicolumn{4}{|c|}{Nombres} \\ \hline
@@ -299,10 +308,13 @@ Pos. & Atributo & Valor & Código \\ \hline
 \multirow{2}{*}{7} & \multirow{2}{*}{Grado} & Aumentativo  & A \\ \cline{3-4}
   & & Diminutivo & D \\ \hline
 \end{tabular}
+\caption{Valores para cada coordenada de tags para sustantivos}
+\end{table}
 \end{center}
 
 
 \begin{center}
+\begin{table}
 \begin{tabular}{| l | l | l |}
  \hline
 Forma & Lema & Etiqueta \\ \hline
@@ -317,6 +329,8 @@ Barcelona & barcelona & NP000G0 \\ \hline
 COI & coi & NP000O0 \\ \hline
 Pedro & pedro & NP000P0 \\ \hline
 \end{tabular}
+\caption{Ejemplos de tags y lemas para sustantivos}
+\end{table}
 \end{center}
 
 
@@ -430,7 +444,7 @@ Como nota al pie, este esquema de clasificación semántico es uno entre otros. 
 
 Estas reglas básicas -triviales, si se quiere- cubren gran parte de las preguntas con una eficacia alta. En \allref{sec:stanford-qc} veremos un enfoque más complejo que permite una clasificación más granular, basado en machine learning. El uso de algoritmos de machine learning tiene una serie de ventajas interesantes a la hora de definir un sistema de clases complejo. Como mencionamos al hablar de los otros taggers, la definición de reglas manuales es una tarea tediosa y con poca capacidad de adaptarse o modificarse, mientras que la definición de un set de features adecuado para el aprendizaje programático, en cambio, permite la fácil incorporación de nuevas clases y/o la incorporación de nuevas mejoras descubiertas. Por otro lado, un esquema de clases semánticamente rico -más granular que el modelo básico recién enunciado- requiere la consideración de una gran cantidad de dimensiones lingüísticas, tanto sintácticas como semánticas, lo que hace que la definición manual de reglas una tarea potencialmente imposible en términos de costo de tiempo humano.
 
-Finalmente, cabe mencionar que no existen clasificadores de preguntas para el español y que a la hora de abordar este problema en nuestra implementación debimos apelar a mecanismos ad-hoc. En particular, para el modelo estructurado implementamos un sistema de reglas simples como el recién enunciado y para el modelo no estructurado utilizamos el resultado de la clasificación de la misma pregunta pero formulada en inglés (pues las preguntas están disponibles en ambos idiomas).
+Finalmente, cabe mencionar que no existen clasificadores de preguntas para el español y que a la hora de abordar este problema en nuestra implementación debimos apelar a mecanismos ad-hoc.
 
 \subsection{Otras tareas}
 \label{subsec:otras-tareas-pnl}
