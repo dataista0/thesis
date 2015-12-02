@@ -9,7 +9,7 @@ Testeamos este sistema sobre la base de datos World, en inglés, ofrecida por My
 
 Cabe mencionar que el scope original de este sistema era ser bilingüe y ejecutarse sobre una base de datos sobre universidades, empresas e investigación nacional del ámbito de la informática. Lamentablemente, por una cuestión de tiempos y de errores a la hora de estimar esfuerzos, no pudimos completar este plan original.
 
-La estructura del capítulo es como sigue: En \ref{sec:popescu-db} pasamos revista de la base de datos que utilizamos para testear el sistema y en \ref{sec:popescu-implementacion} discutimos la implementación. \ref{subsec:popescu-codigo} se divide, a su vez, en \ref{subsec:popescu-ejemplos}, donde discutimos la implementación en sí misma, 4.2.2, donde mostramos y comentamos algunos ejemplos de ejecuciones y \ref{subsec:popescu-cierre} donde analizamos los alcances, los límites y el trabajo futuro.
+La estructura del capítulo es como sigue: En \ref{sec:popescu-db} pasamos revista de la base de datos que utilizamos para implementar el sistema y en \ref{sec:popescu-implementacion} discutimos la implementación. \ref{subsec:popescu-codigo} se divide, a su vez, en \ref{subsec:popescu-ejemplos}, donde discutimos la implementación en sí misma, 4.2.2, donde mostramos y comentamos algunos ejemplos de ejecuciones y \ref{subsec:popescu-cierre} donde analizamos los alcances, los límites y el trabajo futuro.
 
 
 \section{Base de datos}
@@ -37,13 +37,14 @@ Las definiciones de las relaciones originales son:
 \item CountryLanguage(CountryCode, Language, IsOfficial, Percentage)
 \end{itemize}
 
-
 Para nuestro proyecto, renombramos algunos de los elementos:
 \begin{itemize}
 \item La relación CountryLanguage fue renombrada a Language
 \item El atributo Language de la relación CountryLanguage fue renombrado a Name
 \item El atributo IndepYear de la relación Country fue renombrado a IndependenceYear
 \end{itemize}
+
+%TODO: falta mencionar un cambio importante (reemplazo de los ids por los valores en una columna que no recuerdo)
 
 En las tablas \ref{tab:country-data}, \ref{tab:country-data-2}, \ref{table:countrylanguage-data} y \ref{table:city-data} pueden verse algunas filas de ejemplo de cada una de las tablas y, en la tabla W, el total de filas de cada una.
 
@@ -348,7 +349,6 @@ En las figuras \ref{fig:word-tags} y \ref{fig:syntax-tags} pueden verse los dife
 \end{figure}
 
 
-
 Las reglas que construimos son las siguientes (notar que los nombres pueden denotar una direccionalidad, pero las relaciones son simétricas.
 Utilizamos NNx para denotar cualquier hoja sustantivo, adjetivo o adverbio (JJ, JJR, JJS, NN, NNS, NNP, NNPS, RB, RBR, RBS, CD), NN para denotar estrictamente sustantivos (NN, NNS, NNP, NNPS) y Nx para denotar cualquier sintagma relacionado a estos tipos de hojas (nodos intermedios): (ADJP, ADVP, NP, S)
 
@@ -435,8 +435,7 @@ El primer paso es el tokenizer que, según expusimos, consta de los siguientes 7
   \item Obtener tokens para cada lema ($Lexicon.getTokens()$)
   \begin{itemize}
     \item $getTokens(who)\ \rightarrow \{$'who'$\}$
-    %\item $getTokens(head)\ \rightarrow \{$'head country', 'head teacher body politic', 'head body politic', 'head teacher land', 'read / write head dos', 'heading provincial', 'heading state', 'heading commonwealth', 'head teacher dos', 'head teacher country', 'read / write head body politic', 'head word land', ... TODO: this$\}$
-\item $getTokens(head)\ \rightarrow \{$ 'head country', 'head teacher body politic', 'head body politic', 'head teacher land', 'read / write head dos', 'heading provincial', 'heading state', 'heading commonwealth', 'head teacher dos', 'head teacher country', 'read / write head body politic', 'head word land', 'head state of matter', 'read / write head provincial', 'read / write head state department', 'read / write head department of state', 'head province', 'heading body politic', 'heading res publica', 'read / write head nation', (51 más)...$\}$
+    \item $getTokens(head)\ \rightarrow \{$ 'head country', 'head teacher body politic', 'head body politic', 'head teacher land', 'read / write head dos', 'heading provincial', 'heading state', 'heading commonwealth', 'head teacher dos', 'head teacher country', 'read / write head body politic', 'head word land', 'head state of matter', 'read / write head provincial', 'read / write head state department', 'read / write head department of state', 'head province', 'heading body politic', 'heading res publica', 'read / write head nation', (51 más)...$\}$
 
     \item $getTokens(state)\ \rightarrow  \{$'heart eastern united states', 'centre eastern united states', 'central eastern united states', 'centrical eastern united states', 'midsection eastern united states', 'midriff eastern united states', 'centric eastern united states', 'center eastern united states', 'middle eastern united states', 'eye eastern united states', 'camellia state yaman', 'frederick north western united states', 'compass north western united states', 'north western united states', 'second earl of guilford western united states', 'magnetic north western united states', 'northward western united states', 'due north western united states', 'union western united states', (702 más)...$\}$
     \item $getTokens(zimbabwe)\ \rightarrow \{$'zimbabwe', 'republic of zimbabwe', 'capital of zimbabwe'$\}$
@@ -710,7 +709,7 @@ Esta única traducción pasa al $QueryGenerator$ que la traduce univocamente en 
 \end{itemize}
 
 
-\subsection{Limitaciones y Trabajo Futuro}
+\subsection{Conclusiones, limitaciones y trabajo futuro}
 \label{subsec:popescu-cierre}
 
 Las diferentes limitaciones y mejoras de nuestra implementación actual fueron mencionadas durantes la exposición de la misma que realizamos a lo largo de este capítulo: esta sección las presenta juntas para facilitar el acceso.
@@ -729,3 +728,5 @@ Más allá de estas mejoras técnicas, las siguientes mejoras permitirían incre
 
 Con esta lista terminamos la presentación de nuestro sistema closed domain en inglés. En el próximo capitulo daremos vuelta la página y presentaremos nuestro sistema open domain multilingüe.
 
+
+%TODO: conclusiones

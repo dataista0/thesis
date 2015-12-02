@@ -1,15 +1,15 @@
 \chapter{Implementación sobre Qanus}
 \label{chap:qanus} \label{chap:5}
-\faltadependiente
-En este capitulo veremos la implementación del modelo de question answering multilingüe y diferentes evaluaciones realizadas utilizando como guía dos tareas monolingües de la competencia QA@Clef '07, una para español y otra para portugués. El sistema está basado en un framework académico de código abierto llamado Qanus. Este framework está empaquetado con una sistema de QA simple, QA-sys, que resuelve ejercicios de la competencia Trec '07 con soporte para inglés. Nosotros adaptamos este sistema para utilizar como librería de procesamiento de lenguajes a Freeling, generando un sistema baseline multilingüe. A este sistema le agregamos features reseñados en \allref{sec:literatura} y realizamos diferente mediciones sobre las instancias en español y portugués sobre los ya mencionados ejercicios de Clef '07.
 
-La estructura de este capitulo es la siguiente: en \allref{sec:ejercicio-de-clef} se describe con detalle el panorama general de tareas de question answering en la competencia Clef '07, haciendo énfasis en las tareas seleccionadas, en los corpus y las preguntas disponibles y en las decisiones tomadas a la hora de elegir estas tareas; en \allref{sec:sistema} se comenta la adaptación del sistema baseline y las modificaciones realizadas a los algoritmos, {\color{red}mientras que los resultados pueden observarse como apartados en las mismas secciones o como una sección aparte al final}.
+En este capitulo veremos la implementación del modelo de question answering multilingüe y diferentes evaluaciones realizadas utilizando como guía dos tareas monolingües de la competencia QA@Clef '07, una para español y otra para portugués. El sistema está basado en un framework académico de código abierto llamado Qanus. Este framework está empaquetado con un sistema de QA simple, QA-sys, que resuelve ejercicios de la competencia Trec '07 con soporte para inglés. Nosotros adaptamos este sistema para utilizar como librería de procesamiento de lenguajes a Freeling, generando un sistema baseline multilingüe. A este sistema le agregamos features reseñados en \allref{sec:literatura} y realizamos diferente mediciones sobre las instancias en español y portugués sobre los ya mencionados ejercicios de Clef '07.
+
+La estructura de este capitulo es la siguiente: en \allref{sec:ejercicio-de-clef} se describe con detalle el panorama general de tareas de question answering en la competencia Clef '07, haciendo énfasis en las tareas seleccionadas, en los corpora y las preguntas disponibles y en las decisiones tomadas a la hora de elegir estas tareas; en \allref{sec:sistema} reseñamos la implementación de nuestro sistema, presentando el sistema baseline de basado en Qanus (\ref{subsec:baseline}), las adaptaciones multilingües y demás mejoras realizadas (\ref{subsec:modificaciones}), las diferentes corridas que realizamos para evaluarlo (\ref{sec:eval}) y, finalmente, las conclusiones, los límites y potenciales mejoras del sistema (\ref{sec:clef-cierre}).
 
 \section{Ejercicio de Clef}
 \label{sec:ejercicio-de-clef}
 Tras investigar distintas competencias y métodos de evaluación, optamos por utilizar como guía de trabajo dos ejercicios de la tarea principal de question answering de la competencia Clef de 2007. Principalmente por contar con un subconjunto de ejercicios bastante adecuados para nuestra tesis y disponer de un corpus de datos libre y disponible en el acto para evaluar una parte importante de las funcionalidades implementadas en nuestro proyecto.
 
-Como mencionamos en \allref{subsec:competencias}, Clef (de \textit{Cross-Language Evaluation Forum}) es una organización que busca fomentar la investigación en sistemas de information retrieval cross-language. En particular, una vez por año Clef lanza una competencia de Question Answering multilingüe, con diferentes corpus y diferentes tipos de ejercicios. Estas competencia permiten obtener un patrón estándar de comparación entre distintos desarrollos y una idea general del estado de arte alcanzado en los diferentes idiomas por la diferentes actores académicos y comerciales. Por lo demás, Clef es el principal organizador de conferencias de question answering multilingüe para idiomas europeos y la tarea principal de '07 presentaba una complejidad adecuada para el scope de esta tesis.
+Como mencionamos en \allref{subsec:competencias}, Clef (de \textit{Cross-Language Evaluation Forum}) es una organización que busca fomentar la investigación en sistemas de information retrieval cross-language. En particular, una vez por año Clef lanza una competencia de Question Answering multilingüe, con diferentes corpora y diferentes tipos de ejercicios. Estas competencia permiten obtener un patrón estándar de comparación entre distintos desarrollos y una idea general del estado de arte alcanzado en los diferentes idiomas por la diferentes actores académicos y comerciales. Por lo demás, Clef es el principal organizador de conferencias de question answering multilingüe para idiomas europeos y la tarea principal de '07 presentaba una complejidad adecuada para el scope de esta tesis.
 
 La competencia de 2007 es la quinta campaña de QA multilingüe de Clef, siendo la primera en 2003.
 
@@ -18,7 +18,7 @@ La tarea estándar principal de question answering incorpora algunas particulari
 
 \subsection{Tareas}
 \label{subsec:tareas}
-Utilizamos como guía dos ejercicios de la tarea principal de question answering de '07  por varias razones (Ver \cite{GuidelineClef07} y \cite{OverviewClef07} para un detalle exhaustivo de la conferencia en cuestión). Para esta tarea estaban disponibles en acto corpus, inputs de prueba y resultados esperados para una experimentación multilingüe que abarque tanto inglés como español y portugués. Además, estos ejercicios incorporaban, por única vez, diferentes wikipedias como parte del corpus de datos, lo cual resulta de por si atractivo.
+Utilizamos como guía dos ejercicios de la tarea principal de question answering de '07  por varias razones (Ver \cite{GuidelineClef07} y \cite{OverviewClef07} para un detalle exhaustivo de la conferencia en cuestión). Para esta tarea estaban disponibles en acto corpora, inputs de prueba y resultados esperados para una experimentación multilingüe que abarque tanto inglés como español y portugués. Además, estos ejercicios incorporaban, por única vez, diferentes wikipedias como parte del corpus de datos, lo cual resulta de por sí atractivo.
 
 La tarea principal de QA de Clef '07 ofrece dos grandes grupos de ejercicios:
 \begin{itemize}
@@ -52,39 +52,46 @@ Para nuestro proyecto utilizamos las preguntas y los datos de evaluación de los
 Los datos de los ejercicios constan de dos archivos: un archivo con 200 preguntas agrupadas por temas y otro archivo con diferentes traducciones de la pregunta, una respuesta goldstandard con soporte textual y el id del documento de soporte para el idioma target (del corpus).
 
 Por otro lado, en la guía de ingreso a la competencia\cite{GuidelineClef07} se proveen links para descargar los snapshots de wikipedia sugeridos. Se ofrece una versión de wikipedia en inglés preprocesada de Noviembre de 2006 \footnote{\url{http://ilps.science.uva.nl/WikiXML/}}, dos opciones para descargar wikipedia en español: una imagen estática en html de Noviembre de 2006 \footnote{\url{http://static.wikipedia.org/downloads/November_2006/es/}} y un dump xml de Diciembre de 2006 \footnote{\url{http://download.wikimedia.org/images/archive/eswiki/20061202/pages-articles.xml.bz2}} y también X opciones de portugués.
+%TODO: X
 
 La guía aclara que, bajo responsabilidad de los participantes, se puede usar
 cualquier otra versión de Wikipedia, siempre y cuando sea anterior a noviembre / diciembre de 2006.
-Además, se pide que las respuestas sean tomadas de ``entradas reales" o artículos de wikipedia y
+Además, se pide que las respuestas sean tomadas de ``entradas reales'' o artículos de wikipedia y
 no de otros documentos (imágenes, discusión, categoría, template, histórico de revisiones, datos de usuario y páginas con meta información).
 
-Los links a páginas de wikipedia en español y en portugués no estaban más disponibles (ambos respondieron 404), mientras que el formato
-preprocesado pedido para el inglés resultaba realmente complejo de instalar y parecía una linea muerta. Por estos motivos,
-seguimos la sugerencia sobre el uso responsable de otras wikipedias y utilizamos las siguientes snapshots de Wikidumps\footnote{Ver \url{http://dumps.wikimedia.org/} y \url{http://en.wikipedia.org/wiki/Wikipedia:Database_download\#Other_languages}}.
+Los links a páginas de wikipedia en español y en portugués no estaban más disponibles (ambos respondieron 404), mientras que el formato preprocesado pedido para el inglés resultaba realmente complejo de instalar y parecía una linea muerta. Por estos motivos, seguimos la sugerencia sobre el uso responsable de otras wikipedias y utilizamos las siguientes snapshots de Wikidumps\footnote{Ver \url{http://dumps.wikimedia.org/} y \url{http://en.wikipedia.org/wiki/Wikipedia:Database_download\#Other_languages}}. En la tabla \ref{table:wikipedias} pueden verse las diferentes wikipedias que procesamos durante el trabajo.
 
 \begin{center}
-\begin{tabular}{ | l | l | l | l |}
+\begin{table}
+\begin{tabular}{ | l | l | l |}
     \hline
-    Idioma & Fecha & Tamaño & \# Entradas \\ \hline
-    Español & 5 de Julio de 2006 & 558M  & 233750  \\ \hline
-    Portugués & 1 de Febrero de 2007 & 776M  & 498039  \\ \hline
-    Inglés Simple & 4 de Julio de 2006 & 26M   & 18273   \\ \hline
-    Inglés & 4 de Noviembre de 2006 & 7,6G  &   \\ \hline
-    Español & 26 de Enero de 2007 & 902M  &   \\ \hline
-    Español & 14 de Junio de 2013 & 7,3G  &   \\ \hline
-    Inglés Simple & 24 de Julio de 2013 & 406M  &   \\ \hline
+    Idioma & Fecha & Tamaño  \\ \hline
+    Español & 5 de Julio de 2006 & 558M  \\ \hline
+    Portugués & 1 de Febrero de 2007 & 776M   \\ \hline
+    Inglés Simple & 4 de Julio de 2006 & 26M  \\ \hline
+    Inglés & 4 de Noviembre de 2006 & 7,6G    \\ \hline
+    Español & 26 de Enero de 2007 & 902M    \\ \hline
+    Español & 14 de Junio de 2013 & 7,3G    \\ \hline
+    Inglés Simple & 24 de Julio de 2013 & 406M    \\ \hline
 \end{tabular}
+\caption{Snapshots procesados con fechas y tamaños}
+\label{table:wikipedias}
+\end{table}
 \end{center}
 
-Utilizando la información disponible en los archivos de respuestas esperadas, discriminamos las preguntas con respuestas con soporte de wikipedia, las soportadas por el corpora de noticias de la organización y las que no tienen respuesta (NIL):
+Utilizando la información disponible en los archivos de respuestas esperadas, discriminamos las preguntas con respuestas con soporte de wikipedia, las soportadas por el corpora de noticias de la organización y las que no tienen respuesta (NIL) (Ver table \ref{table:preguntas-por-respuesta}).
 
 \begin{center}
+\begin{table}
 \begin{tabular}{| l | l | l | l | l |}
 \hline
 Idioma & Wiki & News & NIL & Total \\ \hline
 es & 155 & 37 & 8 & 200 \\ \hline
 pt & 130 & 59 & 11 & 200 \\ \hline
 \end{tabular}
+\caption{Total de preguntas con respuesta en Wikipedia, en otras fuentes y sin respuesta}
+\label{table:preguntas-por-respuesta}
+\end{table}
 \end{center}
 
 
@@ -176,14 +183,15 @@ A: Israel-Egyptian peace treaty.\\ \hline
 \end{table}
 \end{center}
 
-Las preguntas de tipo LIST consisten son enumeraciones de 4 tipos posibles: PERSON, LOCATION, ORGANIZATION y OTHER.
+Las preguntas de tipo LIST consisten en enumeraciones de 4 subtipos posibles: PERSON, LOCATION, ORGANIZATION y OTHER.
 Por ejemplo:\newline
 Q: Name all the airports in London, England. \newline
 A: Gatwick, Stansted, Heathrow, Luton and City.
 
-Como solo una fuente estaba estaba permitida, los items debían aparecer en secuencia, uno después del otro, en uno documento de la colección .
-Con respecto a las preguntas de tipo definition, también cuatro tipos, con otra semántica.
+Como solo una fuente estaba permitida, los items debían aparecer en secuencia, uno después del otro, en un solo documento de la colección.
+Las preguntas de tipo DEFINITION tienen también estos mismos cuatro subtipos, pero con una semántica ligeramente diferente. En la tabla \ref{table:definition-questions} presentamos ejemplos y la definición inferida sobre estos tipos.
 
+Por su parte, en la table \ref{table:tipo-general} puede verse una clasificación general de preguntas por tipo y por subtipo para los ejercicios de español y de portugués.
 
 \begin{center}
 \begin{table}[H]
@@ -327,82 +335,54 @@ El módulo de procesamiento de la base de información de la implementación QA-
 
 En este proceso descartamos artículos mal formados y entradas representado imágenes o discusiones, tal como se sugiere en la guía.
 Los artículos se indexan en índices Lucene como documentos con los siguiente campos: \emph{id, title, body y all}.
-La tabla \ref{table:creacion-indices} muestra algunos datos del proceso de generación de índices, mientras que la figura \ref{fig:LuceneIndexWriterWiki} ilustra el proceso.
+La tabla \ref{table:creacion-indices} muestra algunos datos del proceso de generación de índices.
 
-Las categorías filtradas contiene artículos con alguno de los siguientes prefijos en el título: WP, wp, Biografías, Wikipedia, Wikiproyecto, Imagen, Plantilla, MediaWiki, Template, Category, Help, Image, Ayuda, Portal, Ajuda, Categoria, Categoría, Imagem, Predefinição.
+Las categorías filtradas contienen artículos con alguno de los siguientes prefijos en el título: WP, wp, Biografías, Wikipedia, Wikiproyecto, Imagen, Plantilla, MediaWiki, Template, Category, Help, Image, Ayuda, Portal, Ajuda, Categoria, Categoría, Imagem, Predefinição.
 
 
 \begin{table}
 \centering
 \begin{center}
-\begin{tabular}{| l | l | l | l | l | l| l|l|}
+\begin{tabular}{| l | l | l | l | l | l| l|}
 \hline
-Wikipedia & \# Entradas & Nulas & Redirects & Filtradas & Validas & Tamaño & Tiempo \\ \hline
-simple-06 & 18273 & 22 &  3452 & 5241 & 9558 & 26M & 14 secs \\ \hline
-es-06 & 233750 & 52 & 62805 & 34947 & 135946 & 558M & 242 secs\\ \hline
-pt-07 & 498039 & 80 & 210983 & 43390 & 243586 & 776M & 294 secs\\ \hline
-simple-13 & 180067 & 8 & 35600 & 41902 & 102557 & 406M & 133 secs\\ \hline
+Wikipedia & \# Entradas & Nulas & Redirects & Filtradas & Validas \\ \hline
+simple-06 & 18273 & 22 &  3452 & 5241 & 9558  \\ \hline
+es-06 & 233750 & 52 & 62805 & 34947 & 135946 \\ \hline
+pt-07 & 498039 & 80 & 210983 & 43390 & 243586 \\ \hline
+simple-13 & 180067 & 8 & 35600 & 41902 & 102557\\ \hline
 \end{tabular}
-\caption{Datos de procesamiento sobre las diferentes versiones de wikipedia analizadas. Los tiempos de procesamiento están tomados en una Intel Core i3-2100 CPU @ 3.10GHz de dos cores con 8 GiB de RAM.}
+\caption{Wikipedias: cantidad de entradas válidas e inválidas}
 \label{table:creacion-indices}
 \end{center}
 \end{table}
 
-
-\begin{figure}[H]
-  \centering
-    \includegraphics{graficos/LuceneIndexWriterWiki}
-  \caption{Lucene Index Writer para dumps de Wikipedia}
-  \label{fig:LuceneIndexWriterWiki}
-\end{figure}
-
-
 \subsubsection{Anotado de la pregunta}
 
-El módulo original de QA-sys de procesamiento de la pregunta espera preguntas en el formato Aquaint definido por Trec, al igual que el tipo de datos esperado sobre el corpus en el paso anterior. En el procesamiento lleva a cabo las tareas descriptas de modo general en \allref{subsec:impl-pos}, \allref{subsec:impl-ner} y \allref{subsec:qtype},  utiliza como librerías de procesamiento de lenguaje el POS-Tagger, el NER-Tagger y el Question Classifier de la Universidad de Stanford, disponibles solo para inglés, descriptas en \allref{sec:stanford-both} y \allref{sec:stanford-qc} respectivamente.
+El módulo original de QA-sys de procesamiento de la pregunta espera preguntas en el formato Aquaint definido por Trec, al igual que el tipo de datos esperado sobre el corpus en el paso anterior. Durante el procesamiento clasifica la pregunta, y ejecuta un POS tagger y un NER tagger, utilizando como librerías de procesamiento de lenguaje el POS-Tagger, el NER-Tagger y el Question Classifier de la Universidad de Stanford, disponibles solo para inglés, descriptas en \allref{sec:stanford-both} y \allref{sec:stanford-qc} respectivamente.
 
-En nuestra adaptación incorporamos los módulos de POS y NERC multilingües de freeling. Con respecto a la clasificación de preguntas, ya mencionamos que no existen clasificadores para español y tampoco para el portugués. Frente a esta situación podríamos haber implementado clasificadores heurísticos basados en reglas escritas a mano como en el caso del sistema estructurado (\allref{sec:qp-mitic}). Aprovechando la disponibilidad de una traducción confiable al inglés de las preguntas en archivos de datos (debido a la activación de los ejercicios cross-lingual en-es y en-pt), decidimos utilizar el clasificador de Stanford sobre la traducción inglesa de la pregunta.
-Las tablas \ref{table:qc-es} y \ref{table:qc-pt} presentan la distribución de las 200 preguntas para español y para portugués según las seis clases principales del esquema de Li \& Roth.
-
-\begin{table}
-\centering
-\begin{center}
-\begin{tabular}{| l | l | }
-\hline
-Clase & \# Preguntas  \\ \hline
-HUM &  62\\ \hline
-NUM &  53\\ \hline
-ENTY &  34\\ \hline
-DESC &  25\\ \hline
-LOC &  24\\ \hline
-ABBR &  2\\ \hline
-\end{tabular}
-\caption{Distribución por clases de las preguntas para el ejercicio monolingüe español}
-\label{table:qc-es}
-\end{center}
-\end{table}
-
-
+En nuestra adaptación incorporamos los módulos de POS y NERC multilingües de freeling. Con respecto a la clasificación de preguntas, ya mencionamos que no existen clasificadores para español y tampoco para el portugués. Frente a esta situación podríamos haber implementado clasificadores heurísticos basados en reglas escritas a mano. Esta implementación nos desviaba de nuestro proyecto, por lo que utilizando la disponibilidad de una traducción confiable al inglés de las preguntas en archivos de datos (debido a la activación de los ejercicios cross-lingual en-es y en-pt), decidimos utilizar el clasificador de Stanford sobre la traducción inglesa de la pregunta para clasificarlas en el idioma en cuestión.
+La tabla \ref{table:qc-es-pt} presenta la distribución de las 200 preguntas para español y para portugués según las seis clases principales del esquema de Li \& Roth obtenida al clasificar las preguntas con el clasificador de Stanford.
 
 \begin{table}
 \centering
 \begin{center}
-\begin{tabular}{| l | l | }
+\begin{tabular}{| l | l | l | }
 \hline
-Clase & \# Preguntas  \\ \hline
-HUM &  53\\ \hline
-NUM &  52\\ \hline
-ENTY &  28\\ \hline
-DESC &  30\\ \hline
-LOC &  36\\ \hline
-ABBR &  1\\ \hline
+Clase & \# Preguntas (es)  & \# Preguntas (pt)\\ \hline
+HUM &  62 & 53 \\ \hline
+NUM &  53 & 52\\ \hline
+ENTY &  34 & 28\\ \hline
+DESC &  25 & 30\\ \hline
+LOC &  24 & 36\\ \hline
+ABBR &  2 & 1\\ \hline
 \end{tabular}
-\caption{Distribución por clases de las preguntas para el ejercicio monolingüe portugués}
-\label{table:qc-pt}
+\caption{Distribución por clases de las preguntas para español y portugués}
+\label{table:qc-es-pt}
 \end{center}
 \end{table}
 
-Al finalizar este paso, las preguntas tienen asociadas su tipo, las distintas entidades nombradas, el análisis gramatical y las qwords. Dejamos la generación de queries para el paso posterior ya que así es como estaba implementado en el sistema original.
+
+Al finalizar el paso del anotado de la pregunta, las preguntas tienen asociado su tipo, las distintas entidades nombradas, el análisis gramatical y las qwords. Dejamos la generación de queries para el paso posterior ya que así es como estaba implementado en el sistema original.
 
 \subsubsection{Generación de Respuestas}
 
@@ -418,84 +398,54 @@ Como baseline de desarrollo y pruebas, adaptamos los algoritmos de Qanus. En est
 
 En el primer paso, se descartan todas las preguntas cuyo tipo no sea \textit{factoid}. Esto, en principio, dejaría afuera a 32 preguntas de tipo \textit{definition} y 10 de tipo \textit{list} para el ejercicio en español (24 y 9, respectivamente, considerando solamente las que como goldstandard answer tienen datos de wikipedia) y 31 de tipo \textit{definition} y 10 de tipo \textit{list} para el portugués (18 y 8, respectivamente, considerando las de wikipedia).
 
-En en segundo paso, la generación de queries, el sistema baseline utiliza 2 algoritmos diferentes según el qtype inferido por el clasificador de preguntas. El primer caso es especifico para la clase fina \sq{HUM:ind} y consta de tres tipos de expresiones regulares escritas a mano y en inglés que matchean contra preguntas de la forma: \dq{Who (is|was) (the)+ NN ... NN?} (NN significa, acá, sustantivo). Por ejemplo: \dq{Who is the CEO of Microsoft?} y \dq{Who VERBO ...?}. En estos casos se extraen los sustantivos y los verbos de la pregunta para generar la query. Eliminamos estos casos ya que adaptarlos a los diferentes idiomas no escalaba para un sistema multilingüe. Por su parte, si el tipo de la pregunta no es \sq{HUM:ind}, el algoritmo general de generación de queries espera, además de la pregunta propiamente dicha, un campo asociado a la pregunta, \sq{target}, aparentemente definido en la competencia TREC para la que está escrito. El campo \sq{target} es utilizado por mucha de la algoritmia que vendrá. Dejaremos en suspenso con qué poblamos ese dato hasta más adelante. Un uso posible es asociarlo el \sq{tópico} del grupo de preguntas de los ejercicios de la competencia. Más adelante veremos qué contenido le cargamos.
+En en segundo paso, la generación de queries, el sistema baseline utiliza 2 algoritmos diferentes según el qtype inferido por el clasificador de preguntas. El primer caso es especifico para la clase fina \sq{HUM:ind} y consta de tres tipos de expresiones regulares escritas a mano y en inglés que matchean contra preguntas de la forma: \dq{Who (is|was) (the)+ NN ... NN?} (NN significa, acá, sustantivo). Por ejemplo: \dq{Who is the CEO of Microsoft?}. También se considera aquí preguntas con la forma \dq{Who VERBO ...?}. Para este tipo de expresiones, el algoritmo específico extrae los sustantivos y los verbos de la pregunta para generar la query. Eliminamos este caso ya que su dependencia del idioma volvía el procedimiento obsoleto para un sistema con soporte multilenguaje.
+
+Por su parte, si el tipo de la pregunta no es \sq{HUM:ind}, el algoritmo general de generación de queries espera, además de la pregunta propiamente dicha, un campo asociado a la pregunta, \sq{target}, aparentemente definido en la competencia TREC para la que está escrito. El campo \sq{target} es utilizado por mucha de la algoritmia que vendrá. Dejaremos en suspenso con qué poblamos ese dato hasta más adelante. Un uso posible es asociarlo el \sq{tópico} del grupo de preguntas de los ejercicios de la competencia. Más adelante veremos qué contenido le cargamos.
 
 
 El método default FormQuery genera una query que contiene, sin repetir, todas las palabras no-stopwords del campo target y todos los sustantivos, verbos y adjetivos de la pregunta completa según el pos tagger de stanford. Nosotros adaptamos este método para funcionar con las etiquetas de Freeling y utilizamos este mecanismo de generación de queries como baseline.
 
-En el tercer paso, a partir de la query generada, se hace un pedido al índice lucene. En el cuarto paso, los documentos son divididos en oraciones de manera indiscriminada, es decir: las oraciones no heredan posición de acuerdo al ranking de los documentos a los que pertenecían. Las oraciones se evalúan mediante diferentes métricas contra la query generada. Los scores $coverage$, $freq$ y $prox$ están descriptos en el Apéndice \allref{TODO}. La fórmula de ponderación es la siguiente: \\
+En el tercer paso, a partir de la query generada se hace un pedido al índice lucene y se obtiene una lista de documentos. En el cuarto paso, los documentos son divididos en sus oraciones de manera indiscriminada, es decir: las oraciones no heredan posición de acuerdo al ranking de los documentos a los que pertenecían.
+
+Las oraciones se evalúan mediante el peso ponderado de diferentes features que consideran la query generada y la oración, generando un nuevo orden entre ellas, basado en su \textit{score}. El score es un valor real entre 0 y 1, que sigue la siguiente fórmula:
+
+\medskip
 
 $PassageScore = (0.9)*CoverageScore + (0.05)*FreqScore+ (0.05)*ProxScore;$
 
-
-
-%%
-%%
-%% TODO: copie y pegué el apendice acá, ver como articularlo más lindo
-%%
-%%
-
-
-
-Los siguiente comparadores son algoritmos fueron adaptados a partir de
-los Scorers del proyecto Qanus. Todos devuelven valores reales entre
-0 y 1 y sirven para comparar secuencias de tokens (y no sólo palabras). Estos
-comparadores, al igual que Contains, no son simétricos. Para
-distinguir, llamaremos primer string al buscado y segundo string a
-aquel en el cual se busca el primero.
+\medskip
+Los scorers $coverage$, $freq$ y $prox$ son diferentes métricas de evaluación de oraciones, cuya imagen es una valor real entre 0 y 1. En la tabla \ref{table:scorers} se hace una presentación general de los Scorers y a continuación explicamos los algoritmos de $Prox$ y $Span$ ya que no son triviales ($Span$ aún no ha sido utilizado pero lo será en breve).
 
 \begin{center}
+\begin{table}
 \begin{tabular}{| l | l | p {8cm} |}
 \hline
-\multicolumn{3}{|c|}{Comparadores de Secuencias de Tokens} \\ \hline
 Abreviatura & Nombre &  Descripción\\ \hline
-Freq & Frequencia & Computa la cantidad de veces que los tokens del primer
-string ocurren en el segundo string. Esta suma se divide por la
-longitud del segundo string, dando un valor entre 0 y 1. \\ \hline
-Covr & Cobertura &  Computa cuantos tokens del primer string aparecen al
-menos una vez en el segundo, y divide esta suma por el total de tokens
-del \textit{primer} string.\\ \hline
-Prox & Proximidad &  Computa la distancia entre dos strings en un tercero. Ver abajo.   \\ \hline
-Span & Distancia entre tokens & Computa la distancia media entre términos del primer string en el segundo. Ver abajo. \\ \hline
+Freq & Frequencia & Computa la cantidad de veces que los tokens de la query ocurren en la oración. Esta suma se divide por la cantidad de tokens de la oración, dando un valor entre 0 y 1. \\ \hline
+Coverage & Cobertura &  Computa cuantos tokens de la query aparecen al
+menos una vez en la oración, y divide esta suma por el total de tokens
+de la \textit{query}.\\ \hline
+Prox & Proximidad &  Computa la distancia entre dos strings en un tercero. Ver aparte.   \\ \hline
+Span & Distancia entre tokens & Computa la distancia media entre términos de la query en la oración. Ver aparte. \\ \hline
 \end{tabular}
+\caption{Scorers de Qanus}
+\label{table:scorers}
+\end{table}
 \end{center}
 
-Vamos a explicar los algoritmos de $Prox$ y $Span$ ya que no son triviales. \newline
 $Prox$ toma dos strings a buscar en un tercero. Busca ambos en el tercero y computa la distancia en tokens entre ellos.
 Esta distancia se calcula como la distancia entre el centro de ambos strings.
 Por ejemplo, para los strings de búsqueda \dq{Argentina es un país americano} y \dq{independizado en 1810} sobre el texto \dq{Argentina es un país americano, originalmente una colonia española, independizado en 1810} se considera la distancia entre \sq{un} y \sq{en} (por ser los tokens \sq{intermedios} de ambos strings
-de búsqueda. La distancia entre ambos, en el tercer string, es 7. Esta distancia se divide por la longitud en tokens del string en el que se buscan (12), dando un resultado de 0.58. Un score cercano a 1 denota que los dos string están cercanos uno al otro en el tercer string. \newline
+de búsqueda. La distancia entre ambos, en el tercer string, es 7 (la cantidad de tokens entre ellos). Esta distancia se divide por la longitud en tokens del string en el que se buscan (12), dando un resultado de 0.58. Un score cercano a 1 denota que los dos string están cercanos uno al otro en el tercer string.
+%TODO: no anda en el original no?? Porque dice que tiene que recibir 2 elementos y recibe siempre solo 1
+
 Por su parte, $Span$ tiene un concepto similar, pero funciona sobre un solo string de búsqueda, considerando sus tokens. Los distintos tokens buscados ocurren en ciertas posiciones. $Span$ considera la distancia entre las posiciones de los tokens más distantes, dividiendo el total de tokens encontrados por este valor.
 Un score cercano a 1 significa que los términos del string buscado están cerca en el string en el que se buscan.
 Por ejemplo, suponiendo los siguientes matchs de tokens (denotados por una X): \newline
 ..... X ..... X ..... X ...... \newline
 ......a ...... b ...... c ...... \newline
 
-El score de $Span$ estaría dado por \#total de tokens encontrados /  {\textbar}c-a{\textbar}.
-
-
-
-
-%%
-%%
-%% TODO: copie y pegué el apendice acá, ver como articularlo más lindo
-%%
-%%
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+El score de $Span$ estaría dado por \#total de tokens encontrados /  {\textbar}posición de c- posición de a{\textbar}.
 
 
 
@@ -1130,7 +1080,7 @@ $MRR_{25}$ & 12.55 & 12.62 & 13.78 & 16.72 & 18.00 & 18.06  \\ \hline
 \end{center}
 \end{table}
 
-\subsection{Limitaciones y Trabajo Futuro}
+\subsection{Conclusiones, limitaciones y trabajo futuro}
 \label{sec:clef-cierre}
 %TODO: Hacer
 
