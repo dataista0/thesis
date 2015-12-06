@@ -48,6 +48,8 @@ Para nuestro proyecto, renombramos algunos de los elementos:
 
 En las tablas \ref{tab:country-data}, \ref{tab:country-data-2}, \ref{table:countrylanguage-data} y \ref{table:city-data} pueden verse algunas filas de ejemplo de cada una de las tablas y, en la tabla W, el total de filas de cada una.
 
+%TODO: agregar que no soportamos IsOfficial a limites
+
 %
 % Data: countrylanguage
 %
@@ -146,7 +148,7 @@ Incorporando estos datos al modelo teórico, hasta aquí tenemos definidos: la b
 
 El código de la implementación está disponible en github: \url{http://github.com/julian3833/popescu-world}. Está implementado en java e implementa, con la mayor fidelidad posible, el sistema propuesto por Popescu y descripto en \allref{subsec:closed-domain}.
 
-Estructuramos esta sección como sigue. Primero (\ref{subsec:popescu-codigo}), discutimos la implementación en sí misma, analizando los módulos más importantes del sistema, luego (\ref{subsec:popescu-ejemplos}) mostramos y comentamos algunos ejemplos de ejecuciones y, finalmente (\ref{subsec:popescu-cierre}), analizamos analizamos alcances, límites y trabajo futuro.
+Estructuramos esta sección como sigue. Primero (\ref{subsec:popescu-codigo}), discutimos la implementación en sí misma, analizando los módulos más importantes del sistema, luego (\ref{subsec:popescu-ejemplos}) mostramos y comentamos algunos ejemplos de ejecuciones y, finalmente (\ref{subsec:popescu-cierre}), analizamos alcances, límites y trabajo futuro.
 
 \subsection{Código}
 \label{subsec:popescu-codigo}
@@ -161,11 +163,11 @@ El lexicón, recordemos, es el módulo encargado de generar un conjunto de token
 
 El lexicón está implementado en la clase $uba.modules.Lexicon$. Debemos distinguir los momentos de construcción y de consulta del mismo. La construcción, cuyo punto de entrada es el módulo $uba.app.CreateLexicon$, ocurre por separado, y debe ejecutarse una vez antes de poder utilizar el sistema para responder preguntas. Esta genera 4 archivos con formato json, que son luego cargados en memoria al momento de realizar consultas.
 
-En el centro la construcción del lexicón se encuentra Wordnet (una base de datos léxica en inglés, que consta de conjuntos de sinónimos, definiciones de los mismos y relaciones semánticas entre ellos). Utilizamos esta base de datos para obtener los sinónimos de los elementos de la base de datos.
+En el centro la construcción del lexicón se encuentra Wordnet, una base de datos léxica en inglés, que consta de conjuntos de sinónimos, definiciones de los mismos y relaciones semánticas entre ellos. Utilizamos esta base de datos para obtener los sinónimos de los elementos de la base de datos.
 
 El input del algoritmo es la lista de los elementos de la base de datos (relaciones, atributos y valores) como strings. El primer paso es eliminar el camel case y separar y lematizar las palabras (la tokenizamos en el sentido dado por Popescu a token). Por ejemplo, después de este paso, el elemento GovernmentForm se convierte en el token \{government, form\}. En este paso eliminamos también las stopwords (por ejemplo, HeadOfState se convierte en \{head, state\}).
 
-Luego, los datos pasan por el TokenAugmenter, que simplemente agrega algunos sinónimos escritos a mano a algunos de estos elementos (ver tabla \ref{table:token-augmenter}. Por ejemplo, para el elemento region (atributo de la relación country), agregamos el término location, para el elemento surface area agregamos los términos total size y square kilometers. Este paso es llevado a cabo por la clase uba.db.TokenAugmenter y su intención es mejorar las chances de obtener sinónimos útiles a partir de wordnet, ampliando su input de trabajo. Al salir del TokenAugmenter tenemos, para cada elemento de la base de datos, un conjunto (que puede tener un solo string si el TokenAugmenter no tenía ningún sinónimo) de tokens (que son, a su vez, listas de lemas).
+Luego, los datos pasan por el TokenAugmenter, que simplemente agrega algunos sinónimos escritos a mano a algunos de estos elementos (ver tabla \ref{table:token-augmenter}). Por ejemplo, para el elemento ``region'' (atributo de la relación ``country''), agregamos el término ``location'', para el elemento ``surface area'' agregamos los términos ``total size'' y ``square kilometers''. Este paso es llevado a cabo por la clase $uba.db.TokenAugmenter$ y su intención es mejorar las chances de obtener sinónimos útiles a partir de wordnet, ampliando su input de trabajo. Al salir del TokenAugmenter tenemos, para cada elemento de la base de datos, un conjunto (que puede tener un solo string si el TokenAugmenter no tenía ningún sinónimo) de tokens (que son, a su vez, listas de lemas).
 
 \begin{center}
 \begin{table}[h]
@@ -177,7 +179,6 @@ head of state & president, leader, emperor, king \\ \hline
 region & location\\ \hline
 surface area & size, total size, square kilometers, km2\\ \hline
 independence year & independent, independency\\ \hline
-When & IndependenceYear\\ \hline
 \end{tabular}
 \caption{Sinónimos introducidos por el Token Augmenter}
 \label{table:token-augmenter}
@@ -186,7 +187,7 @@ When & IndependenceYear\\ \hline
 
 El tercer paso es el central: en este se obtienen, para cada uno de estos tokens, tokens sinónimos. Para esto obtenemos una lista de sinónimos y palabras relacionadas para cada lema del token, luego los combinamos formando todos los sinónimos ordenados. Por ejemplo, si el token original consistía de los lemas (A, B) y para A obtuvimos los sinónimos \{A1, A2\} y para B los sinónimos \{B1 y B2\}, el resultado serán todas las combinaciones ordenadas posibles: \{(A, B), (A, B1), (A, B2), (A1, B), (A1, B1), (A1, B2), (A2, B), (A2, B1), (A2, B2)\}.
 
-Finalmente, intentamos obtener sinónimos también de todas las palabras del token juntas (incluyendo las stopwords), ya que verificamos empíricamente que para algunas de ellas existía una entrada en wordnet (Por ejemplo head of state produce el sinónimo chief of state que se pierde sin este paso).
+Finalmente, intentamos obtener sinónimos también de todas las palabras del token juntas (incluyendo las stopwords), ya que verificamos empíricamente que para algunas de ellas existía una entrada en wordnet (Por ejemplo ``head of state'' produce el sinónimo ``chief of state'' que se pierde sin este paso).
 
 El conjunto de tokens sinónimos para cada elementos de la base de datos es luego invertido, es decir, en lugar de disponer de un mapeo de elementos de la base de datos a conjunto de tokens sinónimos, construimos un mapeo de tokens en elementos de la base de datos.
 
@@ -223,12 +224,12 @@ En general, los humanos podemos distinguir qué sentido de una palabra polisémi
 Este problema no es tematizado en los trabajos de Popescu y, sin embargo, ellos argumentan que el sistema Precise fue construido con wordnet sin ningún tipo de desambiguador contextual previo.
 En realidad, existe un atenuante para este problema que es el contexto de uso y el rol que cumplen los conjuntos de sinónimos y es que el conjunto de todos los tokens sinónimos generados funciona como un filtro sobre consultas del usuario y nunca es activo o productivo.
 Consideremos, por ejemplo, una base de datos sobre localización de sucursales de bancos y el elemento Banco (por ejemplo, el nombre de una relación).
-Buscando en sinonimos.com obtenemos los siguientes sinónimos, separados en dos líneas: 1) entidad crediticia, 2) taburete, escabel, escaño, peana, sitial, asiento. Tomando todos los sinónimos tendríamos el siguiente conjunto de sinónimos: {banco, (entidad, crediticia), taburete, escaño, peana, sitial, asiento} donde hay, mezclados, dos sentidos. Ahora bien: ¿qué uso hacemos de este conjunto? El usuario de una aplicación sobre localización de bancos introduce una pregunta, el sistema la separa, lematiza y chequea si los lemas pertenecen a algún conjunto de sinónimos. En este contexto, ¿es un problema que tengamos en término asiento en nuestro conjunto de sinónimos? Sería un problema solo si el usuario pudiese introducirlo, ya que al conjunto de sinónimos solo se accede a partir de palabras introducidas por el usuario. Si bien este problema es posible, no es probable y, quizás, siguiendo este razonamiento, quienes propusieron el modelo no hicieron ningún énfasis en este problema.
+Buscando en sinonimos.com obtenemos los siguientes sinónimos, separados en dos líneas: 1) entidad crediticia, 2) taburete, escabel, escaño, peana, sitial, asiento. Tomando todos los sinónimos tendríamos el siguiente conjunto de sinónimos: \{banco, entidad crediticia, taburete, escaño, peana, sitial, asiento\} donde hay, mezclados, dos sentidos. Ahora bien: ¿qué uso hacemos de este conjunto? El usuario de una aplicación sobre localización de bancos introduce una pregunta, el sistema la separa, lematiza y chequea si los lemas pertenecen a algún conjunto de sinónimos. En este contexto, ¿es un problema que tengamos el término ``asiento'' en nuestro conjunto de sinónimos? Sería un problema solo si el usuario pudiese introducirlo, ya que al conjunto de sinónimos solo se accede a partir de palabras introducidas por el usuario. Si bien este problema es posible, no es probable y, quizás, siguiendo este razonamiento, quienes propusieron el modelo no hicieron ningún énfasis en él.
 
 Nuestro sistema no introduce ningún desambiguador de sentido: utilizamos todo los sinónimos disponibles de tipo sustantivo, introduciendo potenciales errores de interpretación en este punto, con la salvedad recién mencionada.
 
 
-Finalmente, agregamos también derivaciones léxicas lematizadas. Una derivación léxica es una variación de la palabra original que da otro sentido (relacionado) a la palabra original. Por ejemplo: existir, existencia, existencial, existiendo, existente son una serie de variaciones de la misma raíz.  Esta opción es experimental y puede activarse o desactivarse desde el archivo de configuración (uba.app.Config)
+Finalmente, agregamos también derivaciones léxicas lematizadas. Una derivación léxica es una variación de la palabra original que da otro sentido (relacionado) a la palabra original. Por ejemplo: existir, existencia, existencial, existiendo, existente son una serie de variaciones de la misma raíz.  Esta opción es experimental y puede activarse o desactivarse desde el archivo de configuración ($uba.app.Config$)
 
 En la tabla \ref{table:sinonimos} pueden verse algunos ejemplos de los resultados.
 
@@ -238,7 +239,7 @@ En la tabla \ref{table:sinonimos} pueden verse algunos ejemplos de los resultado
 \begin{tabular}{| l |  p{9.5cm} | p{4cm} |} \hline
 Lema & Sinónimos & Derivaciones léxicas\\ \hline
 city 	&	metropolis, (urban, center)	&	citify, metropolitan\\ \hline
-country	&	state, nation, land, commonwealth, (res, publica), (body, politic), (rural, area), area	&	--\\ \hline
+country	&	state, nation, land, commonwealth, res publica, body politic, rural area, area	&	--\\ \hline
 language	&	language, linguistic communication, speech, speech communication, spoken communication, spoken language, voice communication, oral communication, lyric, words, linguistic process, terminology, nomenclature & lyricist, lyric, speak, terminological \\ \hline
 region	&	region, part, area, neighborhood, realm	&	--\\ \hline
 location	&	location, placement, locating, position, positioning, emplacement, localization, localisation, fix	&	locate, position, posit, emplace, localize, localise\\ \hline
@@ -268,7 +269,7 @@ El Tokenizer sigue el siguiente procedimiento:
 \item Para cada token potencial (resultado del paso anterior) verificar que todos sus lemas están presentes en el conjunto de lemas de la pregunta original.
 \item Generar el conjunto de partes de todos los tokens hasta aquí obtenidos\footnote{El conjunto de partes de un conjunto dado es otro conjunto formado por todos los subconjuntos del mismo. Por ejemplo, el conjunto de partes de A = \{1, 2, 3\} es: \{ $\varnothing$, \{1\}, \{2\}, \{3\}, \{1, 2\}, \{2, 3\}, \{1, 3\}, \{1, 2, 3\} \}}. \\ \\
 	Probando con cada elemento del conjunto de partes en lugar de utilizar solamente el conjunto original podemos obtener subconjuntos que cumplan también la condiciones requeridas para considerarse una tokenización completa (evaluados en 7).
-\item Para cada uno de estos subconjuntos, verificar 1) que sus tokens cubran completamente los lemas significativos de la pregunta original y 2) que no haya stems repetidos entre los tokens.
+\item Para cada uno de estos subconjuntos, verificar 1) que sus tokens cubran completamente los lemas significativos de la pregunta original y 2) que no haya lemas repetidos entre los tokens.
 \end{enumerate}
 
 El resultado será un conjunto de tokenizaciones completas. Como se ve, respetamos casi al pie de la letra la implementación sugerida por Popescu. La obtención de los elementos de la base de datos que corresponden a los elementos, por una cuestión implementativa, quedó en manos del Matcher y no del Tokenizer. La implementación, de todos modos, del servicio, está en el Lexicon. Con este conjunto de tokenizaciones completas como input, será responsabilidad del Matcher decidir cuáles de ellas son traducciones válidas.
@@ -276,7 +277,7 @@ El resultado será un conjunto de tokenizaciones completas. Como se ve, respetam
 \subsubsection*{Matcher}
 \label{subsubsec:matcher}
 
-El Matcher, por su parte, toma las tokenizaciones completas generadas por Tokenizer y construye el grafo que expusimos con detalle en la sección \ref{subsec:closed-domain} y ejecuta el algoritmo de max flow. El problema de max-flow es un problema de grafos que consiste en “enviar” el máximo flujo posible a través de un grafo dirigido con dos nodos especiales (fuente o source y sumidero o sink) y aristas con cierta capacidad mayor o igual que cero. Este flujo debe ir desde el nodo fuente al nodo sumidero, respetando las capacidades de las aristas y respetando que, para cada nodo, el flujo saliente no puede ser mayor al flujo entrante.
+El Matcher, por su parte, toma las tokenizaciones completas generadas por Tokenizer, construye el grafo que expusimos con detalle en la sección \ref{subsec:closed-domain} y ejecuta el algoritmo de max flow. El problema de max-flow es un problema de grafos que consiste en “enviar” el máximo flujo posible a través de un grafo dirigido con dos nodos especiales (fuente o source y sumidero o sink) y aristas con cierta capacidad mayor o igual que cero. Este flujo debe ir desde el nodo fuente al nodo sumidero, respetando las capacidades de las aristas y respetando que, para cada nodo, el flujo saliente no puede ser mayor al flujo entrante.
 
 Existen diferentes algoritmos para resolver este problema. En nuestra implementación, tomamos un código libre disponible en internet (aquí: \url{http://web.mit.edu/~ecprice/acm/acm08/MaxFlow.java}).
 
@@ -292,7 +293,7 @@ Finalmente, verificamos cuales de las soluciones con máximo flujo cumplen las c
 
 \begin{enumerate}
 \item Todos  los tokens de la tokenización tienen un único elemento de la base de datos asociado y no hay elementos de la base de datos repetidos. (Mapping.meetsConditionOne())
-\item Cada token de atributo se relaciona con un único token de valor respetando que: (Mapping.meetsConditionTwo))
+\item Cada token de atributo se relaciona con un único token de valor respetando que: (Mapping.meetsConditionTwo())
 \begin{enumerate}
 \item el atributo relacionado con el token de atributo y el valor relacionado con el token de valor son compatibles (esta condición está garantizada por el max-flow mismo)
 \item ambos tokens están sintácticamente asociados
@@ -302,12 +303,12 @@ Finalmente, verificamos cuales de las soluciones con máximo flujo cumplen las c
 \item	la relación de la base de datos que corresponde al token de relación y el elemento de la base de datos que corresponde al token de atributo o token de valor son compatibles
 \item ambos tokens (token de relación - token de atributo o bien token de relación - token de valor) están sintácticamente asociados
 \end{enumerate}
-\item La pregunta tiene una qword (Mapping.oneWhValue())
+\item La pregunta tiene una qword (Mapping.hasOneWhValue())
 \end{enumerate}
 
 Notemos que la condición 3 implica que para cada token de relación exista algún token de atributo o de valor a) compatible y b) sintácticamente asociado. La condición a) no está verificada por el algoritmo de máximo flujo y es verificada en el método Mapping.valid()
 
-Para verificar las condiciones de asociación sintáctica (2.b y 3.b) utilizamos la implementación oficial del árbol sintáctico de Charniak (\url{github.com/BLLIP/bllip-parser}), con un wrapper en java que es la clase uba.nlp.CharniakParseTree. Las reglas sintácticas utilizadas por los creadores del modelo no están especificadas en sus trabajos, por lo que creamos nuestras propias reglas tomando los ejemplos de asociaciones sintácticas dadas en los trabajos, evaluando los resultados de diferentes ejemplos y extrapolando reglas a partir de allí.
+Para verificar las condiciones de asociación sintáctica (2.b y 3.b) utilizamos la implementación oficial del árbol sintáctico de Charniak (\url{github.com/BLLIP/bllip-parser}), con un wrapper en java que es la clase $uba.nlp.CharniakParseTree$. Las reglas sintácticas utilizadas por los creadores del modelo no están especificadas en sus trabajos, por lo que creamos nuestras propias reglas tomando los ejemplos de asociaciones sintácticas dadas en los trabajos, evaluando los resultados de diferentes ejemplos y extrapolando reglas a partir de allí.
 
 
 Veamos, en primer lugar, ejemplos del parse tree para tres preguntas:
@@ -384,7 +385,6 @@ En los ejemplos presentados, los pares de términos asociados según estas regla
 \newline
 
 La definición de las reglas se hizo a prueba y error y es posible que sea simple, para alguien con mayores conocimientos lingüísticos, mejorarlas. Probablemente tenga sentido diferenciar entre sustantivos principal y modificador (Unix y system, por ejemplo) y modificar las reglas 3 y 4 para conectar solo los principales, entre otras mejoras. El sistema ofrece también la opción de no evaluar las asociaciones sintácticas en absoluto, en cuyo caso se mejora la performance pero aparecen nuevas traducciones válidas que podrían haber sido filtradas por estas condiciones, que el usuario deberá desambiguar manualmente).
-
 Además, estas reglas seguramente sean insuficientes y estén dejando afuera varias preguntas que deberían poder procesarse.
 
 Finalmente, todos los resultados de max-flow que cumplen con las condiciones de 1 a  4 son traducciones válidas, que pasan al MappingFilter, que realiza ciertos filtrados que describiremos, de nuevo, en un título aparte.
@@ -395,7 +395,7 @@ El resultado de este módulo es una lista de Mappings (una estructura que contie
 \label{subsubsec:mapping-filter}
 
 La clase $uba.app.MappingFilter$ es responsable, en primer lugar, de quitar las traducciones válidas repetidas y, en segundo lugar, de aplicar una serie de reglas también de filtrado. Para eliminar las traducciones repetidas, las transformamos en queries y simplemente comparamos por igualdad, ya que el generador de queries ordena las cláusulas generando, para inputs iguales pero diferentemente ordenados, la misma query.
-Además de este filtro, aplicamos tres reglas más, de creación propia. En primer lugar, eliminamos ``semi duplicados'', que consisten en atributos similares en la base de datos, en concreto, en para esta base de datos, consideramos semi-duplicada a una query que consulta por Country.Name y por Country.LocalName solamente. La segunda y la tercera regla, están basadas en la misma idea: en el caso en que exista más de una traducción válida en la cual la qword esté asociada con un atributo \textit{implícito}, por como está el sistema definido, también estará asociado con todos los atributos que pueda estarlo (ver tabla \allref{table:atributos-qwords} para las compatibilidades definidas). Esto implica que, por ejemplo, para cualquier pregunta cuya qword sea 'what' y no tenga su atributo asociado explícito, habrá 16 diferentes traducciones válidas. En los trabajos sobre los que basamos nuestro proyecto este problema no está mencionado y en los ejemplos presentados no es visible. Lo que hicimos en este caso es aplicar dos conceptos de preferencia. La segunda regla, prefiere, entre los atributos implícitos posibles, aquellos cuya relación está mencionada en la pregunta (si hubiera alguna). La tercer regla, señala un orden de preferencia entre los atributos mismos, una vez especificada la relación. El atributo implicito preferido está marcado en negrita en la tabla \ref{table:atributos-qwords}. Si tras aplicar estar reglas siguen existiendo más de una traducción válida, entonces damos al usuario el control, pidiendo por una desambiguación.
+Además de este filtro, aplicamos tres reglas más, de creación propia. En primer lugar, eliminamos ``semi duplicados'', que consisten en atributos similares en la base de datos, en concreto, para esta base de datos, consideramos semi-duplicada a una query que consulta por Country.Name y por Country.LocalName solamente. La segunda y la tercera regla, están basadas en la misma idea: en el caso en que exista más de una traducción válida en la cual la qword esté asociada con un atributo \textit{implícito}, por como está el sistema definido, también estará asociado con todos los atributos que pueda estarlo (ver tabla \allref{table:atributos-qwords} para las compatibilidades definidas). Esto implica que, por ejemplo, para cualquier pregunta cuya qword sea 'what' y no tenga su atributo asociado explícito, habrá 16 diferentes traducciones válidas. En los trabajos sobre los que basamos nuestro proyecto este problema no está mencionado y en los ejemplos presentados no es visible. Lo que hicimos en este caso es aplicar dos conceptos de preferencia. La segunda regla, prefiere, entre los atributos implícitos posibles, aquellos cuya relación está mencionada en la pregunta (si hubiera alguna). La tercer regla, señala un orden de preferencia entre los atributos mismos, una vez especificada la relación. El atributo implicito preferido está marcado en negrita en la tabla \ref{table:atributos-qwords}. Si tras aplicar estar reglas siguen existiendo más de una traducción válida, entonces damos al usuario el control, pidiendo por una desambiguación.
 
 
 \subsubsection*{QueryGenerator}
@@ -407,7 +407,7 @@ El procedimiento para generar una query a partir de una traducción válida es e
 \subsubsection*{MainProcessor}
 \label{subsubsec:main-processor}
 
-Finalmente, el punto de entrada de todo el sistema es uba.app.MainProcessor, que puede utilizarse especificando el parámetro -q QUESTION en cuyo caso responderá a esa pregunta y retornará el control o bien sin parámetros, en cuyo caso ingresa en un loop de preguntas-respuestas. El resultado para cada pregunta es cero, una o más queries de SQL.
+Finalmente, el punto de entrada de todo el sistema es $uba.app.MainProcessor$, que puede utilizarse especificando el parámetro -q QUESTION en cuyo caso responderá a esa pregunta y retornará el control o bien sin parámetros, en cuyo caso ingresa en un loop de preguntas-respuestas. El resultado para cada pregunta es cero, una o más queries de SQL.
 Agregamos la opción de desambiguación para que el usuario elija entre dos o más queries si no se pudo generar una y también una presentación de las respuestas una vez determinada la query final, pero es más bien experimental y poco sólido.
 
 \subsection{Ejemplos}
@@ -463,7 +463,7 @@ entre los tokens.
 Es decir, el Tokenizer encontró tres conjuntos de tokens completos para la pregunta, Tokenizer.generateCompleteTokenizations(``Who is the head of state of Zimbabwe?'') $\rightarrow$ [\{ `who', `head state', `zimbabwe'\}, \{`who', `heading state', `zimbabwe'\}, \{`who', `head of state', `zimbabwe'\}].
 
 El siguiente paso es el Matcher, que construye el grafo de atributos y valores para cada uno de las tokenizaciones completas y decide si existe un conjunto de elementos de la base de datos que permita establecer la traducción. Presentamos aquí solamente el grafo para la primer tokenización completa, que puede verse en la figura \ref{grafo-1}. Las otras tokenizaciones tienen un grafo análogo y generaran el mismo resultado, que será filtrado luego por el EquivalenceChecker. Notar que no es esta repetición de tokenizaciones lo que filtra el Matcher, sino la ambigüedad introducida por un token que puede referir a dos o más elementos de la base de datos (este problema no ocurre en este primer ejemplo).
- Para construirlo, primero, se consulta al Lexicón por el tipo y los elementos asociados de cada token mediante el servicio $getMatchingElements$:
+ Para construirlo, primero, se consulta al Lexicón por el tipo y los elementos asociados de cada token mediante el servicio $getMatchingElements$ como se puede ver en la tabla \ref{table:get-matching-elements-1}.
 \begin{center}
 \begin{table}[h]
 \centering
@@ -479,7 +479,7 @@ who & WhValue/Value & Who & Q-valor compatible con: Atributo HeadOfState de la t
 \end{table}
 \end{center}
 
-En este primer ejemplo el grafo no desambigua ninguna relación token-elemento ya que no hay ningún token con más de un elemento asociado, por lo que el grafo de max-flow no tiene ningun atractivo especial y es construido siguendo el procedimiento reseñado en \ref{subsec:closed-domain} Al ejecutar el algoritmo de max-flow sobre el grafo, se obtiene que el flujo máximo es 2 y los pares (Who, Country.HeadOfState), (Country.Name, Zimbabwe), sin generar ningún otro flujo alternativo.
+En este primer ejemplo el grafo no desambigua ninguna relación token-elemento ya que no hay ningún token con más de un elemento asociado, por lo que el grafo de max-flow no tiene ningun atractivo especial y es construido siguendo el procedimiento reseñado en \ref{subsec:closed-domain} Al ejecutar el algoritmo de max-flow sobre el grafo, se obtiene que el flujo máximo es 2 y los pares (Who, Country.HeadOfState), (Country.Name, Zimbabwe), sin generar ningún otro flujo alternativo como se ve en la figura \ref{grafo-1}.
 
 
 
@@ -527,7 +527,7 @@ En este primer ejemplo el grafo no desambigua ninguna relación token-elemento y
 \end{figure}
 
 El próximo paso es evaluar que los términos del par de tokens (`who', `head state') estén sintácticamente asociados en el
-parse tree generado por el algoritmo de Charniak según nuestras reglas. El arbol sintáctico para la pregunta es:
+parse tree generado por el algoritmo de Charniak según nuestras reglas. El arbol sintáctico para la pregunta es el siguiente:
 
 \begin{center}[h]
 \Tree [.S1 [.SBARQ [.WHNP [.WP \textbf{Who} ] ] [.SQ [.VP [.AUX is ] [.NP [.NP [.DT the ] [.NN \textbf{head} ] ] [.PP [.IN of ] [.NP [.NN state ] ] ] [.PP [.IN of ] [.NP [.NNP Zimbabwe ] ] ] ] ] ] [.. ? ] ] ] \\
@@ -539,11 +539,11 @@ La regla 2 (q-word a sustantivo) vincula los términos 'who' con 'head', mientra
 Las otras dos tokenizaciones generan la misma traducción y sus repeticiones son eliminadas por el $EquivalenceChecker$.
 Finalmente, esta única traducción pasa al $QueryGenerator$ que la traduce univocamente en una query, aplicando las reglas descriptas en \ref{subsec:closed-domain}:
 
-``\textbf{SELECT} Country.HeadOfState \textbf{FROM} Country \textbf{WHERE} Country.Name$=$`Zimbabwe''', cuyo resultado es ``Robert G. Mugabe''.
+``\textbf{SELECT} Country.HeadOfState \textbf{FROM} Country \textbf{WHERE} Country.Name$=$`Zimbabwe' '', cuyo resultado es ``Robert G. Mugabe''.
 
 \subsubsection*{Ejemplo 2: ``What caribbean countries are also considered north american?''}
 
-Consideremos nuestro segundo ejemplo, una corrida trivial: ``What caribbean countries are also considered north american?''.
+Consideremos nuestro segundo ejemplo: ``What caribbean countries are also considered north american?''.
 
 El primer paso es el tokenizer que, según expusimos, consta de los siguientes 7 pasos:
 
@@ -588,17 +588,22 @@ entre los tokens.
   \end{itemize}
 \end{enumerate}
 
-Es decir, el Tokenizer encontró un conjunto de tokens completo para la pregunta, Tokenizer.generateCompleteTokenizations(``What caribbean countries are also considered north american?'') $\rightarrow$ [ \{what, caribbean, country, north, american\}].
+Es decir, el Tokenizer encontró un conjunto de tokens completo para la pregunta, Tokenizer.generateCompleteTokenizations(``What caribbean countries are also considered north american?'') $\rightarrow$ [ \{what, caribbean, country, north american\}].
 
-El siguiente paso es el grafo del Matcher, que en este caso sí desambigua un token de valor\ref{grafo-2}, como puede verse en \ref{table:get-matching-elements-2}, al token 'north american' le corresponde
+El siguiente paso es el grafo del Matcher, que en este caso sí desambigua un token de valor. Como puede verse en \ref{table:get-matching-elements-2}, al token 'caribbean' le corresponden dos posibles valores: valor del atributo Region de la tabla Country y también valor del atributo Continent de la tabla Country.
+
+En este ejemplo el grafo decide entre dos interpretaciones posibles  (Ver grafo \ref{grafo-2}) para el token 'caribbean', que puede ser un valor tanto del atributo Region como del atributo Continent. Teniendo presente el token 'north american', que solo puede tomar el atributo Continent, para maximizar el flujo el algoritmo asigna 'caribean' a Region, obteniendo un flujo de 3, que es el máximo y eliminando así la posibilidad de relacionar este token de valor con el atributo Continent.
+
+
+%TODO: entender porque tuve que limitar el tipado por elemento (atributo > valor y relacion > valor).
 \begin{center}
 \begin{table}[h]
 \centering
 \begin{tabular}{| p{2cm} | p{2cm} | p{2cm} | p{6cm} |}
 \hline
 Token & Tipos & Elementos & Detalle \\ \hline
-north american & Value & North America & Valor de los Atributo Region y Continent de la tabla Country\\ \hline
-caribbean & Value & Caribbean & Valor del Atributo Region de la tabla Country\\ \hline
+caribbean & Value & North America & Valor de los Atributo Region y Continent de la tabla Country\\ \hline
+north american & Value & Caribbean & Valor del Atributo Region de la tabla Country\\ \hline
 country & Relation & Country & Relación Country\\ \hline
 what & WhValue / Value & What & Q-valor compatible con: Atributos GovernmentForm, Population, GNP, Name, Capital, LocalName, Continent, Region, Code, LifeExpectancy y SurfaceArea de la tabla Country, District, Population y Name de la tabla City e ISOfficial y Percentage de la tabla Language\\ \hline
 \end{tabular}
@@ -606,8 +611,6 @@ what & WhValue / Value & What & Q-valor compatible con: Atributos GovernmentForm
 \label{table:get-matching-elements-2}
 \end{table}
 \end{center}
-
-En este ejemplo el grafo decide entre dos interpretaciones posibles para el token 'caribbean', que puede ser un valor tanto del atributo Region como del atributo Continent. Teniendo presente el token 'north american', que solo puede tomar el atributo Continent, para maximizar el flujo el algoritmo asigna 'caribean' a Region, obteniendo un flujo de 3, que es el máximo.
 
 \begin{figure}
 \hspace*{-1.5cm}
@@ -663,13 +666,13 @@ En este ejemplo el grafo decide entre dos interpretaciones posibles para el toke
 \draw[->, thick] (i) -- (sink) node [near end, fill=white, below] {f=3};
 \end{tikzpicture}
 \caption{Grafo de atributo-valor para la primer tokenización completa de ``What caribbean countries are also considered north american?''}
-\label{grafo-1}
+\label{grafo-2}
 \end{figure}
 
 
 Como no hay tokens de atributo explícitos, solo queda verificar la regla relacionada con los tokens de relación: Country es compatible con todos los tokens de valor que aparecen en la pregunta y, en particular, está sintácticamente asociada a what (regla 2), por lo que las condiciones de traducción válida se cumplen.
 
-Esto nos da una única traducción válida, pero en realidad el $Matcher$ genera 16, una por cada atributo implícito posible compatible con la q-word 'What'. Notar que Country.Name no tiene ninguna particularidad especial, al menos para el $Matcher$, sobre las demás posibilidades listadas en \ref{table:get-matching-elements-2}. Pero de esto se ocupa el $MappingFilter$ con las tres reglas especiales que agregamos. Dado que la relación $country$ está presente en la pregunta y no así las otras dos, aplicando las reglas de preferencia de atributos implícitos nos quedamos solo con la asociación Country.Name$=$What.
+Esto nos da una única traducción válida, pero en realidad el $Matcher$ genera 16, una por cada atributo implícito posible compatible con la q-word 'What'. Notar que Country.Name no tiene ninguna particularidad especial, al menos no para el $Matcher$, sobre las demás posibilidades listadas en \ref{table:get-matching-elements-2}. Pero de esto se ocupa el $MappingFilter$ con las tres reglas especiales que agregamos. Dado que la relación $country$ está presente en la pregunta y no así las otras dos, aplicando las reglas de preferencia de atributos implícitos nos quedamos solo con la asociación Country.Name$=$What.
 
 \begin{center}
 \Tree
