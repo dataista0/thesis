@@ -44,11 +44,10 @@ Para nuestro proyecto, renombramos algunos de los elementos:
 \item El atributo IndepYear de la relación Country fue renombrado a IndependenceYear
 \end{itemize}
 
-%TODO: falta mencionar un cambio importante (reemplazo de los ids por los valores en una columna que no recuerdo)
+Por otro lado, dado que no soportamos más de un JOIN posible entre tablas, tuvimos que eliminar la referencia a la tabla City en el atributo Country.Capital. Lo que hicimos fue rellenar ese campo con el nombre de la ciudad en lugar de su  ID, perdiendo la posiblidad de navegar con preguntas del tipo ¿Cuál es la población de la capital del país X?.
+Los JOINS que manejamos, en caso de ser necesarios por estarse refiriendo más de una tabla, son City.CountryCode $=$ Country.Code y Language.CountryCode$=$Country.Code.
 
 En las tablas \ref{tab:country-data}, \ref{tab:country-data-2}, \ref{table:countrylanguage-data} y \ref{table:city-data} pueden verse algunas filas de ejemplo de cada una de las tablas y, en la tabla W, el total de filas de cada una.
-
-%TODO: agregar que no soportamos IsOfficial a limites
 
 %
 % Data: countrylanguage
@@ -353,7 +352,6 @@ En las figuras \ref{fig:word-tags} y \ref{fig:syntax-tags} pueden verse los dife
 Las reglas que construimos son las siguientes (notar que los nombres pueden denotar una direccionalidad, pero las relaciones son simétricas.
 Utilizamos NNx para denotar cualquier hoja sustantivo, adjetivo o adverbio (JJ, JJR, JJS, NN, NNS, NNP, NNPS, RB, RBR, RBS, CD), NN para denotar estrictamente sustantivos (NN, NNS, NNP, NNPS) y Nx para denotar cualquier sintagma relacionado a estos tipos de hojas (nodos intermedios): (ADJP, ADVP, NP, S)
 
-%TODO: hacer esto lindo
 \begin{enumerate}
 \item Hermanos:
   \begin{itemize}
@@ -594,8 +592,6 @@ El siguiente paso es el grafo del Matcher, que en este caso sí desambigua un to
 
 En este ejemplo el grafo decide entre dos interpretaciones posibles  (Ver grafo \ref{grafo-2}) para el token 'caribbean', que puede ser un valor tanto del atributo Region como del atributo Continent. Teniendo presente el token 'north american', que solo puede tomar el atributo Continent, para maximizar el flujo el algoritmo asigna 'caribean' a Region, obteniendo un flujo de 3, que es el máximo y eliminando así la posibilidad de relacionar este token de valor con el atributo Continent.
 
-
-%TODO: entender porque tuve que limitar el tipado por elemento (atributo > valor y relacion > valor).
 \begin{center}
 \begin{table}[h]
 \centering
@@ -715,6 +711,13 @@ Esta única traducción pasa al $QueryGenerator$ que la traduce univocamente en 
 \subsection{Conclusiones, limitaciones y trabajo futuro}
 \label{subsec:popescu-cierre}
 
+El sistema implementado consiste en un mecanismo para traducir preguntas simples formuladas en inglés a las consultas SQL correspondientes sobre la base de datos World, permitiendo reconocer cuando una pregunta no es semánticamente tratable. Si bien es verdad que la implementación require de desarrollo humano, los tiempos de adaptación a diferentes bases de datos, con el código base existente, no es tan grande. El potencial de los sistemas de dominio cerrado basados en traducciones a SQL tiene un interes acotado ya que es, en realidad, un agregado cosmético para una base de datos ya existente y ya consultable. Dicho de otro modo: la información sobre la que trabajamos en este caso ya está ordenada y estructuradas y es accesible, consultable, mediante un lenguaje: el SQL, que, con sus limitaciones y su tiempo de aprendizaje, es un lenguaje comprensible por humanos. Con esto en mente, el agregado que introduce un módulo de question answering sobre esta información está en proponer una interfaz más intituitiva. Este agregado, técnicamente menor, incorpora, sin embargo, un aporte clave, que es la accesibilidad de las bases de datos a un público masivo, conocedor de su idioma (inglés en este caso, pero en general, de algún idioma) pero no del SQL. Como ya mencionamos, esta posibilidad, en combinación con un procesador de voz, tiene un interés esencial.
+
+Por otro lado, creemos que es clave destacar una hipótesis de trabajo de Popescu que nos parece fundamental a la hora de enfocar el trabajo sobre el área de question answering sobre dominios cerrados y estructurados. Esta hipótesis es: no es necesario entender todas las preguntas posibles formulables en lenguaje natural, ya que estas pueden tener una complejidad arbitrariamente grande; basta con limitarse a definir un conjunto de preguntas simples trabables que, sin embargo, permita una amplia expresividad y, más aún, que sea, en la práctica, la forma más natural y directa de formular esta pregunta.
+Creemos que esta hipótesis de trabajo es muy fecunda y prolífica, ya que elimina de raíz el preconcepto de que es imposible traducir el lenguaje natural informal en un lenguaje técnico formal. Quizás sea imposible computacionalmente capturar el sentido de la frase \dq{explicar con palabras de este mundo que partió de mí un barco llevándome} de Alejandra Pizarnik, pero definitivamente es computable traducir la pregunta \dq{¿En qué año murió Alejandra Pizarnik?} a una consulta SQL de la forma ``\textbf{SELECT} dead\_year \textbf{FROM} writers \textbf{WHERE} name $=$ `Alejandra Pizarnik' ''. Si bien el ejemplo es un poco excesivo en su contraste, consideramos que este exceso hace más patente la importancia de esta hipótesis de trabajo al señalar, digamos, \textit{zonas} computacionales del lenguaje, en particular, del conjuntos de las preguntas.
+
+El sistema que presentamos en nuestro trabajo incorpora todos los conceptos del marco teórico propuesto por Popescu, permitiendo distinguir preguntas semánticamente tratables de aquellas que no lo son. Con ciertas limitaciones que presentamos durante la exposición y que en breve mencionaremos resumidamente, es un sistema funcional que sirve como base de trabajo para proyectos futuros de mayor solidez y embergadura y, por qué no, para un trabajo conjunto con el área de procesamiento de voz del Departamento.
+
 Las diferentes limitaciones y mejoras de nuestra implementación actual fueron mencionadas durantes la exposición de la misma que realizamos a lo largo de este capítulo: esta sección las presenta juntas para facilitar el acceso.
 
 En un nivel técnico, habría una enorme mejora de performance implementando el lexicón sobre una base de datos relacional. Los archivos json sirven para un modelo de escala pequeña, pero no permiten escalar ya que genera un tiempo de carga innecesario, así como también uso de memoria. Existen también una serie de clases con datos dentro del código que deberían separar archivos de configuración de códigos. Estas son TokenAugmenter, WhGenerator y Config. Estas clases requieren editar el código para aplicarlo sobre una nueva base de datos, cuando en realidad solo es necesario editar definiciones.
@@ -724,12 +727,11 @@ Más allá de estas mejoras técnicas, las siguientes mejoras permitirían incre
 \begin{itemize}
 \item En el Lexicón, no generar sinónimos para nombres propios. Wordnet posee sinónimos para, por ejemplo \textit{Hugo} (Victor Hugo, etc) introduciendo ruido innecesario y fácilmente eliminable.
 \item Lexicon: Desambiguador de sentidos para los sinónimos de los tokens. Este es un problema complejo de NLP e integrar una solución del mismo dentro del modelo ya definido podría redundar en un avance teórico. Desde un nivel más técnico y con mejor complejidad, también sería posible implementar un desambiguador supervisado.
+\item Soportar diferentes paths para aparear (\textit{joinear}) tablas.
 \item Soportar desambiguación de relaciones en el Matcher.
 \item Interfaz con el usuario: como mencionamos, el resultado es una query y la desambiguación es entre dos o más queries. Que el resultado sea una respuesta presentada en un formato amigable y que la desambiguación sea, también, presentada en un formato amigable es una mejora de usabilidad necesaria para utilizar el sistema en la vida real.
 \item CharniakParseTree: evaluando con un lingüista profesional las reglas utilizadas para definir la \textit{asociación sintáctica} seguramente se obtengan reglas más eficaces.
+
 \end{itemize}
 
 Con esta lista terminamos la presentación de nuestro sistema closed domain en inglés. En el próximo capitulo daremos vuelta la página y presentaremos nuestro sistema open domain multilingüe.
-
-
-%TODO: conclusiones

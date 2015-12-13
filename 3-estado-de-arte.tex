@@ -177,7 +177,7 @@ Para ambos casos de uso de los modelos de dominio cerrado (sistemas híbridos y 
 %\subsubsection{Marco teórico utilizado en la tesis}
 
 En esta tesis utilizamos como marco teórico el desarrollado por Ana-Maria Popescu et. al. en sus papers \cite{QADB1} y \cite{QADB2}.
-% TODO: potencialmente, citar los otros trabajos que tengo en personal-folder/Thesis/
+
 
 En estos trabajos, Ana María Popescu et. al. definen la noción de pregunta \textit{semánticamente tratable} en el contexto de una base de datos concreta. Proponen, así mismo, un modelo teórico para identificar este tipo de preguntas y una forma de transformarlas en consultas de SQL, así como también un sistema concreto que implementa el modelo, llamado Precise. Popescu argumenta que una interfaz a una base de datos en lenguaje natural puede no identificar una pregunta, pero que jamás debe mal interpretarla activamente, es decir, interpretar algo distinto a lo preguntado y dar una respuesta que no se condice con la necesidad de información del usuario. Una mala interpretación de una pregunta reducirá la confianza del usuario en el sistema, volviéndolo inusable. En cambio, identificando una pregunta como intratable, se puede disparar un proceso de reformulación o especificación asistida de la pregunta, lo cual no es tan costoso en términos de confianza en el sistema.
 
@@ -213,7 +213,6 @@ Observemos que mientras las primeras tres reglas de compatibilidad son independi
 
 Las \textbf{qwords}, recordemos, son los pronombres interrogativos, palabras típicas con las que comienza una pregunta: quién, qué, cómo, cuándo, dónde, etc para el castellano, why, where, who, which, etc para el inglés. En los trabajos de Popescu, se define extensivamente como una palabra dentro del conjunto \{what, which, where, who, when\}.
 
-% TODO: Quizas, introducir que es un lema, pero qué sé yo
 Por otro lado, se introduce una noción de \textbf{token}, diferente de la que dimos en \allref{sec:terminologia}.
 En el contexto de este modelo, un token es un conjunto de lemas de palabras (Ver \allref{subsec:otras-tareas-pnl}) que corresponden a un elemento de la base de datos. Por ejemplo, \{experiencia, requerir\} y \{experiencia, necesario\} son tokens que corresponden al atributo “Experiencia Requerida” de una base de datos.
 
@@ -332,7 +331,7 @@ El grafo es interpretado como una red de flujo en la que cada arista tiene capac
 
 Las flechas sólidas representan el camino elegido por el algoritmo de max-flow. Notar que la ambigüedad sobre si HP era el nombre de una compañia o una plataforma fue automáticamente resuelto al maximizar el flujo. El algoritmo decidió que HP era una plataforma, porque de otro modo no hubiera habido una interpretación posible para el token ``Unix'' y el flujo final hubiera sido 2.
 
-Después de que todos los atributos y valores fueron apareados con elementos de la base de datos, el sistema verifica que todos los tokens de relación se corresponden con un token de valor o con uno de atributo. En este caso, con un único token de relación (job), esto se reduce a verificar si alguna de las relaciones de la base de datos relacionadas con el token contienen algún atributo que se corresponda con algún token de atributo. Como en el ejemplo job solo se corresponde con la única relación existente (Job), todos los atributos están contenidos por ella y la condición se hace verdadera. Finalmente, el algoritmo encontró una correspondencia uno a uno entre los tokens de la pregunta y elementos de la base de datos que satisfacen las condiciones semánticas requeridas en la definición de tratabilidad semántica. En este punto, Precise verifica que los tokens emparejados satisfacen las condiciones sintácticas modeladas en la función $attachment$ para los pares de tokens (what, job), (HP, job) y (Unix, system). Si esto es así, entonces una \textit{traducción válida} ha sido encontrada y el sistema retorna la consulta SQL que puede verse en la base de la Figura \ref{fig:popescu-example}. En el trabajo se presenta también un ejemplo sobre preguntas cuya traducción a consultas SQL implica la aparición de clausulas JOIN. Nosotros omitiremos esa parte ya que en nuestra implementación del modelo estructurado no soportamos esa funcionalidad. Baste mencionar que la implementación consta de otra red de flujo, más simple que la recién presentada, para desambiguar tokens de relación.
+Después de que todos los atributos y valores fueron apareados con elementos de la base de datos, el sistema verifica que todos los tokens de relación se corresponden con un token de valor o con uno de atributo. En este caso, con un único token de relación (job), esto se reduce a verificar si alguna de las relaciones de la base de datos relacionadas con el token contienen algún atributo que se corresponda con algún token de atributo. Como en el ejemplo job solo se corresponde con la única relación existente (Job), todos los atributos están contenidos por ella y la condición se hace verdadera. Finalmente, el algoritmo encontró una correspondencia uno a uno entre los tokens de la pregunta y elementos de la base de datos que satisfacen las condiciones semánticas requeridas en la definición de tratabilidad semántica. En este punto, Precise verifica que los tokens emparejados satisfacen las condiciones sintácticas modeladas en la función $attachment$ para los pares de tokens (what, job), (HP, job) y (Unix, system). Si esto es así, entonces una \textit{traducción válida} ha sido encontrada y el sistema retorna la consulta SQL que puede verse en la base de la Figura \ref{fig:popescu-example}. En el trabajo se presenta también un ejemplo sobre preguntas cuya traducción a consultas SQL implica la aparición de diferentes cláusulas JOIN posibles. Nosotros omitiremos esa parte ya que en nuestra implementación del modelo estructurado no soportamos esa funcionalidad. Baste mencionar que la implementación consta de otra red de flujo, más simple que la recién presentada, para desambiguar tokens de relación.
 
 \bigskip
 
@@ -397,14 +396,6 @@ FROM & Todas las relaciones mencionadas \\ \hline
 El \textbf{Equivalence Checker} elimina, en el caso de soluciones múltiples, soluciones repetidas generadas de manera distinta (por ejemplo, los pares atributo/valor aparecen en otro orden). Si Precise encuentra dos consultas SQL distintas, no genera una respuesta sino que pide al usuario por una desambigüación. Por ejemplo, en la pregunta ```Qué trabajos de analista en sistemas existen en Buenos Aires?'', ``analista en sistemas'' puede ser el nombre de un trabajo, mientra que también puede ocurrir que ``analista'' sea el nombre del trabajo mientras que ``sistemas'' sea el área. En este caso, Precise no logra desambigüar la situación y necesita que el usuario lo haga por él mismo.
 
 \medskip
-
-%TODO: completar. Hacer esto o no? Una especie de resumen general de la seccion con los límites
-
-%%Hagamos un breve resumen de esta sección a modo de cierre.
-
-%%El paper no presenta las condiciones sintácticas modeladas con $attachment$.
-
-%%Por otro lado, es importante notar las limitaciones del modelo teórico recién expuesto. En principio, la navegación a través del modelo de datos no está contemplada y el manejo de relaciones se limita a relaciones de un grado (la exposición de la implementación de este manejo fue omitida por simplicidad).
 
 En la próxima sección veremos un caso de éxito de un proyecto de question answering híbrido implementado por IBM y en el próximo capítulo describiremos la implementación de un modelo de question answering de dominio cerrado en el que utilizamos este marco como orientación.
 

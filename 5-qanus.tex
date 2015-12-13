@@ -321,10 +321,8 @@ de respuesta esperada. Por último, el evaluador de resultados mide la
 exactitud (\textit{accuracy}): total de respuestas correctas sobre
 total de preguntas.
 
-QA-sys funciona sólo sobre preguntas del tipo
-factoid y, a modo de comparación, el mejor sistema según la Trec
-2007, el LymbaPA07 obtuvo un grado de exactitud del 0.706 y el décimo
-(Quanta) obtuvo 0.206, mientras que QA-sys logra el 0.119 disponiendo de una implementación sumamente simple.
+QA-sys funciona sólo sobre preguntas del tipo factoid y, a modo de comparación, el mejor sistema según la Trec
+2007, el LymbaPA07 obtuvo un grado de exactitud del 0.706 y el décimo (Quanta) obtuvo 0.206, mientras que QA-sys logra el 0.119 disponiendo de una implementación sumamente simple.
 
 En las siguientes secciones de la tesis describiremos la implementación de nuestro sistema de question answering tomando como base los tres pasos principales del pipeline de QA-sys.
 
@@ -658,7 +656,7 @@ En la primer corrida variamos la cantidad de documentos retornados por el índic
   \item Método de Ranking: 1
 \end{itemize}
 
-Las tablas \ref{table:1_50_getExactMRRWikiFactoid_getCovrMRRWikiFactoid}, \ref{table:1_100_getExactMRRWikiFactoid_getCovrMRRWikiFactoid} y \ref{table:1_200_getExactMRRWikiFactoid_getCovrMRRWikiFactoid} presentan los resultados generales de esta primera corrida.
+Las tablas \ref{table:1_50_getExactMRRWikiFactoid_getCovrMRRWikiFactoid}, \ref{table:1_100_getExactMRRWikiFactoid_getCovrMRRWikiFactoid} y \ref{table:1_200_getExactMRRWikiFactoid_getCovrMRRWikiFactoid} presentan los resultados generales de esta primera corrida. Notar que los valores expresados están multiplicados por 100 (MRR toma valores entre 0 y 1, aquí los presentamos como valores entre 0 y 100).
 
 \begin{table}[H]
 \centering
@@ -815,7 +813,6 @@ $MRR_{25}$ & 9.54 & 9.61 & 10.39 & 12.89 & 14.41 & 14.48  \\ \hline
 \end{tabular}
 
 \medskip
-
 
 \begin{tabular}{|l | l | l | l | l | l | l |}
 \hline
@@ -1044,10 +1041,8 @@ $MRR_{25}$ & 12.58 & 12.91 & 14.06 & 17.46 & 18.70 & 18.90  \\ \hline
 
 \textbf{Corrida 3: Combinación de Óptimos}\newline
 
-En esta corrida utilizamos los parámetros que mejores resultados dieron en todos los métodos anteriores, bajo la hipótesis de que el resultado debería agregarse. Como puede verse en la tabla \ref{table:optimos}, esto no es así para $MRR_1$, mientras que sí ocurre para $MRR_5$, por ejemplo. \newline
-%TODO: redactar esto
 
-
+Datos de la corrida 3.1, para español:
 \begin{itemize}
   \item Idioma: Español
   \item Cantidad de documentos retornados: 50
@@ -1057,7 +1052,6 @@ En esta corrida utilizamos los parámetros que mejores resultados dieron en todo
   \item Fórmula de Ranking de Pasajes:  $PassageScore_{bl} \times 0.8 + LengthScore \times 0.2$
 \end{itemize}
 
-
 \begin{table}[H]
 \centering
 \begin{center}
@@ -1065,26 +1059,31 @@ En esta corrida utilizamos los parámetros que mejores resultados dieron en todo
 \hline
 Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
 $MRR_{1}$ & 10.00 & 10.00 & 10.77 & 12.31 & 13.08 & 13.08  \\ \hline
-$MRR_{5}$ & 12.00 & 12.31 & 13.46 & 16.18 & 16.95 & 17.01  \\ \hline
+$MRR_{5}$ & \textbf{12.00} & 12.31 & 13.46 & 16.18 & 16.95 & 17.01  \\ \hline
 $MRR_{10}$ & 12.24 & 12.31 & 13.46 & 16.26 & 17.44 & 17.50  \\ \hline
 $MRR_{25}$ & 12.55 & 12.62 & 13.78 & 16.72 & 18.00 & 18.06  \\ \hline
 \end{tabular}
 \label{table:optimos}
-
 \medskip
 \caption{Corrida 3.1: Combinación de óptimos para español}
 \end{center}
 \end{table}
 
-%TODO: y esto
-%[('lucene_results', 50), ('n_passages', 40), ('topic_inference', 2), ('passage_rank', 3), ('querygeneration', 3)]
+Datos de la corrida 3.2, para portugués
+\begin{itemize}
+  \item Idioma: Portugués
+  \item Cantidad de documentos retornados: 50
+  \item Cantidad de pasajes extraídos: 40
+  \item Método de Generación de Queries: 3
+  \item Método de Temas: 2
+  \item Fórmula de Ranking de Pasajes:  $PassageScore_{bl} \times 0.8 + LengthScore \times 0.2$
+\end{itemize}
 
 \begin{table}[H]
 \centering
 \begin{center}
 \begin{tabular}{|l | l | l | l | l | l | l |}
 \hline
-\multicolumn{7}{|c|}{2}  \\ \hline
 Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
 $MRR_{1}$ & 1.92 & 2.88 & 2.88 & 3.85 & 3.85 & 3.85  \\ \hline
 $MRR_{5}$ & 3.16 & 5.03 & 5.03 & 6.91 & 7.15 & 7.15  \\ \hline
@@ -1096,6 +1095,32 @@ $MRR_{25}$ & 4.08 & 6.00 & 6.00 & 8.21 & 8.84 & 8.94  \\ \hline
 \end{center}
 \end{table}
 
+
+En esta última corrida, utilizamos los métodos que mejores resultados dieron, por sección, todos juntos, primero para español (\ref{table:optimos}) y luego para portugués (\ref{table:2_3_2_40_getExactMRRWikiFactoid_getCovrMRRWikiFactoid}).
+Hay dos observaciones importantes. Primero, con respecto a la corrida en español, es notorio como el $MRR_1$ y, en general, todos los valores salvo el $MRR_5$ con matching exacto, tienen una performance peor que en la corrida 2.3, lo cual se debe, seguramente,a una interacción compleja entre los distintos pasos que conduce a este comportamiento.
+En segundo lugar, con respecto a la corrida en portugués, es notoria su baja performance en relación con los resultados en español, obteniendo apenas un 3.16 \% de respuestas correctas exactas considerando la métrica $MRR_5$. Existen varios factores para explicar esto. En primer lugar, que las herramientas para portugués no son tan maduras como las herramientas para español; en segundo lugar, que la evaluación de los métodos optimos y, en general, todo el enfoque al sistema, estuvo marcado por el español, siendo las adaptaciones para portugués un momento secundario que intentó mostrar, simplemente, que este soporte estaba accesible; en tercer lugar, también es posible que el sistema per se y el enfoque, aún sin otro inconveniente, se desempeñe peor para el set de preguntas para el portugués. A fin de cuentas, no hay que perder de vista que los sets de test usables por nuestro sistema son de 122 preguntas para español y 104 para portugués, a partir de los cuales no es posible extrapolar un comportamiento general, sino presentar resultados concretos.
+
+
 \subsection{Conclusiones, limitaciones y trabajo futuro}
 \label{sec:clef-cierre}
-%TODO: y esto
+
+El sistema implementado en este capítulo es un sistema de question answering de dominio abierto con soporte para diferentes idiomas. El mismo utiliza como base el código de Qanus y Qasys - monolingüe, con soporte solo para el idioma inglés - y agrega sobre el mismo las adaptaciones necesarias para trabajar con diferentes idiomas - con los límites mencionados-, utilizando la librería de procesamiento de lenguajes Freeling y, en consecuencia, soportando tantos idiomas como esta soporta. Agregamos, asímismo, mejoras simples en los módulos de recuperación de documentos (la incorporación del algoritmo Lasso de generación de queries) y también en el de generación de respuestas (la introducción de nuevos scores generales). Para ejecutar nuestro sistema y poder evaluar la performance de nuestro sistema con sporte multilingüe baseline, asi como de estas diferentes mejoras y diferentes configuraciones del sistema, tomamos una tarea monolingüe de la competencia CLEF '07 y evaluamos nuestro sistema sobre una parte limitada de la misma, para los idiomas español y portugués (lo hicimos, en realidad, en un principio, para español y para inglés, para darnos cuenta finalmente que las respuestas esperadas para la tarea en inglés no estaban disponibles). Las partes que evaluamos consisten, en concreto, en preguntas de tipo factoid con respuesta válida en entradas de wikipedia.
+
+Para darnos una idea de la escala de valores manejados, debemos señalar que, en primer lugar, en el documento retrospectivo de CLEF '07 se señala que ``las tareas fueron de una complejidad elevada y en comparación con los resultados del año anterior, la mejor precisión general bajó del 49\% al 41.75\% para tareas multi-lingües, mientras que, más significativamente, bajó de 68\% a 54\% en tareas monolingües.'' En nuestro trabajo, tomamos tareas monolingües - con soporte para varias lenguas, pero monolingües - y nos restringimos a una subsección sencilla (eliminando preguntas de tipo DEFINITION y LIST), por lo que no es del todo válido comparar esta performance con la nuestra. Por otro lado, de Qasys, el sistema baseline que adaptamos para soportar diferentes idiomas, sabemos que en la TREC 07 (en inglés), competencia en la que Qasys participó, el mejor sistema, LumbaPA07, obtuvo una exactitud de 70,06\%, mientas que el décimo (Quanta) obtuvo 20,6\% y Qasys logró un 11,9\%.
+
+Nuestro sistema adaptado al español, con todas las mejoras en su óptimo, logra un nada despreciable 10,08\% $MRR_1$ y un 12,00\% $MRR_5$.
+
+Es importante destacar, con respecto a este modelo de dominio abierto, un punto clave que saltó a la vista tanto en la reseña bibliográfica como en el código del sistema baseline Qanus, que es la limitación de las mejoras a zonas acotadas y sin enfoques sistémicos. Una mejora argumentada y con cierta presencia en la literatura del área fue el mecanismo de generación de queries que llamamos Lasso (por el sistema en el que fue implementado por primera vez) y nosotros lo incorporamos aquí, logrando mejoras mínimas en la performance, pasando de 7.75 a 7.81 en $MRR_1$ exacto (+0.26), de 8.94 a 9.27 en $MRR_5$ exacto (+0.31). Más allá de esta mejora, los puntos en los que podríamos haber enfocado nuestras mejoras eran un incremento en la eficacia de las estrategias de generación de respuestas con enfoques ad-hoc basados en nuestra intuición y en la experimentación. Esto podría ser una falla en nuestra investigación, pero más bien parece que no están estudiados ni sistematizados procedimientos sistémicos a la hora de enfrentar, en concreto, el paso de la generación de respuestas. Por su parte, un subsistema muy interesante que no pudimos encontrar y que representaría un gran avance para el área es un módulo open source que permita extraer el \textit{focus} de las preguntas. Este módulo sí representa un problema acotado y bien definido.
+
+El sistema que hacemos público en este trabajo (y que puede encontrarse, como dijimos, en \url{http://github.com/julian3833/multilingual-qanus}, con sus límites, es un buen baseline para emprender trabajos de question answering de dominio abierto sobre bases de conocimiento no estructuradas con soporte para diferentes idiomas.
+
+
+Con respecto a las limitaciones y al trabajo futuro, la lista de posibles mejoras tiene virtualmente una longitud arbitraria, pero los siguientes son los puntos, a nuestro entender, claves:
+\begin{itemize}
+  \item El primer límite a mencionar es la falta de un módulo multilingüe de Question Classification. Como ya mencionamos, utilizamos la existencia de una traducción de las preguntas al inglés para utilizar el módulo en inglés de Stanford, pero nuestro sistema no dispone de un módulo multilingüe de QC. Como ya explicamos, esto es así porque no existen tales implementaciones, al menos, al momento de escribir esta tesis. Una forma sencilla de enfrentar esta situación es utilizar el QC de Stanford en inglés, anteponiendo una traducción del idioma de origen al inglés. Otra posibilidad es una implementación manual por idioma es la implementación de un módulo basado en reglas escritas a mano con un sistema de clases simple. Este acercamiento tiene un problema que es que todo el módulo de generación de respuestas está basado en casos relacionados con las clases del QC de Stanford, así que haría falta afectar ese módulo también.
+  \item Otro punto débil, aunque restringido a esta tarea particular, es la inferencia del tópico a partir del primer par de pregunta-respuesta: este procedimiento podría mejorarse enormemente.
+  \item La ya mencionada generación del \textit{focus}, que definitivamente tiene la entidad de un trabajo aparte y no una mera mejora para este sistema.
+  \item El soporte de preguntas de tipo definition y list, el soporte de cláusulas de temporales.
+  \item Mejorar concretas para los casos de generación de respuestas, que son realmente muy básicos. Seguramente con un poco de inventiva y experimientación la performance del sistema puede mejorarse sustancialmente agregando algunas condiciones y expresiones regulares a mano en los casos de generación de respuestas, así como agregando más casos basados en las clases finas de clasificador de preguntas.
+  \item Una mejora no necesaria pero interesante sería agregar la web como base de conocimiento.
+\end{itemize}
