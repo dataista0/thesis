@@ -9,7 +9,7 @@ Testeamos este sistema sobre la base de datos World, en inglés, ofrecida por My
 
 Cabe mencionar que el scope original de este sistema era ser bilingüe y ejecutarse sobre una base de datos sobre universidades, empresas e investigación nacional del ámbito de la informática. Lamentablemente, por una cuestión de tiempos y de errores a la hora de estimar esfuerzos, no pudimos completar este plan original.
 
-La estructura del capítulo es como sigue: En \ref{sec:popescu-db} pasamos revista de la base de datos que utilizamos para implementar el sistema y en \ref{sec:popescu-implementacion} discutimos la implementación. \ref{subsec:popescu-codigo} se divide, a su vez, en \ref{subsec:popescu-ejemplos}, donde discutimos la implementación en sí misma, 4.2.2, donde mostramos y comentamos algunos ejemplos de ejecuciones y \ref{subsec:popescu-cierre} donde analizamos los alcances, los límites y el trabajo futuro.
+La estructura del capítulo es como sigue: En \ref{sec:popescu-db} pasamos revista de la base de datos que utilizamos para implementar el sistema y en \ref{sec:popescu-implementacion} discutimos la implementación. \ref{sec:popescu-implementacion} se divide, a su vez, en \ref{subsec:popescu-codigo}, donde discutimos la implementación en sí misma, \ref{subsec:popescu-ejemplos}, donde mostramos y comentamos algunos ejemplos de ejecuciones y \ref{subsec:popescu-cierre} donde analizamos los alcances, los límites y el trabajo futuro.
 
 
 \section{Base de datos}
@@ -47,15 +47,14 @@ Para nuestro proyecto, renombramos algunos de los elementos:
 Por otro lado, dado que no soportamos más de un JOIN posible entre tablas, tuvimos que eliminar la referencia a la tabla City en el atributo Country.Capital. Lo que hicimos fue rellenar ese campo con el nombre de la ciudad en lugar de su  ID, perdiendo la posiblidad de navegar con preguntas del tipo ¿Cuál es la población de la capital del país X?.
 Los JOINS que manejamos, en caso de ser necesarios por estarse refiriendo más de una tabla, son City.CountryCode $=$ Country.Code y Language.CountryCode$=$Country.Code.
 
-En las tablas \ref{tab:country-data}, \ref{tab:country-data-2}, \ref{table:countrylanguage-data} y \ref{table:city-data} pueden verse algunas filas de ejemplo de cada una de las tablas y, en la tabla W, el total de filas de cada una.
+En las tablas \ref{table:countrylanguage-data}, \ref{table:city-data}, \ref{tab:country-data} y \ref{tab:country-data-2} pueden verse algunas filas de ejemplo de cada una de las tablas.
 
 %
 % Data: countrylanguage
 %
  \begin{longtable}{|l|l|l|l|}
- \hline \endhead \hline \endfoot \hline
- \caption{Algunas filas de la tabla CountryLanguage} \label{table:countrylanguage-data} \\\hline \multicolumn{1}{|c|}{\textbf{CountryCode}} & \multicolumn{1}{|c|}{\textbf{Language}} & \multicolumn{1}{|c|}{\textbf{IsOfficial}} & \multicolumn{1}{|c|}{\textbf{Percentage}} \\ \hline \hline  \endfirsthead
-\caption{Content of table countrylanguage (continued)} \\ \hline \multicolumn{1}{|c|}{\textbf{CountryCode}} & \multicolumn{1}{|c|}{\textbf{Language}} & \multicolumn{1}{|c|}{\textbf{IsOfficial}} & \multicolumn{1}{|c|}{\textbf{Percentage}} \\ \hline \hline \endhead \endfoot
+ \hline  \multicolumn{1}{|c|}{\textbf{CountryCode}} & \multicolumn{1}{|c|}{\textbf{Language}} & \multicolumn{1}{|c|}{\textbf{IsOfficial}} & \multicolumn{1}{|c|}{\textbf{Percentage}} \\ \hline  \endfirsthead
+\caption{Algunas filas de la tabla CountryLanguage (cont)} \\ \hline \multicolumn{1}{|c|}{\textbf{CountryCode}} & \multicolumn{1}{|c|}{\textbf{Language}} & \multicolumn{1}{|c|}{\textbf{IsOfficial}} & \multicolumn{1}{|c|}{\textbf{Percentage}} \\ \hline \hline \endhead \endfoot
 ABW & Dutch & T & 5.3 \\ \hline
 ABW & English & F & 9.5 \\ \hline
 ABW & Papiamento & F & 76.7 \\ \hline
@@ -69,15 +68,17 @@ AGO & Ambo & F & 2.4 \\ \hline
 AGO & Chokwe & F & 4.2 \\ \hline
 AGO & Kongo & F & 13.2 \\ \hline
 AGO & Luchazi & F & 2.4 \\ \hline
- \end{longtable}
+\caption{Algunas filas de la tabla CountryLanguage}
+\label{table:countrylanguage-data}
+\end{longtable}
 
-\clearpage % Las tablas se ubican mal, no se xq
+
+%\clearpage % Las tablas se ubican mal, no se xq
 %
 % Data: city
 %
   \begin{longtable}{|l|l|l|l|l|}
- \hline \endhead \hline \endfoot \hline
- \caption{Algunas filas de la relación City} \label{table:city-data} \\\hline \multicolumn{1}{|c|}{\textbf{ID}} & \multicolumn{1}{|c|}{\textbf{Name}} & \multicolumn{1}{|c|}{\textbf{CountryCode}} & \multicolumn{1}{|c|}{\textbf{District}} & \multicolumn{1}{|c|}{\textbf{Population}} \\ \hline \hline  \endfirsthead
+ \hline \multicolumn{1}{|c|}{\textbf{ID}} & \multicolumn{1}{|c|}{\textbf{Name}} & \multicolumn{1}{|c|}{\textbf{CountryCode}} & \multicolumn{1}{|c|}{\textbf{District}} & \multicolumn{1}{|c|}{\textbf{Population}} \\ \hline \endfirsthead
 \caption{Algunas filas de la tabla city} \\ \hline \multicolumn{1}{|c|}{\textbf{ID}} & \multicolumn{1}{|c|}{\textbf{Name}} & \multicolumn{1}{|c|}{\textbf{CountryCode}} & \multicolumn{1}{|c|}{\textbf{District}} & \multicolumn{1}{|c|}{\textbf{Population}} \\ \hline \hline \endhead \endfoot
 129 & Oranjestad & ABW & – & 29034 \\ \hline
 1 & Kabul & AFG & Kabol & 1780000 \\ \hline
@@ -92,6 +93,7 @@ AGO & Luchazi & F & 2.4 \\ \hline
 53 & Tafuna & ASM & Tutuila & 5200 \\ \hline
 63 & Saint John's & ATG & St John & 24000 \\ \hline
 130 & Sydney & AUS & New South Wales & 3276207 \\ \hline
+ \caption{Algunas filas de la relación City} \label{table:city-data}
  \end{longtable}
 
 \bigskip
@@ -100,8 +102,7 @@ AGO & Luchazi & F & 2.4 \\ \hline
 %
 \begin{footnotesize}
  \begin{longtable}{|l|l|l|l|l|l|}
- \hline \endhead \hline \endfoot \hline
- \caption{Algunas filas de la tabla Country} \label{tab:country-data} \\\hline \multicolumn{1}{|c|}{\textbf{Code}} & \multicolumn{1}{|c|}{\textbf{Name}} & \multicolumn{1}{|c|}{\textbf{Continent}} & \multicolumn{1}{|c|}{\textbf{Region}} & \multicolumn{1}{|c|}{\textbf{SurfaceArea}} & \multicolumn{1}{|c|}{\textbf{IndepYear}} \\ \hline \hline  \endfirsthead
+ \hline \multicolumn{1}{|c|}{\textbf{Code}} & \multicolumn{1}{|c|}{\textbf{Name}} & \multicolumn{1}{|c|}{\textbf{Continent}} & \multicolumn{1}{|c|}{\textbf{Region}} & \multicolumn{1}{|c|}{\textbf{SurfaceArea}} & \multicolumn{1}{|c|}{\textbf{IndepYear}} \\ \hline \hline  \endfirsthead
 \caption{Algunas filas de la tabla Country} \\ \hline \multicolumn{1}{|c|}{\textbf{Code}} & \multicolumn{1}{|c|}{\textbf{Name}} & \multicolumn{1}{|c|}{\textbf{Continent}} & \multicolumn{1}{|c|}{\textbf{Region}} & \multicolumn{1}{|c|}{\textbf{SurfaceArea}} & \multicolumn{1}{|c|}{\textbf{IndepYear}} \\ \hline \hline \endhead \endfoot
 ABW & Aruba & North America & Caribbean & 193.00 & \textit{NULL} \\ \hline
 AFG & Afghanistan & Asia & Southern and Central Asia & 652090.00 & 1919 \\ \hline
@@ -116,13 +117,13 @@ ARM & Armenia & Asia & Middle East & 29800.00 & 1991 \\ \hline
 ASM & American Samoa & Oceania & Polynesia & 199.00 & \textit{NULL} \\ \hline
 ATA & Antarctica & Antarctica & Antarctica & 13120000.00 & \textit{NULL} \\ \hline
 ATF & French Southern territories & Antarctica & Antarctica & 7780.00 & \textit{NULL} \\ \hline
+ \caption{Algunas filas de la tabla Country} \label{tab:country-data}
  \end{longtable}
   \end{footnotesize}
 
 \begin{footnotesize}
  \begin{longtable}{|l|l|p{2cm}|l|p {3cm}| p {3cm}|l|}
- \hline \endhead \hline \endfoot \hline
- \caption{Algunas filas de la tabla Country (continuación)} \label{tab:country-data-2} \\\hline \multicolumn{1}{|c|}{\textbf{Code}} & \multicolumn{1}{|c|}{\textbf{Population}} & \multicolumn{1}{|p{2cm}|}{\textbf{Life Expectancy}} & \multicolumn{1}{|c|}{\textbf{GNP}} & \multicolumn{1}{|p {3cm}|}{\textbf{GovernmentForm}} & \multicolumn{1}{|p {3cm}|}{\textbf{HeadOfState}} & \multicolumn{1}{|c|}{\textbf{Capital}} \\ \hline \hline  \endfirsthead
+ \hline \multicolumn{1}{|c|}{\textbf{Code}} & \multicolumn{1}{|c|}{\textbf{Population}} & \multicolumn{1}{|p{2cm}|}{\textbf{Life Expectancy}} & \multicolumn{1}{|c|}{\textbf{GNP}} & \multicolumn{1}{|p {3cm}|}{\textbf{GovernmentForm}} & \multicolumn{1}{|p {3cm}|}{\textbf{HeadOfState}} & \multicolumn{1}{|c|}{\textbf{Capital}} \\ \hline \hline  \endfirsthead
 \caption{Algunas filas de la tabla Country (continuación)} \\ \hline \multicolumn{1}{|c|}{\textbf{Code}} & \multicolumn{1}{|c|}{\textbf{Population}} & \multicolumn{1}{|c|}{\textbf{LifeExpectancy}} & \multicolumn{1}{|c|}{\textbf{GNP}} & \multicolumn{1}{|c|}{\textbf{GovernmentForm}} & \multicolumn{1}{|c|}{\textbf{HeadOfState}} & \multicolumn{1}{|c|}{\textbf{Capital}} \\ \hline \hline \endhead \endfoot
 ABW & 103000 & 78.4 & 828.00 & Nonmetropolitan Territory of The Netherlands & Beatrix & 129 \\ \hline
 AFG & 22720000 & 45.9 & 5976.00 & Islamic Emirate & Mohammad Omar & 1 \\ \hline
@@ -134,6 +135,7 @@ ANT & 217000 & 74.7 & 1941.00 & Nonmetropolitan Territory of The Netherlands & B
 ARE & 2441000 & 74.1 & 37966.00 & Emirate Federation & Zayid bin Sultan al-Nahayan & 65 \\ \hline
 ARG & 37032000 & 75.1 & 340238.00 & Federal Republic & Fernando de la Rúa & 69 \\ \hline
 ARM & 3520000 & 66.4 & 1813.00 & Republic & Robert Kotšarjan & 126 \\ \hline
+ \caption{Algunas filas de la tabla Country (continuación)} \label{tab:country-data-2}
  \end{longtable}
  \end{footnotesize}
 
