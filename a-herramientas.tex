@@ -5,9 +5,9 @@
 \section{Herramientas de Stanford}
 \label{sec:stanford-tools}
 
-En este apéndice nos detendremos principalmente en el Question Clasiffier ya que es este el más interesante para nuestro trabajo y los otros dos módulos fueron suficientemente tratados en el capítulo \ref{chap:teorico}, aunque agregamos aquí algunas referencias a documentos importantes para ahondar en ellos.
+En este apéndice nos detendremos principalmente en el Question Clasiffier ya que es este el más interesante para nuestro trabajo, y los otros dos módulos fueron suficientemente tratados en el capítulo \ref{chap:teorico}, aunque agregamos aquí algunas referencias a documentos importantes para ahondar en ellos.
 
-Baste mencionar que el POS tagger de Stanford es un algortimo basado en entropía máxima (\textit{maximum entropy}), implementado en java originalmente en \cite{POS2}, con algunos agregados y mejoras técnicas realizadas en \cite{POS1}. Al descargar el paquete, también está disponible uno más complejo con soporte para los idiomas árabe, chino y alemán. En este trabajo utilizamos el paquete sencillo, que consta de dos modelos entrenados para inglés, usando, como señalamos en \allref{subsec:pos} el tagset de Penn Treebank. Por su parte, el NER tagger de Stanford, es un algoritmo también conocido como CRF Classifier (Conditional Random Field) y permite el entrenamiento con modelos propios, mientras que los modelos incluidos por defecto incorporan tres clases (PERSON, ORGANIZATION, LOCATION) y hay disponibles otros modelos para otros idiomas. Para más detalles, el clasificador implementa -con algunas variaciones- el modelo definido en \cite{NER2}.
+Baste mencionar que el POS tagger de Stanford es un algortimo basado en entropía máxima (\textit{maximum entropy}), implementado en java originalmente en \cite{POS2}, con algunos agregados y mejoras técnicas realizadas en \cite{POS1}. Al descargar el paquete, también está disponible uno más complejo con soporte para los idiomas árabe, chino y alemán. En este trabajo utilizamos el paquete sencillo, que consta de dos modelos entrenados para inglés, usando, como señalamos en \allref{subsec:pos}, el tagset de Penn Treebank. Por su parte, el NER tagger de Stanford, es un algoritmo conocido como CRF Classifier (Conditional Random Field) y permite el entrenamiento con modelos propios, mientras que los modelos incluidos por defecto incorporan tres clases (PERSON, ORGANIZATION, LOCATION) y hay disponibles otros modelos para otros idiomas. Para más detalles, el clasificador implementa -con algunas variaciones- el modelo definido en \cite{NER2}.
 
 Finalmente, el Question Classifier de Stanford \cite{QC2} es un sistema de clasificación de preguntas basado en machine learning que utiliza la arquitectura de aprendizaje SNoW. Es un sistema jerárquico guiado por una semántica de dos niveles que permite la clasificación en categorías granulares. Según los tests de los autores, el proceso logra una efectividad del 90\% sobre 50 diferentes clases finales, utilizando features sintácticos y semánticos.
 
@@ -91,7 +91,7 @@ Uno de los principales problemas que tuvieron los autores al enfrentarse a clase
 La primer pregunta puede pertenecer a la clase \textit{definición} o bien a la clase \textit{enfermedad / medicina} y la segunda a \textit{comida}, \textit{planta} o \textit{animal}. Para abordar este problema, el clasificador asigna diferentes clases ponderadas y no una única clase.
 
 Los dos niveles de clasificación están implementados como dos clasificadores simples en secuencia, ambos utilizando el algoritmo Winnow de SNoW. El primero etiqueta la pregunta en función de las clases más generales y el segundo asigna las clases más finas (dentro de las suclases determinadas por la clase del primero).
-El modelo para el algoritmo de aprendizaje representa las preguntas como listas de características (\textit{features}) tanto sintácticos como semánticos. Los features utilizando son, en total, más de 200.000, siendo casi todos combinaciones complejas de un set acotado de features simples basados en palabras, pos tags, chunks (componentes constitucionales de la oración), chunks principales (por ejemplo: componente nominal principal), entidades nombradas y palabras semánticamente relacionadas a ciertas clases. De estos seis tipos de features primitivos, tres son sintácticos (pos tags, chunks, chunks principales) mientras que otros son semánticos (named entities, palabras relacionadas).
+El modelo para el algoritmo de aprendizaje representa las preguntas como listas de características (\textit{features}) tanto sintácticas como semánticas. Los features utilizados son, en total, más de 200.000, siendo casi todos combinaciones complejas de un set acotado de features simples basados en palabras, pos tags, chunks (componentes constitucionales de la oración), chunks principales (por ejemplo: componente nominal principal), entidades nombradas y palabras semánticamente relacionadas a ciertas clases. De estos seis tipos de features primitivos, tres son sintácticos (pos tags, chunks, chunks principales) mientras que otros son semánticos (named entities, palabras relacionadas).
 
 El clasificador, al igual que el resto de las herramientas de nlp de Stanford, está implementado en java.
 
@@ -124,19 +124,19 @@ para un conjunto bastante amplio de idiomas. La última versi\'on a la fecha (3.
 \end{itemize}
 
 Cabe destacar que no todos los m\'odulos soportan todos los idiomas. Sin embargo, dado que el proyecto está radicado en Espa\~na,
-los idiomas necesarios para los fines de nuestro trabajo (espa\~nol e inglés), soportan todos los m\'odulos disponibles
+los idiomas necesarios para los fines de nuestro trabajo (espa\~nol, portugués e inglés), soportan todos los m\'odulos disponibles
 en la librería.
-Freeling 3.1 ofrece los siguientes analizadores lingüisticos:
+Freeling 3.1 ofrece los siguientes analizadores lingüísticos:
 
 \begin{itemize}
 \item Detecci\'on de idioma
 \item Tokenizer
-\item Sentence splitting,
+\item Sentence splitting
 \item Análisis morfol\'ogico
 \item NER y NEC (Detecci\'on y Clasificaci\'on de Entidades Nombradas)
 \item Reconocimiento de fechas, números, magnitudes físicas, monedas
 \item Codificaci\'on fonética
-\item POS tagging,
+\item POS tagging
 \item Shallow parsing
 \item Dependency parsing
 \item Wordnet-based sense annotation
