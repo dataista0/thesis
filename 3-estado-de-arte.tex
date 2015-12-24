@@ -96,11 +96,10 @@ Nuevamente, vale que $K1 \in \mathbb{R} \wedge  K1 \in [-1,1]$ y $K1=0$ se condi
 
 \section{Literatura y sistemas}
 \label{sec:literatura}
-% Estado: Agregar una introducción acá sobre qué veremos en esta sección.
 
 \subsection{Enfoques sobre open domain}
 \label{subsec:open-domain}
-% Estado: limé aristas (brevemente) y eliminé la etiqueta \falta. Para el yo del 6-6 cuenta como Cerrado.
+
 Existe un consenso general a la ahora de definir el modelo de software más abstracto o de arquitectura para encarar la construcción de un sistema de question answering open domain. Esta arquitectura consiste en un pipeline con al menos tres módulos o componentes bien diferenciados:
 \begin{itemize}
 \item Módulo de procesamiento de la pregunta
@@ -174,7 +173,6 @@ Los sistemas de dominio cerrado puros, por otro lado, tienen interés en diferen
 
 Para ambos casos de uso de los modelos de dominio cerrado (sistemas híbridos y de dominio cerrado puros) el enfoque algorítmico consiste en traducir la pregunta formulada en un lenguaje natural a una consulta del lenguaje formal (potencialmente: SQL, SPARQL o similar). Dado que la cantidad de \dq{cuestiones} sobre las que se puede responder es siempre acotada, el modelo estándar de dominio cerrado sobre datos estructurados busca traducir la pregunta formulada en lenguaje humano a una consulta acerca de algún aspecto de la base de datos. Debe, además poder decidir si una pregunta tiene sentido en el contexto de la información de la que dispone.
 
-%\subsubsection{Marco teórico utilizado en la tesis}
 
 En esta tesis utilizamos como marco teórico el desarrollado por Ana-Maria Popescu et. al. en sus papers \cite{QADB1} y \cite{QADB2}.
 
@@ -268,7 +266,7 @@ Para definir la tratabilidad semántica es necesario introducir antes dos defini
 Considerando las definiciones recién enunciadas, se define como una \textbf{tokenización completa de una pregunta \textit{q}} a cualquier conjunto de tokens en los que cada término que no es un marcador sintáctico de $q$ aparece en exactamente un token del conjunto.
 
 Por su parte, decimos que dos tokens están \textbf{sintácticamente asociados}\footnote{Traducimos aquí \textit{syntactic attachment} como \textit{asociación sintáctica}} en el contexto de una pregunta $q$ cuando estos dos tokens cumplen ciertas restricciones en el árbol sintáctico de la pregunta.
-% Reemplacé "parse tree" por "árbol sintáctico y eliminé una referencia a una sección parse-tree"
+
 La función $attachment$, que modela la asociación sintáctica, tiene como dominio un par de palabras o lemas (y la oración en la que aparecen) y como imagen verdadero o falso. En la implementación presentada por los investigadores (Precise), como veremos en la sección siguiente, se utiliza un Charniak Parser para modelar esta función, aunque los detalles de las condiciones implementadas no se presentan nunca.
 
 Con estos conceptos definidos, podemos dar finalmente la definición de \textbf{traducción válida}\footnote{Traducimos aquí \textit{valid mapping} por \textit{traducción válida}}. Una traducción válida de una pregunta $q$ en un conjunto de elementos $E$ de una base de datos es una correspondencia de alguna tokenización completa de $q$ en elementos de $E$ que cumple las siguientes tres condiciones (notar que los términos \textit{correspondencia}, \textit{compatibilidad} y \textit{asociación sintáctica} están usados según las definiciones técnicas recién reconstruidas):
