@@ -1,9 +1,9 @@
 \chapter{Implementación sobre Qanus}
 \label{chap:qanus} \label{chap:5}
 
-En este capitulo veremos la implementación del modelo de question answering multilingüe y diferentes evaluaciones realizadas utilizando como guía dos tareas monolingües de la competencia QA@Clef '07, una para español y otra para portugués. El sistema está basado en un framework académico de código abierto llamado Qanus. Este framework está empaquetado con un sistema de QA simple, QA-sys, que resuelve ejercicios de la competencia Trec '07 con soporte para inglés. Nosotros adaptamos este sistema para utilizar como librería de procesamiento de lenguajes a Freeling, generando un sistema baseline multilingüe. A este sistema le agregamos features reseñados en \allref{sec:literatura} y realizamos diferente mediciones sobre las instancias en español y portugués sobre los ya mencionados ejercicios de Clef '07.
+En este capítulo veremos la implementación del modelo de question answering multilingüe y diferentes evaluaciones realizadas utilizando como guía dos tareas monolingües de la competencia QA@Clef '07, una para español y otra para portugués. El sistema está basado en un framework académico de código abierto llamado Qanus. Este framework está empaquetado con un sistema de QA simple, QA-sys, que resuelve ejercicios de la competencia Trec '07 con soporte para inglés. Nosotros adaptamos este sistema para utilizar como librería de procesamiento de lenguajes a Freeling, generando un sistema baseline multilingüe. A este sistema le agregamos features reseñados en \allref{sec:literatura} y realizamos diferente mediciones sobre las instancias en español y portugués sobre los ya mencionados ejercicios de Clef '07.
 
-La estructura de este capitulo es la siguiente: en \allref{sec:ejercicio-de-clef} se describe con detalle el panorama general de tareas de question answering en la competencia Clef '07, haciendo énfasis en las tareas seleccionadas, en los corpora y las preguntas disponibles y en las decisiones tomadas a la hora de elegir estas tareas; en \allref{sec:sistema} reseñamos la implementación de nuestro sistema, presentando el sistema baseline de basado en Qanus (\ref{subsec:baseline}), las adaptaciones multilingües y demás mejoras realizadas (\ref{subsec:modificaciones}), las diferentes corridas que realizamos para evaluarlo (\ref{sec:eval}) y, finalmente, las conclusiones, los límites y potenciales mejoras del sistema (\ref{sec:clef-cierre}).
+La estructura de este capítulo es la siguiente: en \allref{sec:ejercicio-de-clef} se describe con detalle el panorama general de tareas de question answering en la competencia Clef '07, haciendo énfasis en las tareas seleccionadas, en los corpora y las preguntas disponibles y en las decisiones tomadas a la hora de elegir estas tareas; en \allref{sec:sistema} reseñamos la implementación de nuestro sistema, presentando el sistema baseline de basado en Qanus (\ref{subsec:baseline}), las adaptaciones multilingües y demás mejoras realizadas (\ref{subsec:modificaciones}), las diferentes corridas que realizamos para evaluarlo (\ref{sec:eval}) y, finalmente, las conclusiones, los límites y potenciales mejoras del sistema (\ref{sec:clef-cierre}).
 
 \section{Ejercicio de Clef}
 \label{sec:ejercicio-de-clef}
@@ -58,10 +58,11 @@ cualquier otra versión de Wikipedia, siempre y cuando sea anterior a noviembre 
 Además, se pide que las respuestas sean tomadas de ``entradas reales'' o artículos de wikipedia y
 no de otros documentos (imágenes, discusión, categoría, template, histórico de revisiones, datos de usuario y páginas con meta información).
 
-Los links a páginas de wikipedia en español y en portugués no estaban más disponibles (ambos respondieron 404), mientras que el formato preprocesado pedido para el inglés resultaba realmente complejo de instalar y parecía una linea muerta. Por estos motivos, seguimos la sugerencia sobre el uso responsable de otras wikipedias y utilizamos las siguientes snapshots de Wikidumps\footnote{Ver \url{http://dumps.wikimedia.org/} y \url{http://en.wikipedia.org/wiki/Wikipedia:Database_download\#Other_languages}}. En la tabla \ref{table:wikipedias} pueden verse las diferentes wikipedias que procesamos durante el trabajo.
+Los links a páginas de wikipedia en español y en portugués no estaban más disponibles (ambos respondieron 404), mientras que el formato preprocesado pedido para el inglés resultaba realmente complejo de instalar y parecía una linea muerta. Por estos motivos, seguimos la sugerencia sobre el uso responsable de otras wikipedias y utilizamos las diferentes snapshots de Wikidumps\footnote{Ver \url{http://dumps.wikimedia.org/} y \url{http://en.wikipedia.org/wiki/Wikipedia:Database_download\#Other_languages}} que se pueden ver en la tabla \ref{table:wikipedias}.
 
 \begin{center}
 \begin{table}
+\centering
 \begin{tabular}{ | l | l | l |}
     \hline
     Idioma & Fecha & Tamaño  \\ \hline
@@ -78,10 +79,11 @@ Los links a páginas de wikipedia en español y en portugués no estaban más di
 \end{table}
 \end{center}
 
-Utilizando la información disponible en los archivos de respuestas esperadas, discriminamos las preguntas con respuestas con soporte de wikipedia, las soportadas por el corpora de noticias de la organización y las que no tienen respuesta (NIL) (Ver table \ref{table:preguntas-por-respuesta}).
+Utilizando la información disponible en los archivos de respuestas esperadas, discriminamos las preguntas con respuestas con soporte de wikipedia, las soportadas por el corpora de noticias de la organización y las que no tienen respuesta (NIL) (Ver tabla \ref{table:preguntas-por-respuesta}).
 
 \begin{center}
 \begin{table}
+\centering
 \begin{tabular}{| l | l | l | l | l |}
 \hline
 Idioma & Wiki & News & NIL & Total \\ \hline
@@ -105,7 +107,7 @@ Los temas no están dados en el set de test, pero pueden ser inferidos del prime
 \end{itemize}
 
 
-Para ilustrar el punto consideremos el primer grupo de preguntas para el ejercicio de español es:
+Para ilustrar el punto consideremos el primer grupo de preguntas para el ejercicio de español:
 \begin{itemize}
 \item ¿En qué colegio estudia Harry Potter?
 \item ¿Cuál es el lema del colegio?
@@ -143,14 +145,14 @@ A: Labour Party Central Committee.\newline
 
 %Los calculos propios coinciden con el análisis presentado en \cite{OverviewClef07} en la siguiente discriminación del total de preguntas en función de las categorías recién señaladas:
 \begin{center}
-\begin{table}[H]
+\begin{table}
 \centering
 \begin{tabular}{| l | l | l | l | l | l |}
 \hline
 Subset & Idioma & Factoid & Definition & List & Total \\ \hline
 \multirow{2}{*}{Todo} & es & 158 & 32 & 10 & 200 \\ \cline{2-6}
  & pt & 159 & 31 & 10 & 200 \\ \hline
- \multirow{2}{*}{Wiki} & es & 122 & 24 & 9 & 155 \\ \cline{2-6}
+ \multirow{2}{*}{Wiki} & es & 130 & 24 & 9 & 163 \\ \cline{2-6}
  & pt & 104 & 18 & 8 & 130 \\ \hline
 \end{tabular}
 \caption{Totales por tipo de pregunta}
@@ -158,11 +160,10 @@ Subset & Idioma & Factoid & Definition & List & Total \\ \hline
 \end{table}
 \end{center}
 
-Los tipos de preguntas disponen a su vez de subtipos. Las preguntas factoid disponen de 8 subtipos, las de definiciones y listas tienen 4.
-Se consideraron los siguiente 8 tipos de Factoids:
+Los tipos de preguntas disponen a su vez de subtipos. Las preguntas factoid disponen de 8 subtipos (ver tabla \ref{table:type-factoid}), las de definiciones y listas tienen 4.
 
 \begin{center}
-\begin{table}[H]
+\begin{table}
 \centering
 \begin{tabular}{| l | p{12cm}|}
 \hline
@@ -190,10 +191,10 @@ A: Gatwick, Stansted, Heathrow, Luton and City.
 Como solo una fuente estaba permitida, los items debían aparecer en secuencia, uno después del otro, en un solo documento de la colección.
 Las preguntas de tipo DEFINITION tienen también estos mismos cuatro subtipos, pero con una semántica ligeramente diferente. En la tabla \ref{table:definition-questions} presentamos ejemplos y la definición inferida sobre estos tipos.
 
-Por su parte, en la table \ref{table:tipo-general} puede verse una clasificación general de preguntas por tipo y por subtipo para los ejercicios de español y de portugués.
+Por su parte, en la tabla \ref{table:tipo-general} puede verse una clasificación general de preguntas por tipo y por subtipo para los ejercicios de español y de portugués.
 
 \begin{center}
-\begin{table}[H]
+\begin{table}
 \centering
 \begin{tabular}{| l | p{12cm}|}
 \hline
@@ -217,7 +218,7 @@ A: Song contest. \\ \hline
 \end{center}
 
 \begin{center}
-\begin{table}[H]
+\begin{table}
 \centering
 \begin{tabular}{| l | l | l | l | l | l |l |l|l|}
 \hline
@@ -288,7 +289,7 @@ Básicamente, cruza las respuestas obtenidas contra unas respuestas
 esperadas escritas a mano y presenta el total de respuestas dadas
 correctamente.\newline
 
-En esta sección de la tesis adoptamos el framework Qanus y adaptamos el sistema QA-sys para 1) incorporar Freeling como librería de herramientas de procesamiento del lenguaje permitiendo un funcionamiento multilenguaje, 2) trabajar sobre el corpus de datos y preguntas de los ejercicios de CLEF '07 de español y portugués descriptos en \allref{sec:ejercicio-de-clef} y, finalmente, 3) incorporamos y evaluamos diferentes mejoras tomadas de la reseña a la literatura científica del apartado anterior \allref{sec:literatura}.
+En esta sección de la tesis adoptamos el framework Qanus y adaptamos el sistema QA-sys para 1) incorporar Freeling como librería de herramientas de procesamiento del lenguaje permitiendo un funcionamiento multilenguaje, 2) trabajar sobre el corpus de datos y preguntas de los ejercicios de CLEF '07 de español y portugués descriptos en \allref{sec:ejercicio-de-clef} y, finalmente, 3) incorporamos y evaluamos algunas mejoras tomadas de la reseña a la literatura científica del apartado anterior \allref{sec:literatura}.
 
 \subsection{Implementación baseline}
 \label{subsec:baseline}
@@ -342,7 +343,7 @@ Las categorías filtradas contienen artículos con alguno de los siguientes pref
 \begin{center}
 \begin{tabular}{| l | l | l | l | l | l| l|}
 \hline
-Wikipedia & \# Entradas & Nulas & Redirects & Filtradas & Validas \\ \hline
+Wikipedia & \# Entradas & Nulas & Redirects & Filtradas & Válidas \\ \hline
 simple-06 & 18273 & 22 &  3452 & 5241 & 9558  \\ \hline
 es-06 & 233750 & 52 & 62805 & 34947 & 135946 \\ \hline
 pt-07 & 498039 & 80 & 210983 & 43390 & 243586 \\ \hline
@@ -393,11 +394,11 @@ Como baseline de desarrollo y pruebas, adaptamos los algoritmos de Qanus. En est
   \item Heurísticas de AR basadas en el QC
 \end{enumerate}
 
-En el primer paso, se descartan todas las preguntas cuyo tipo no sea \textit{factoid}. Esto, en principio, dejaría afuera a 32 preguntas de tipo \textit{definition} y 10 de tipo \textit{list} para el ejercicio en español (24 y 9, respectivamente, considerando solamente las que como goldstandard answer tienen datos de wikipedia) y 31 de tipo \textit{definition} y 10 de tipo \textit{list} para el portugués (18 y 8, respectivamente, considerando las de wikipedia).
+En el primer paso, se descartan todas las preguntas cuyo tipo no sea \textit{factoid}. Esto, en principio, deja afuera a 32 preguntas de tipo \textit{definition} y 10 de tipo \textit{list} para el ejercicio en español (24 y 9, respectivamente, considerando solamente las que como goldstandard answer tienen datos de wikipedia) y 31 de tipo \textit{definition} y 10 de tipo \textit{list} para el portugués (18 y 8, respectivamente, considerando las de wikipedia).
 
-En en segundo paso, la generación de queries, el sistema baseline utiliza 2 algoritmos diferentes según el qtype inferido por el clasificador de preguntas. El primer caso es especifico para la clase fina \sq{HUM:ind} y consta de tres tipos de expresiones regulares escritas a mano y en inglés que matchean contra preguntas de la forma: \dq{Who (is|was) (the)+ NN ... NN?} (NN significa, acá, sustantivo). Por ejemplo: \dq{Who is the CEO of Microsoft?}. También se considera aquí preguntas con la forma \dq{Who VERBO ...?}. Para este tipo de expresiones, el algoritmo específico extrae los sustantivos y los verbos que siguen al patrón descripto y estos son la query. Estos términos se llaman \textit{subject} de la pregunta y el mismo procedimiento se utiliza en un caso posterior de generación de respuestas. Eliminamos este caso ya que su dependencia del idioma volvía el procedimiento obsoleto para un sistema con soporte multilenguaje.
+En en segundo paso, la generación de queries, el sistema baseline utiliza 2 algoritmos diferentes según el qtype inferido por el clasificador de preguntas. El primer caso es especifico para la clase fina \sq{HUM:ind} y consta de tres tipos de expresiones regulares escritas a mano (en inglés) que matchean contra preguntas de la forma: \dq{Who (is|was) (the) NN ... NN?} (NN significa, acá, sustantivo). Por ejemplo: \dq{Who is the CEO of Microsoft?}. También se considera aquí preguntas con la forma \dq{Who VERBO ...?}. Para este tipo de expresiones, el algoritmo específico extrae los sustantivos y los verbos que siguen al patrón descripto y estos son utilizados como la query (estos términos se llaman \textit{subject} de la pregunta y el mismo procedimiento se utiliza en un caso posterior de generación de respuestas). Eliminamos este caso ya que su dependencia del idioma volvía el procedimiento obsoleto para un sistema con soporte multilenguaje.
 
-Por su parte, si el tipo de la pregunta no es \sq{HUM:ind}, el algoritmo general de generación de queries espera, además de la pregunta propiamente dicha, un campo asociado a la pregunta, \sq{target}, aparentemente definido en la competencia TREC para la que está escrito. El campo \sq{target} es utilizado por mucha de la algoritmia que vendrá. Dejaremos en suspenso con qué poblamos ese dato hasta más adelante. Un uso posible es asociarlo el \sq{tópico} del grupo de preguntas de los ejercicios de la competencia. Más adelante veremos qué contenido le cargamos.
+Por su parte, si el tipo de la pregunta no es \sq{HUM:ind}, el algoritmo general de generación de queries espera, además de la pregunta propiamente dicha, un campo asociado a la pregunta, el \sq{target}, aparentemente definido en la competencia TREC para la que está escrito. El campo \sq{target} es utilizado por mucha de la algoritmia que vendrá. Dejaremos en suspenso con qué poblamos ese dato hasta más adelante. Un uso posible es asociarlo el \sq{tópico} del grupo de preguntas de los ejercicios de la competencia. Más adelante veremos qué contenido le cargamos.
 
 
 El método default FormQuery genera una query que contiene, sin repetir, todas las palabras no-stopwords del campo target y todos los sustantivos, verbos y adjetivos de la pregunta completa según el pos tagger de stanford. Nosotros adaptamos este método para funcionar con las etiquetas de Freeling y utilizamos este mecanismo de generación de queries como baseline.
@@ -411,14 +412,14 @@ Las oraciones se evalúan mediante el peso ponderado de diferentes features que 
 $PassageScore = (0.9)*CoverageScore + (0.05)*FreqScore+ (0.05)*ProxScore;$
 
 \medskip
-Los scorers $coverage$, $freq$ y $prox$ son diferentes métricas de evaluación de oraciones, cuya imagen es una valor real entre 0 y 1. En la tabla \ref{table:scorers} se hace una presentación general de los Scorers y a continuación explicamos los algoritmos de $Prox$ y $Span$ ya que no son triviales ($Span$ aún no ha sido utilizado pero lo será en breve).
+Los scorers $coverage$, $freq$ y $prox$ son diferentes métricas de evaluación de oraciones, cuya imagen es una valor real entre 0 y 1. En la tabla \ref{table:scorers} se hace una presentación general de los Scorers. A continuación explicamos los algoritmos de $Prox$ y $Span$ ya que no son triviales ($Span$ aún no ha sido utilizado pero lo será en breve).
 
 \begin{center}
 \begin{table}
 \begin{tabular}{| l | l | p {8cm} |}
 \hline
 Abreviatura & Nombre &  Descripción\\ \hline
-Freq & Frequencia & Computa la cantidad de veces que los tokens de la query ocurren en la oración. Esta suma se divide por la cantidad de tokens de la oración, dando un valor entre 0 y 1. \\ \hline
+Freq & Frecuencia & Computa la cantidad de veces que los tokens de la query ocurren en la oración. Esta suma se divide por la cantidad de tokens de la oración, dando un valor entre 0 y 1. \\ \hline
 Coverage & Cobertura &  Computa cuantos tokens de la query aparecen al
 menos una vez en la oración, y divide esta suma por el total de tokens
 de la \textit{query}.\\ \hline
@@ -450,7 +451,7 @@ El score de $Span$ está dado por \#total de tokens encontrados /  {\textbar}pos
 En el quinto paso se seleccionan las 40 oraciones mejor rankeadas según este score y se les aplica pos tagging.
 
 Finalmente, el sexto paso ejecuta diferentes heurísticas de extracción de respuestas en base al tipo de pregunta generador por el clasificador en el paso anterior.
-Define diferentes heurísticas para los siguientes casos: ABBR:exp, ABBR:abb, HUM:gr y ENTY:cremat, HUM:ind, HUM general, LOC general, NUM:date, NUM:period, NUM:count, NUM general, ENTY general, otros casos.\newline
+Define diferentes heurísticas para los siguientes casos: ABBR:exp, ABBR:abb, HUM:gr y ENTY:cremat, HUM:ind, HUM general, LOC general, NUM:date, NUM:period, NUM:count, NUM general, ENTY general, que veremos a continuación.\newline
 
 \textbf{Caso ABBR:exp}\newline
 
@@ -468,7 +469,7 @@ La fórmula de ponderación utilizada es la siguiente: \\
 
 $TotalScore = (0.55 * CoverageScore) + (0.2 * SentenceScore)	+ (0.1 * ProximityScore) + (0.15 * RepeatedTermScore)$
 
-Donde $CoverageScore$ es el cubrimiento del \sq{$target$} de la pregunta en la oración de soporte de la respuesta, $ProximityScore$ mide la distancia entre el \sq{target} de la pregunta y la respuesta candidata en el contexto de la oración de soporte, $SentenceScore$ considera la posición de la oración en el ranking de las 40 oraciones y $RepeatedTermScore$ es una penalización (su valor es negativo) si la respuesta candidata tiene tokens en común con el \sq{target} de la pregunta. En la adaptación inicial eliminamos este filtrado por diccionarios ya que depende del idioma. \newline
+Donde $CoverageScore$ es el cubrimiento del \sq{$target$} de la pregunta en la oración de soporte de la respuesta, $ProximityScore$ mide la distancia entre el \sq{target} de la pregunta y la respuesta candidata en el contexto de la oración de soporte, $SentenceScore$ considera la posición de la oración en el ranking de las 40 oraciones y $RepeatedTermScore$ es una penalización (su valor es negativo) si la respuesta candidata tiene tokens en común con el \sq{target} de la pregunta. En la adaptación eliminamos el filtrado por diccionarios ya que depende del idioma. \newline
 
 \textbf{Caso HUM:ind} \newline
 
@@ -485,7 +486,7 @@ Donde los scores representan lo siguiente:
   \item SentenceScore: puntaje derivado de la posición de la oración-fuente en el ranking de oraciones
   \item ProximityScore: cuán cerca están la query utilizada como input del módulo de information retrieval (sin stop-words) y la respuesta candidata en el contexto de la oración de la que se extrajo la respuesta candidata.
   \item RepeatedTermScore: penalización (negativo). Coverage entre el \sq{target} y la respuesta candidata
-  \item IsPronoun: Penaliza si la respuesta candidata contienen pronombres. En concreto, verifica si algún token pertenece a la lista \{it, we, he, she, they, our, their\}.
+  \item IsPronoun: Penaliza si la respuesta candidata contiene pronombres. En concreto, verifica si algún token pertenece a la lista \{it, we, he, she, they, our, their\}.
 \end{itemize}
 
 En base a este score, se devuelve la respuesta candidata con puntaje más alto. \newline
@@ -565,7 +566,7 @@ Como vimos anteriormente, los ejercicios consisten en preguntas agrupadas en tor
 Aprovechamos el campo \sq{target} del sistema baseline para incorporar este tópico al flujo de procesamiento, ya que su funcionalidad es la esperada para este input.
 Finalmente, evaluamos diferentes contenidos para este valor. A modo de testeo, utilizamos, aún cuando en la competencia no estaba permitido, el tópico real del grupo según el test set. Por otro lado, implementamos otros tres métodos para generar el tema, siempre basándonos en la pregunta. Hicimos esto por considerar que las respuestas, probablemente, sean erróneas. Dado que no podemos saberlo, apoyar algoritmia sobre el supuesto de que estén bien sería contraproducente para el caso general. Así, implementamos: un método en el cual se agregan solo las entidades nombradas, los números y las fechas de la pregunta, otro en el que se agregan solo los sustantivos y, finalmente, otra en la que se agregan ambos. Si el método elegido no funciona, se utiliza la pregunta sin stop words ni qwords. En todos los casos, nos referimos a la primer pregunta del grupo.
 
-En concreto, esto se reduce a cuatro casos de código, que en la sección de experimentación llamaremos: \textbf{1) Tema Test}, cuando utilizamos el tema explícito de los datos de testing, (\textbf{2) Tema NERS}, \textbf{3) Tema sustantivos} y \textbf{4) Tema híbrido}.
+En concreto, esto se reduce a cuatro casos de código, que en la sección de experimentación llamaremos: \textbf{1) Tema Test}, cuando utilizamos el tema explícito de los datos de testing, \textbf{2) Tema NERS}, \textbf{3) Tema sustantivos} y \textbf{4) Tema híbrido}.
 
 \subsubsection{Generación de queries}
 
@@ -617,7 +618,7 @@ $PassageScore_3 =  PassageScore_{bl} * 0.4 + LengthScore * 0.15 + QNERScore * 0.
 \subsection{Experimentación}
 \label{sec:eval}
 
-Hicimos corridas con todas las combinaciones recién expuestas y, además, variamos la cantidad de documentos retornados por lucene (50 en el sistema baseline) y la cantidad de pasajes extraídos de ellos (40 en el sistema baseline).  Por otro lado, modificamos el sistema para que devuelva una lista de respuestas en lugar de una sola, considerando que los resultados serían bajos. Sobre esta lista, utilizamos la métrica MRR (Mean Reciprocal Rank), única adaptada al caso, sobre distintas longitudes de listas de respuestas. Para evaluar consideramos solamente la respuesta y no el pasaje de justificación, es decir, realizamos una evaluación lenient (indulgente). Por otro lado, en el caso general utilizamos una evaluación automática, aunque luego revisamos las respuestas para algunos caso de modo manual. Como $R-set$ utilizamos solamente la respuesta goldstandard disponible en los archivos de test y, considerando su tamaño acotado, evaluamos diferentes métricas. Utilizamos, primero, un match exacto, es decir, chequeamos que la respuesta dada y la respuesta esperada coincidan exactamente. Luego usamos cubrimientos de la respuesta esperada por la respuesta dada, con diferentes porcentajes de cubrimiento. Esta decisión se justifica, por ejemplo, para el caso de la primer pregunta del ejercicio para el español, en la que la respuesta esperada es \dq{Colegio Hogwarts de Magia y Hechicería} y nuestro sistema encuentra, en 5to lugar, la respuesta \dq{Hogwarts}.
+Hicimos corridas con todas las combinaciones recién expuestas y, además, variamos la cantidad de documentos retornados por lucene (50 en el sistema baseline) y la cantidad de pasajes extraídos de ellos (40 en el sistema baseline).  Por otro lado, modificamos el sistema para que devuelva una lista de respuestas en lugar de una sola, considerando que los resultados serían bajos. Sobre esta lista, utilizamos la métrica MRR (Mean Reciprocal Rank), única adaptada al caso, sobre distintas longitudes de listas de respuestas. Para evaluar consideramos solamente la respuesta y no el pasaje de justificación, es decir, realizamos una evaluación lenient (indulgente). Por otro lado, utilizamos una evaluación automática. Como $R-set$ utilizamos solamente la respuesta goldstandard disponible en los archivos de test y, considerando su tamaño acotado, evaluamos diferentes métricas. Utilizamos, primero, un match exacto, es decir, chequeamos que la respuesta dada y la respuesta esperada coincidan exactamente. Luego usamos cubrimientos de la respuesta esperada por la respuesta dada, con diferentes porcentajes de cubrimiento. Esta decisión se justifica, por ejemplo, para el caso de la primer pregunta del ejercicio para el español, en la que la respuesta esperada es \dq{Colegio Hogwarts de Magia y Hechicería} y nuestro sistema encuentra, en 5to lugar, la respuesta \dq{Hogwarts}.
 
 A continuación listamos sintéticamente todas las variables libres y las instanciaciones que elegimos cuyas permutaciones generan una corrida distinta:
 
@@ -639,15 +640,13 @@ Por otro lado, las siguientes opciones no determinan corridas pero sí determina
 
 La cantidad de permutaciones totales es inmensa: 2 idiomas $\times$ 3 métodos de generación de queries $\times$ 4 métodos de generación de tópicos $\times$ 3 métodos de rankeo de pasajes $\times$ $n$ distintas cantidades de documentos retornados por lucene $\times$ $m$ cantidad de pasajes extraídos de los documentos, con $n=3$ y $m=3$ es, 648. Por eso, realizamos el siguiente procedimiento experimental: en primer lugar, evaluamos, para el sistema baseline, variaciones sobre la cantidad de documentos y de pasajes. Como método \sq{baseline} de inferencia de tópicos usamos el método 2), que agrega solo NERs como target, ya que el método baseline de generación de queries contiene sustantivos, adjetivos y verbos, pero no entidades nombradas. Sobre la combinación de totales que dieron mejores resultados para esta combinación, evaluamos los diferentes métodos. Como veremos en la corrida 1, muchas de las variaciones planteadas parecen no generar grandes cambios en los resultados, por lo que redujimos la cantidad de parámetros en las corridas posteriores. \newline
 
-Por otro lado, consideramos diferentes conjuntos de preguntas, discriminando por tipo de pregunta y por base de conocimientos en la que se esperaba encontrarla. Con respecto al tipo de pregunta, el sistema no considera preguntas que no sean factoids y nosotros disponemos de esa información en el archivo de datos. Con respecto a la base de conocimientos en la que se espera encontrarla podemos discriminar entre preguntas cuya respuesta goldstandard surge de wikipedias y aquellas que surgen del corpus que no utilizamos. Es esperable que los resultados sean superiores en preguntas \textit{factoids} cuya respuesta esperaba está en wikipedia.
-Limitamos la presentación de resultados a preguntas factoids cuya respuesta goldstandard está en wikipedia. Los resultados para los demás casos, salvo alguna escasas excepciones, son inferiores. Como vimos anteriormente, las preguntas que se responden con wikipedia son 155 para el español y 130 para el portugués, las factoid son 158 y 159 respectivamente y las que cumplen ambas condiciones son 122
- y 104. \newline
+Por otro lado, consideramos diferentes conjuntos de preguntas, discriminando por tipo de pregunta y por base de conocimientos en la que se esperaba encontrarla. Con respecto al tipo de pregunta, el sistema no considera preguntas que no sean factoids y nosotros disponemos de esa información en el archivo de datos. Con respecto a la base de conocimientos en la que se espera encontrarla podemos discriminar entre preguntas cuya respuesta goldstandard surge de wikipedias y aquellas que surgen del corpus que no utilizamos. Limitamos la presentación de resultados a preguntas factoids cuya respuesta goldstandard está en wikipedia. Los resultados para los demás casos, salvo alguna escasas excepciones, son inferiores. Como vimos anteriormente, las preguntas que se responden con wikipedia son 163 para el español y 130 para el portugués, las factoid son 158 y 159 respectivamente y las que cumplen ambas condiciones son 130 y 104. \newline
 
 Las corridas que vienen a continuación se estructuran de la siguiente manera: en la \textbf{Corrida 1}, variamos la cantidad de documentos retornados y la cantidad de pasajes extraídos de los mismos, dejando fijos los métodos de algoritmia y el idioma. En las siguientes tres corridas (\textbf{Corrida 2.1},  \textbf{Corrida 2.2} y \textbf{Corrida 2.3}) variamos de a uno los métodos de generación de queries, inferencia de temas y ranking de pasajes, respectivamente, dejando fijos en el método baseline los otros dos. Finalmente, en las (\textbf{Corrida 3.1} y \textbf{Corrida 3.2} utilizamos la combinación de los mejores métodos obtenidos en las anteriores corridas sobre español y sobre portugués. \newline
 
 \textbf{Corrida 1: instanciación de cantidades} \newline
 
-En la primer corrida variamos la cantidad de documentos retornados por el índice entre $\{50, 100, 200\}$, y variamos también la cantidad de pasajes extraídos de esos documentos entres $\{20, 40, 70\}$, generando un total de 9 ejecuciones y dejando fijos los siguiente parámetros: \newline
+En la primer corrida variamos la cantidad de documentos retornados por el índice entre $\{50, 100, 200\}$, y variamos también la cantidad de pasajes extraídos de esos documentos entre $\{20, 40, 70\}$, generando un total de 9 ejecuciones y dejando fijos los siguiente parámetros: \newline
 
 \begin{itemize}
   \item Idioma: Español
@@ -656,9 +655,9 @@ En la primer corrida variamos la cantidad de documentos retornados por el índic
   \item Método de Ranking: 1
 \end{itemize}
 
-Las tablas \ref{table:1_50_getExactMRRWikiFactoid_getCovrMRRWikiFactoid}, \ref{table:1_100_getExactMRRWikiFactoid_getCovrMRRWikiFactoid} y \ref{table:1_200_getExactMRRWikiFactoid_getCovrMRRWikiFactoid} presentan los resultados generales de esta primera corrida. Notar que los valores expresados están multiplicados por 100 (MRR toma valores entre 0 y 1, aquí los presentamos como valores entre 0 y 100).
+Las tablas \ref{table:1_50_getExactMRRWikiFactoid_getCovrMRRWikiFactoid}, \ref{table:1_100_getExactMRRWikiFactoid_getCovrMRRWikiFactoid} y \ref{table:1_200_getExactMRRWikiFactoid_getCovrMRRWikiFactoid} presentan los resultados de esta primera corrida. Notar que los valores expresados están multiplicados por 100 (MRR toma valores entre 0 y 1, aquí los presentamos como valores entre 0 y 100).
 
-\begin{table}[H]
+\begin{table}
 \centering
 \begin{center}
 \begin{tabular}{|l | l | l | l | l | l | l |}
@@ -698,7 +697,7 @@ $MRR_{25}$ & 9.12 & 9.19 & 9.96 & 12.43 & 14.02 & 14.02  \\ \hline
 \end{table}
 
 
-\begin{table}[H]
+\begin{table}
 \centering
 \begin{center}
 \begin{tabular}{|l | l | l | l | l | l | l |}
@@ -738,10 +737,7 @@ $MRR_{25}$ & 8.24 & 8.31 & 9.18 & 11.60 & 13.05 & 13.05  \\ \hline
 \end{table}
 
 
-
-
-
-\begin{table}[H]
+\begin{table}
 \centering
 \begin{center}
 \begin{tabular}{|l | l | l | l | l | l | l |}
@@ -780,7 +776,7 @@ $MRR_{25}$ & 7.00 & 7.02 & 7.21 & 9.31 & 10.78 & 10.78  \\ \hline
 \end{table}
 
 En primer lugar, observamos que el incremento de documentos retornados por el módulo de recuperación de información empobrece los resultados en todos los casos.
-En segundo lugar, se observa que extraer 70 pasajes empobrece los resultados, también en todos los casos. Las opciones de 20 y 40 pasajes no son tan lineales. En la tabla \ref{table:1_50_getExactMRRWikiFactoid_getCovrMRRWikiFactoid} marcamos en negritas los casos en los que uno u otro dieron mejores resultados. Como se puede apreciar, el cuadrante más exacto (para $MRR_{1}$ y $MRR_{5}$ y para comparaciones exactas, 40 dio mejores resultados. Considerando esto, utilizaremos la configuración original del sistema baseline de qanus (50 documentos $\times$ 40 pasajes) para el resto de las corridas. \newline
+En segundo lugar, se observa que extraer 70 pasajes empobrece los resultados, también en todos los casos. Las opciones de 20 y 40 pasajes no son tan lineales. En la tabla \ref{table:1_50_getExactMRRWikiFactoid_getCovrMRRWikiFactoid} marcamos en negritas los casos en los que uno u otro dieron mejores resultados. Como se puede apreciar, el cuadrante más exacto (para $MRR_{1}$ y $MRR_{5}$) y para comparaciones exactas, 40 dio mejores resultados. Considerando esto, utilizamos la configuración original del sistema baseline de qanus (50 documentos $\times$ 40 pasajes) para el resto de las corridas. \newline
 
 
 \textbf{Corrida 2.1: Generación de Queries}\newline
@@ -796,9 +792,9 @@ En esta corrida variamos únicamente el método de generación de queries, gener
 \end{itemize}
 
 Los resultados pueden observarse en la tabla \ref{table:2_1_50_40_getExactMRRWikiFactoid_getCovrMRRWikiFactoidx}. En ella salta a la vista que las diferencias son análogas para todas las celdas de las matrices: el método 3) es ligeramente superior al 1) y el 2) queda rezagado por lejos.
+El método de generación de queries 3, como muestra la tabla, es el método Lasso agregado.\newline
 
-
-\begin{table}[H]
+\begin{table}
 \centering
 \begin{center}
 \begin{tabular}{|l | l | l | l | l | l | l |}
@@ -844,7 +840,7 @@ $MRR_{25}$ & 9.94 & 10.01 & 11.18 & 14.05 & 15.59 & 15.65  \\ \hline
 \end{center}
 \end{table}
 
-
+\medskip
 \textbf{Corrida 2.2: Inferencia de Temas}\newline
 
 En esta corrida variamos únicamente el método de inferencia de temas, generando un total de 4 ejecuciones y dejando fijos los siguiente parámetros: \newline
@@ -860,7 +856,7 @@ En esta corrida variamos únicamente el método de inferencia de temas, generand
 
 Los resultados pueden observarse en la tabla \ref{table:2_2_40_getExactMRRWikiFactoid_getCovrMRRWikiFactoidy} y resulta que el método utilizado (NERs + números de la primer pregunta como target) es el más efectivo en todos los casos.\newline
 
-\begin{table}[H]
+\begin{table}
 \centering
 \begin{center}
 \begin{tabular}{|l | l | l | l | l | l | l |}
@@ -911,8 +907,6 @@ $MRR_{25}$ & 7.64 & 7.71 & 8.49 & 10.15 & 11.45 & 11.52  \\ \hline
 \end{tabular}
 
 
-
-
 \caption{Corrida 2.2: Métodos 1, 2, 3 y 4 respectivamente}
 \label{table:2_2_40_getExactMRRWikiFactoid_getCovrMRRWikiFactoidy}
 \end{center}
@@ -921,7 +915,7 @@ $MRR_{25}$ & 7.64 & 7.71 & 8.49 & 10.15 & 11.45 & 11.52  \\ \hline
 
 \textbf{Corrida 2.3: Ranking de Pasajes}\newline
 
-En esta corrida variamos únicamente el método de ranking de pasajes, generando un total de 3 ejecuciones y dejando fijos los siguiente parámetros: \newline
+En esta corrida variamos únicamente el método de ranking de pasajes, generando un total de 3 ejecuciones y dejando fijos los siguiente parámetros:
 
 
 \begin{itemize}
@@ -945,12 +939,10 @@ La fórmula del score es la siguiente:
 \end{equation*}
 
 
-Como se puede ver en \ref{table:2_4_broken_ref}, agregar este valor en el score general del pasaje mejora los resultados. Las causas más evidentes son que el score funciona como un filtro para pasajes mal formados (es decir, que por alguna razón el splitter no logró \sq{separar} bien) o bien pasajes bien formados pero excesivamente largos. En ambos casos, las herramientas de procesamiento de lenguajes pierden su performance, por lo que pasajes bien rankeados, en el momento de la extracción de la respuesta no son de utilidad. Evaluamos tres ponderaciones -9/1, 8/2 y 7/3-, dando mejores resultados cuanto más se ponderó el score, salvo para $MRR_1$ que se redujo en la tercer corrida. Dado que esta métrica es la preferida, decidimos quedarnos con esta fórmula. Eventualmente podría evaluarse otra métricas y descubrir por qué se dio que esta funcionó mejor para $MMR_1$ y 7/3 funcionó mejor para el resto. Todo parece indicar que por este camino pueden encontrarse mejoras sustantivas con bajo costo de implementación, sea mejorando la ponderación, sea complejizando la formulación del score, que, como puede verse, es realmente simple.
+Como se puede ver en \ref{table:2_4_broken_ref}, agregar este valor en el score general del pasaje mejora los resultados. Las causas más evidentes son que el score funciona como un filtro para pasajes mal formados (es decir, que por alguna razón el splitter no logró \sq{separar} bien) o bien pasajes bien formados pero excesivamente largos. En ambos casos, las herramientas de procesamiento de lenguajes pierden su performance, por lo que pasajes bien rankeados, en el momento de la extracción de la respuesta no son de utilidad. Evaluamos tres ponderaciones -9/1, 8/2 y 7/3-, dando mejores resultados cuanto más se ponderó el score, salvo para $MRR_1$ que se redujo en la tercer corrida. Dado que esta métrica es la preferida, decidimos quedarnos con esta fórmula (ponderando 8/2 y no 7/3). Eventualmente podría evaluarse otra métricas y descubrir por qué se dio que esta funcionó mejor para $MMR_1$ y 7/3 funcionó mejor para el resto. Todo parece indicar que por este camino pueden encontrarse mejoras sustantivas con bajo costo de implementación, sea mejorando la ponderación, sea complejizando la formulación del score, que, como puede verse, es realmente simple.
 
 
-
-
-\begin{table}[H]
+\begin{table}
 \centering
 \begin{center}
 
@@ -997,7 +989,7 @@ $MRR_{25}$ & 7.19 & 7.35 & 7.60 & 10.21 & 11.99 & 12.19  \\ \hline
 \end{table}
 
 
-\begin{table}[H]
+\begin{table}
 \centering
 \begin{center}
 \begin{tabular}{|l | l | l | l | l | l | l |}
@@ -1039,20 +1031,13 @@ $MRR_{25}$ & 12.58 & 12.91 & 14.06 & 17.46 & 18.70 & 18.90  \\ \hline
 \end{center}
 \end{table}
 
+\medskip
 \textbf{Corrida 3: Combinación de Óptimos}\newline
 
 
-Datos de la corrida 3.1, para español:
-\begin{itemize}
-  \item Idioma: Español
-  \item Cantidad de documentos retornados: 50
-  \item Cantidad de pasajes extraídos: 40
-  \item Método de Generación de Queries: 3
-  \item Método de Temas: 2
-  \item Fórmula de Ranking de Pasajes:  $PassageScore_{bl} \times 0.8 + LengthScore \times 0.2$
-\end{itemize}
 
-\begin{table}[H]
+
+\begin{table}
 \centering
 \begin{center}
 \begin{tabular}{|l | l | l | l | l | l | l |}
@@ -1063,23 +1048,13 @@ $MRR_{5}$ & \textbf{12.00} & 12.31 & 13.46 & 16.18 & 16.95 & 17.01  \\ \hline
 $MRR_{10}$ & 12.24 & 12.31 & 13.46 & 16.26 & 17.44 & 17.50  \\ \hline
 $MRR_{25}$ & 12.55 & 12.62 & 13.78 & 16.72 & 18.00 & 18.06  \\ \hline
 \end{tabular}
-\label{table:optimos}
 \medskip
 \caption{Corrida 3.1: Combinación de óptimos para español}
+\label{table:optimos}
 \end{center}
 \end{table}
 
-Datos de la corrida 3.2, para portugués
-\begin{itemize}
-  \item Idioma: Portugués
-  \item Cantidad de documentos retornados: 50
-  \item Cantidad de pasajes extraídos: 40
-  \item Método de Generación de Queries: 3
-  \item Método de Temas: 2
-  \item Fórmula de Ranking de Pasajes:  $PassageScore_{bl} \times 0.8 + LengthScore \times 0.2$
-\end{itemize}
-
-\begin{table}[H]
+\begin{table}
 \centering
 \begin{center}
 \begin{tabular}{|l | l | l | l | l | l | l |}
@@ -1090,37 +1065,64 @@ $MRR_{5}$ & 3.16 & 5.03 & 5.03 & 6.91 & 7.15 & 7.15  \\ \hline
 $MRR_{10}$ & 3.45 & 5.33 & 5.33 & 7.33 & 7.71 & 7.86  \\ \hline
 $MRR_{25}$ & 4.08 & 6.00 & 6.00 & 8.21 & 8.84 & 8.94  \\ \hline
 \end{tabular}
-\label{table:2_3_2_40_getExactMRRWikiFactoid_getCovrMRRWikiFactoid}
 \caption{Corrida 3.2: Combinación de óptimos sobre portugués}
+\label{table:2_3_2_40_getExactMRRWikiFactoid_getCovrMRRWikiFactoid}
 \end{center}
 \end{table}
 
 
 En esta última corrida, utilizamos los métodos que mejores resultados dieron, por sección, todos juntos, primero para español (\ref{table:optimos}) y luego para portugués (\ref{table:2_3_2_40_getExactMRRWikiFactoid_getCovrMRRWikiFactoid}).
-Hay dos observaciones importantes. Primero, con respecto a la corrida en español, es notorio como el $MRR_1$ y, en general, todos los valores salvo el $MRR_5$ con matching exacto, tienen una performance peor que en la corrida 2.3, lo cual se debe, seguramente,a una interacción compleja entre los distintos pasos que conduce a este comportamiento.
-En segundo lugar, con respecto a la corrida en portugués, es notoria su baja performance en relación con los resultados en español, obteniendo apenas un 3.16 \% de respuestas correctas exactas considerando la métrica $MRR_5$. Existen varios factores para explicar esto. En primer lugar, que las herramientas para portugués no son tan maduras como las herramientas para español; en segundo lugar, que la evaluación de los métodos optimos y, en general, todo el enfoque al sistema, estuvo marcado por el español, siendo las adaptaciones para portugués un momento secundario que intentó mostrar, simplemente, que este soporte estaba accesible; en tercer lugar, también es posible que el sistema per se y el enfoque, aún sin otro inconveniente, se desempeñe peor para el set de preguntas para el portugués. A fin de cuentas, no hay que perder de vista que los sets de test usables por nuestro sistema son de 122 preguntas para español y 104 para portugués, a partir de los cuales no es posible extrapolar un comportamiento general, sino presentar resultados concretos.
+Hay dos observaciones importantes. Primero, con respecto a la corrida en español, es notorio como el $MRR_1$ y, en general, todos los valores salvo el $MRR_5$ con matching exacto, tienen una performance peor que en la corrida 2.3, lo cual se debe, seguramente, a una interacción compleja entre los distintos pasos que conduce a este comportamiento.
 
+
+En segundo lugar, con respecto a la corrida en portugués, es notoria su baja performance en relación con los resultados en español, obteniendo apenas un 3.16 considerando la métrica $MRR_5$. Existen varios factores para explicar esto. En primer lugar, que las herramientas para portugués no son tan maduras como las herramientas para español; en segundo lugar, que la evaluación de los métodos óptimos y, en general, todo el enfoque al sistema, estuvieron marcados por el español, siendo las adaptaciones para portugués un momento secundario que intentó mostrar, simplemente, que este soporte estaba accesible; en tercer lugar, también es posible que el sistema per se y el enfoque, aún sin otro inconveniente, se desempeñe peor para el set de preguntas para el portugués. A fin de cuentas, no hay que perder de vista que los sets de test usables por nuestro sistema son de 130 preguntas para español y 104 para portugués, a partir de los cuales no es posible extrapolar un comportamiento general, sino presentar resultados concretos.
+
+\medskip
+
+%TODO: verificar que MRR1 esté bien.
+
+Datos de la corrida 3.1, para español:
+\begin{itemize}
+  \item Idioma: Español
+  \item Cantidad de documentos retornados: 50
+  \item Cantidad de pasajes extraídos: 40
+  \item Método de Generación de Queries: 3
+  \item Método de Temas: 2
+  \item Fórmula de Ranking de Pasajes:  $PassageScore_{bl} \times 0.8 + LengthScore \times 0.2$
+\end{itemize}
+\medskip
+Datos de la corrida 3.2, para portugués:
+\begin{itemize}
+  \item Idioma: Portugués
+  \item Cantidad de documentos retornados: 50
+  \item Cantidad de pasajes extraídos: 40
+  \item Método de Generación de Queries: 3
+  \item Método de Temas: 2
+  \item Fórmula de Ranking de Pasajes:  $PassageScore_{bl} \times 0.8 + LengthScore \times 0.2$
+\end{itemize}
 
 \subsection{Conclusiones, limitaciones y trabajo futuro}
 \label{sec:clef-cierre}
 
-El sistema implementado en este capítulo es un sistema de question answering de dominio abierto con soporte para diferentes idiomas. El mismo utiliza como base el código de Qanus y Qasys - monolingüe, con soporte solo para el idioma inglés - y agrega sobre el mismo las adaptaciones necesarias para trabajar con diferentes idiomas - con los límites mencionados-, utilizando la librería de procesamiento de lenguajes Freeling y, en consecuencia, soportando tantos idiomas como esta soporta. Agregamos, asímismo, mejoras simples en los módulos de recuperación de documentos (la incorporación del algoritmo Lasso de generación de queries) y también en el de generación de respuestas (la introducción de nuevos scores generales). Para ejecutar nuestro sistema y poder evaluar la performance de nuestro sistema con sporte multilingüe baseline, asi como de estas diferentes mejoras y diferentes configuraciones del sistema, tomamos una tarea monolingüe de la competencia CLEF '07 y evaluamos nuestro sistema sobre una parte limitada de la misma, para los idiomas español y portugués (lo hicimos, en realidad, en un principio, para español y para inglés, para darnos cuenta finalmente que las respuestas esperadas para la tarea en inglés no estaban disponibles). Las partes que evaluamos consisten, en concreto, en preguntas de tipo factoid con respuesta válida en entradas de wikipedia.
+El sistema implementado en este capítulo es un sistema de question answering de dominio abierto con soporte para diferentes idiomas. El mismo utiliza como base el código de Qanus y Qasys - monolingüe, con soporte solo para el idioma inglés - y agrega sobre el mismo las adaptaciones necesarias para trabajar con diferentes idiomas - con los límites mencionados-, utilizando la librería de procesamiento de lenguajes Freeling y, en consecuencia, soportando tantos idiomas como esta soporta. Agregamos, asímismo, mejoras simples en los módulos de recuperación de documentos (la incorporación del algoritmo Lasso de generación de queries) y también en el de generación de respuestas (la introducción de nuevos scores generales). Para ejecutar y poder evaluar la performance de nuestro sistema con soporte multilingüe baseline, asi como de estas diferentes mejoras y diferentes configuraciones del sistema, tomamos una tarea monolingüe de la competencia CLEF '07 y evaluamos nuestro modelo sobre una parte limitada de la misma, para los idiomas español y portugués (lo hicimos, en realidad, en un principio, para español y para inglés, para darnos cuenta finalmente que las respuestas esperadas para la tarea en inglés no estaban disponibles). Las partes que evaluamos consisten, en concreto, en preguntas de tipo factoid con respuesta válida en entradas de wikipedia.
 
 Para darnos una idea de la escala de valores manejados, debemos señalar que, en primer lugar, en el documento retrospectivo de CLEF '07 se señala que ``las tareas fueron de una complejidad elevada y en comparación con los resultados del año anterior, la mejor precisión general bajó del 49\% al 41.75\% para tareas multi-lingües, mientras que, más significativamente, bajó de 68\% a 54\% en tareas monolingües.'' En nuestro trabajo, tomamos tareas monolingües - con soporte para varias lenguas, pero monolingües - y nos restringimos a una subsección sencilla (eliminando preguntas de tipo DEFINITION y LIST), por lo que no es del todo válido comparar esta performance con la nuestra. Por otro lado, de Qasys, el sistema baseline que adaptamos para soportar diferentes idiomas, sabemos que en la TREC 07 (en inglés), competencia en la que Qasys participó, el mejor sistema, LumbaPA07, obtuvo una exactitud de 70,06\%, mientas que el décimo (Quanta) obtuvo 20,6\% y Qasys logró un 11,9\%.
 
-Nuestro sistema adaptado al español, con todas las mejoras en su óptimo, logra un nada despreciable 10,08\% $MRR_1$ y un 12,00\% $MRR_5$.
+Nuestro sistema adaptado al español, con todas las mejoras en su óptimo, logra un nada despreciable 10,08 para $MRR_1$ y un 12,00 para $MRR_5$.
 
 Es importante destacar, con respecto a este modelo de dominio abierto, un punto clave que saltó a la vista tanto en la reseña bibliográfica como en el código del sistema baseline Qanus, que es la limitación de las mejoras a zonas acotadas y sin enfoques sistémicos. Una mejora argumentada y con cierta presencia en la literatura del área fue el mecanismo de generación de queries que llamamos Lasso (por el sistema en el que fue implementado por primera vez) y nosotros lo incorporamos aquí, logrando mejoras mínimas en la performance, pasando de 7.75 a 7.81 en $MRR_1$ exacto (+0.26), de 8.94 a 9.27 en $MRR_5$ exacto (+0.31). Más allá de esta mejora, los puntos en los que podríamos haber enfocado nuestras mejoras eran un incremento en la eficacia de las estrategias de generación de respuestas con enfoques ad-hoc basados en nuestra intuición y en la experimentación. Esto podría ser una falla en nuestra investigación, pero más bien parece que no están estudiados ni sistematizados procedimientos sistémicos a la hora de enfrentar, en concreto, el paso de la generación de respuestas. Por su parte, un subsistema muy interesante que no pudimos encontrar y que representaría un gran avance para el área es un módulo open source que permita extraer el \textit{focus} de las preguntas. Este módulo sí representa un problema acotado y bien definido.
 
 El sistema que hacemos público en este trabajo (y que puede encontrarse, como dijimos, en \url{http://github.com/julian3833/multilingual-qanus}, con sus límites, es un buen baseline para emprender trabajos de question answering de dominio abierto sobre bases de conocimiento no estructuradas con soporte para diferentes idiomas.
 
-
 Con respecto a las limitaciones y al trabajo futuro, la lista de posibles mejoras tiene virtualmente una longitud arbitraria, pero los siguientes son los puntos, a nuestro entender, claves:
 \begin{itemize}
-  \item El primer límite a mencionar es la falta de un módulo multilingüe de Question Classification. Como ya mencionamos, utilizamos la existencia de una traducción de las preguntas al inglés para utilizar el módulo en inglés de Stanford, pero nuestro sistema no dispone de un módulo multilingüe de QC. Como ya explicamos, esto es así porque no existen tales implementaciones, al menos, al momento de escribir esta tesis. Una forma sencilla de enfrentar esta situación es utilizar el QC de Stanford en inglés, anteponiendo una traducción del idioma de origen al inglés. Otra posibilidad es una implementación manual por idioma es la implementación de un módulo basado en reglas escritas a mano con un sistema de clases simple. Este acercamiento tiene un problema que es que todo el módulo de generación de respuestas está basado en casos relacionados con las clases del QC de Stanford, así que haría falta afectar ese módulo también.
+  \item El primer límite a mencionar es la falta de un módulo multilingüe de Question Classification. Como ya mencionamos, utilizamos la existencia de una traducción de las preguntas al inglés para utilizar el módulo en inglés de Stanford, pero nuestro sistema no dispone de un módulo multilingüe de QC. Como ya explicamos, esto es así porque no existen tales implementaciones, al menos, al momento de escribir esta tesis. Una forma sencilla de enfrentar esta situación es utilizar el QC de Stanford en inglés, anteponiendo una traducción del idioma de origen al inglés. Otra posibilidad es una implementación manual por idioma de un módulo basado en reglas escritas a mano con un sistema de clases simple. Este acercamiento tiene un problema que es que todo el módulo de generación de respuestas está basado en casos relacionados con las clases del QC de Stanford, así que haría falta afectar ese módulo también.
   \item Otro punto débil, aunque restringido a esta tarea particular, es la inferencia del tópico a partir del primer par de pregunta-respuesta: este procedimiento podría mejorarse enormemente.
   \item La ya mencionada generación del \textit{focus}, que definitivamente tiene la entidad de un trabajo aparte y no una mera mejora para este sistema.
-  \item El soporte de preguntas de tipo definition y list, el soporte de cláusulas de temporales.
+  \item El soporte de preguntas de tipo definition y list y el soporte de cláusulas de temporales.
   \item Mejorar concretas para los casos de generación de respuestas, que son realmente muy básicos. Seguramente con un poco de inventiva y experimientación la performance del sistema puede mejorarse sustancialmente agregando algunas condiciones y expresiones regulares a mano en los casos de generación de respuestas, así como agregando más casos basados en las clases finas de clasificador de preguntas.
   \item Una mejora no necesaria pero interesante sería agregar la web como base de conocimiento.
 \end{itemize}
+
+
+Con esta lista terminamos la presentación de nuestro sistema open domain con soporte multilingüe y, también de nuestra tesis.
