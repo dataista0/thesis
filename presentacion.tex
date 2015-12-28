@@ -1,0 +1,165 @@
+\documentclass{beamer}
+
+\mode<presentation> {
+  \usetheme{Warsaw}
+  \setbeamercovered{transparent}
+}
+
+
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+%\usepackage[latin1]{inputenc}
+
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{fancyvrb}
+
+\usepackage{tikz}
+\usetikzlibrary{arrows,shapes}
+\usetikzlibrary{shadows}
+\usetikzlibrary{shapes.arrows}
+
+\usepackage[3D]{movie15}
+
+
+
+
+\title{Question answering de dominio abierto y de dominio cerrado}
+
+\author{Julián Peller}
+
+\date{Abril 2016} %
+
+\subject{Defensa de tesis}
+
+%\pgfdeclareimage[height=0.8cm]{university-logo}{logo}
+%\logo{\includegraphics[width=8mm]{logo_uva.jpg}}
+
+
+
+%\beamerdefaultoverlayspecification{<+->}
+
+\begin{document}
+
+
+
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{index}
+  \tableofcontents[pausesections]
+\end{frame}
+
+\section{Introducción}
+
+\subsection{Qué es question answering}
+\begin{frame}
+        \begin{block}{Question Answering}<3->
+            Es el proceso automatizado de generación de respuestas concretas para preguntas formuladas en lenguaje natural.
+        \end{block}
+        \bigskip
+
+       \begin{alertblock}{Question}<1->
+            ¿Quién desarrolló la teoría de la relatividad?
+        \end{alertblock}
+
+        \begin{columns}<3->
+            \begin{column}{.5\textwidth}
+            \end{column}
+            \begin{column}{.1\textwidth}
+            \begin{tikzpicture}[>=stealth, rotate border/.style={shape border uses incircle, shape border rotate=270}]
+                    \node[rotate border=-40, fill=black, minimum height=1.5cm, single arrow, single arrow head extend=.3cm, single arrow head indent=.1cm, inner sep=1.5pt] (arrow) {};
+                \end{tikzpicture}
+            \end{column}
+            \begin{column}{.3\textwidth}
+                %Question Answering
+            \end{column}
+            \begin{column}{.5\textwidth}
+
+            \end{column}
+        \end{columns}
+
+        \begin{exampleblock}{Answer}<2->
+            Albert Einstein.
+        \end{exampleblock}
+\end{frame}
+\begin{frame}
+
+
+\begin{block}{}
+Pregunta
+\end{block}
+\medskip
+Flecha vertical
+\medskip
+\begin{block}{}
+Respuesta
+\end{block}
+\bigskip
+
+
+\end{frame}
+\subsubsection*{Diferentes tipos de QA}
+\subsection{Overview del proyecto}
+\subsubsection*{Herramientas}
+
+\section{Dominio cerrado}
+\subsection{Marco de trabajo}
+\subsubsection*{Dominio de problemas y enfoque}
+\subsubsection*{Modelo teórico de Popescu}
+\subsection{Implementación}
+\subsubsection*{Limitaciones, trabajo futuro, conclusiones}
+\section{Dominio abierto}
+\subsection{Marco de trabajo}
+\subsubsection*{Dominio de problemas y enfoque}
+\subsubsection*{Ejercicio de Clef}
+\subsection{Implementación}
+\subsubsection*{Experimientación}
+\subsubsection*{Limitaciones, trabajo futuro, conclusiones}
+\section{Cierre}
+  \subsection*{Cierre}
+  \subsection*{Preguntas}
+
+\begin{frame}
+    \frametitle{Título de la primera diapositiva}
+\begin{columns}
+ \begin{column}{0.55\textwidth}
+\begin{block}{Resultados}
+    \begin{itemize}[<+->]
+      \item  Primer item
+      \item  Segundo item
+      \item  Tercer item
+    \end{itemize}
+    \begin{enumerate}[<+-| alert@+>]
+      \item  Primer item
+      \item  Segundo item
+      \item  Tercer item
+    \end{enumerate}
+\end{block}
+ \end{column} \ \
+% \begin{column}{0.40\textwidth}
+      %\only<4>{\includegraphics[width=0.8\textwidth]{knuth.jpg}}
+      %\only<5>{\includegraphics[width=0.9\textwidth]{forges.jpg}}
+   %   \only<6>{\includegraphics[width=0.9\textwidth]{kill-bill-2.jpg}}
+% \end{column}
+\end{columns}
+\end{frame}
+
+
+
+\end{document}
+
+\usetheme{default}
+\usetheme{JuanLesPins}
+\usetheme{Goettingen}
+\usetheme{Szeged}
+\usetheme{Warsaw}
+
+\usecolortheme{crane}
+
+\usefonttheme{serif}
+\usefonttheme{structuresmallcapsserif}
