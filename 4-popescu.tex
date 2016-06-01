@@ -346,7 +346,7 @@ En las figuras \ref{fig:word-tags} y \ref{fig:syntax-tags} pueden verse los dife
 
 
 Las reglas que construimos son las siguientes (notar que los nombres pueden denotar una direccionalidad, pero las relaciones son simétricas).
-Utilizamos NNx para denotar cualquier hoja sustantivo, adjetivo o adverbio (JJ, JJR, JJS, NN, NNS, NNP, NNPS, RB, RBR, RBS, CD), NN para denotar estrictamente sustantivos (NN, NNS, NNP, NNPS) y Nx para denotar cualquier sintagma relacionado a estos tipos de hojas (nodos intermedios): (ADJP, ADVP, NP, S)
+Utilizamos NNx para denotar cualquier hoja sustantivo, adjetivo o adverbio (JJ, JJR, JJS, NN, NNS, NNP, NNPS, RB, RBR, RBS, CD), NN para denotar estrictamente sustantivos (NN, NNS, NNP, NNPS), Nx para denotar cualquier sintagma relacionado a estos tipos de hojas (nodos intermedios): (ADJP, ADVP, NP, S) y Wx para denotar alguna de estas hojas: WDT, WP, WP\$ y WRB.
 
 \begin{enumerate}
 \item Hermanos:
@@ -355,19 +355,19 @@ Utilizamos NNx para denotar cualquier hoja sustantivo, adjetivo o adverbio (JJ, 
   \end{itemize}
 \item Qwords a sustantivo:
   \begin{itemize}
-    \item Una Wx dentro de un WHNP $\Rightarrow$ un NN dentro de uno o más Nx dentro de un VP dentro de un SQ con el mismo SBARQ como padre.
+    \item Una Wx dentro de un WHNP $\Rightarrow$ un NN dentro de uno o más Nx dentro de un VP dentro de un SQ con el mismo SBARQ como padre que la WHNP mencionada.
   \end{itemize}
 \item Sintagma nominal a sintagma preposicional:
   \begin{itemize}
-    \item NN dentro de un Nx $\Rightarrow$ NNx dentro de uno o más Nx dentro de un PP con el mismo padre que el NP original
+    \item NN dentro de un Nx (1) $\Rightarrow$ NNx dentro de uno o más Nx dentro de un PP con el mismo padre que el Nx marcado con el (1)
   \end{itemize}
 \item Sintagma nominal a sintagma verbal
     \begin{itemize}
-      \item NN dentro de un Nx $\Rightarrow$ NNx dentro de uno o más Nx dentro de un VP del mismo padre que el NP original
+      \item NN dentro de un Nx (1) $\Rightarrow$ NNx dentro de uno o más Nx dentro de un VP del mismo padre que el Nx marcado con el (1)
     \end{itemize}
 \item Sintagma preposicional a sintagma preposicional:
   \begin{itemize}
-    \item NNx dentro de un PP $\Rightarrow$ NNx dentro de uno o más Nx dentro de un PP con el mismo padre que el NP original
+    \item NNx dentro de un PP (1) $\Rightarrow$ NNx dentro de uno o más Nx dentro de un PP con el mismo padre que el PP marcado con el (1)
   \end{itemize}
   \item Términos a tokens:
   \begin{itemize}
