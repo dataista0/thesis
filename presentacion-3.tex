@@ -429,7 +429,7 @@
         \item Respuestas candidatas
     \end{itemize}
     \item Filtro candidatas que contengan palabras en diccionario. \footnotemark
-    \item Re ranking de las candidatas según: 
+    \item Re ranking de las candidatas según {\color{red}COMENTADO}: 
     % \begin{itemize}
     %     \item $TotalScore = (0.55 * CoverageScore) + (0.2 * SentenceScore)  + (0.1 * ProximityScore) + (0.15 * RepeatedTermScore)$
     %     \item $CoverageScore$ es el cubrimiento del \sq{$target$} de la pregunta en la oración de soporte de la respuesta
@@ -440,7 +440,7 @@
     \item En la adaptación eliminamos el filtrado por diccionarios ya que depende del idioma
   \end{itemize}
 
-  \footnotetext[1]{En concreto: \{Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday\}, \{January, February, March, April, May, June, July, August, September, October, November, December\}, y \{us, uk, france, england, cuba, japan, u.s, america\}.}
+  \footnotetext[1]{\footnotesize{En concreto: \{Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday\}, \{January, February, March, April, May, June, July, August, September, October, November, December\}, y \{us, uk, france, england, cuba, japan, u.s, america\}.}}
 \end{frame}
 
 \begin{frame}
@@ -1130,10 +1130,13 @@ $MRR_{25}$ & 4.08 & 6.00 & 6.00 & 8.21 & 8.84 & 8.94  \\ \hline
 \frametitle{Conclusiones 2}
 
 Sobre modelo de dominio abierto:
- * Limitación de las mejoras a zonas acotadas y sin enfoques sistémicos. 
- * Una mejora argumentada y con cierta presencia en la literatura del área fue el mecanismo de generación de queries que llamamos Lasso (por el sistema en el que fue implementado por primera vez) y nosotros lo incorporamos aquí, 
-    *  mejoras mínimas en la performance, de 7.75 a 7.81 en $MRR_1$ exacto (+0.26), de 8.94 a 9.27 en $MRR_5$ exacto (+0.31). 
-  * Falta de "doctrina" en la generación de respuestas. Oportunidad! Linea muerta? 
-* Módulo de \textit{focus} open source en inglés. Problema acotado, bien definido. Herramienta útil
-
+  \begin{itemize}
+ \item Limitación de las mejoras a zonas acotadas y sin enfoques sistémicos. 
+ \item Una mejora argumentada y con cierta presencia en la literatura del área fue el mecanismo de generación de queries que llamamos Lasso (por el sistema en el que fue implementado por primera vez) y nosotros lo incorporamos aquí, 
+\begin{itemize}
+    \item  mejoras mínimas en la performance, de 7.75 a 7.81 en $MRR_1$ exacto (+0.26), de 8.94 a 9.27 en $MRR_5$ exacto (+0.31). 
+  \end{itemize}
+  \item Falta de "doctrina" en la generación de respuestas. Oportunidad! Linea muerta? 
+\item Módulo de \textit{focus} open source en inglés. Problema acotado, bien definido. Herramienta útil
+  \end{itemize}
 \end{frame}
