@@ -1,5 +1,11 @@
 \documentclass{beamer}
+\usepackage{tikz}
+\usetikzlibrary{arrows,shapes}
+\usetikzlibrary{shadows}
+\usetikzlibrary{shapes.arrows}
 \usepackage{tikz-qtree}
+\usetikzlibrary{positioning}
+\usetikzlibrary{babel}
 \usepackage{lmodern}
 
 \makeatletter
@@ -62,17 +68,12 @@
 \usepackage{color}
 \usepackage{multirow}
 
-
 \usepackage{soul}
 
-\usepackage{tikz}
-\usetikzlibrary{arrows,shapes}
-\usetikzlibrary{shadows}
-\usetikzlibrary{shapes.arrows}
 
 %\usepackage[3D]{movie15}
 
-
+\usepackage{smartdiagram}
 
 
 \newcommand\dq[1]{\textquotedblleft #1\textquotedblright}
@@ -127,14 +128,22 @@
 \input{presentacion-3.tex}
 
 
-\section{Cierre}
-  \subsection*{Resumen y conclusiones generales}
-    \begin{frame}
-    \frametitle{Conclusiones: Dominio cerrado}
-      \begin{itemize}
-        \item {\color{red} FILL ME}
-      \end{itemize}
-    \end{frame}
+% \section{Cierre}
+%   \subsection*{Resumen y conclusiones generales}
+%     \begin{frame}
+%     \frametitle{Conclusiones: Dominio cerrado}
+%       \smartdiagram[descriptive diagram]{
+%   {Style,{Define shapes, colors, shading,
+%           and line styles for nodes and arrows}},
+%   {Position, {Place nodes using a matrix,
+%               relative or absolute positioning}},
+%   {Relation, Insert edges or arrows
+%              between selected nodes},
+%   {Label, Add labels on edges or arrows}} 
+%       \begin{itemize}
+%         \item {\color{red} FILL ME}
+%       \end{itemize}
+%     \end{frame}
 
 
   \subsection*{Preguntas}

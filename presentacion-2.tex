@@ -1,4 +1,4 @@
-
+\fontsize{9.5pt}{7.2}\selectfont
 \section{Dominio cerrado (Popescu/World)}
 \subsection{Introducción}
 \begin{frame}
@@ -106,14 +106,14 @@
   \frametitle{Tratabilidad semántica / idea coloquial}
     \begin{block}{Tratabilidad semántica en el contexto de una DB}<1->
       \begin{itemize}
-          \item Una Q-word (Qué, quién, cuándo, dónde, etc.)
-          \item Pares de atributos y valores
-          \item Valores sueltos
-          \item Términos no significativos y menciones a relaciones
+          \item Una {\color{green}Q-word} (Qué, quién, cuándo, dónde, etc.)
+          \item Pares de {\color{blue}atributos} y {\color{blue}valores}
+          \item {\color{purple}Valores} sueltos
+          \item Términos no significativos y {\color{orange}menciones a relaciones}
           \item Por ejemplo:
             \begin{itemize}
               \item ¿{\color{green}Qué} {\color{orange}bancos} de la {\color{red}empresa Credicoop} están localizados en el {\color{blue}barrio} de {\color{blue}Coghlan}?
-              \item ¿{\color{green}Quién} era el {\color{red}presidente} de {\color{red}México} en {\color{orange}1993}?
+              \item ¿{\color{green}Quién} era el {\color{red}presidente} de {\color{red}México} en {\color{purple}1993}?
             \end{itemize}
       \end{itemize}
     \end{block}
@@ -298,6 +298,9 @@ FROM & Todas las relaciones mencionadas \\
 \end{frame}
 
 \subsection{Implementación}
+
+%TODO: Falta intro a la implementacion
+
 \subsubsection*{Base de datos}
 \begin{frame}
 \frametitle{Base de datos: World (Country, City y CountryLanguage)}
@@ -375,13 +378,26 @@ When & \textbf{IndependenceYear}\\ \hline
 \end{enumerate}
 \end{frame}
 
+
+\begin{frame}
+\frametitle{Matcher}
+
+\begin{figure}
+  \centering
+    \includegraphics[scale=0.3]{graficos/popescu-example-2}
+  \caption{Matcher para ``What are the HP jobs on a Unix system?''}
+  \label{fig:popescu-example-2}
+\end{figure}
+\end{frame}
+
+
 \begin{frame}
 \frametitle{Matcher}
   
   \begin{itemize}
     \item Input = tokenizaciones completas generadas por el Tokenizer,
     \item Construye el grafo {\color{red} que expusimos en la sección NADA}
-    \item Algoritmo de max flow. \footnotemark \footnotemark
+    \item Algoritmo de max flow.
     \item Las aristas implicadas en el flujo máximo posible asocian 
     \begin{itemize}
       \item 1) los tokens de valor y de atributo y los correspondientes elementos (valores y atributos, respectivamente) de la base de datos y 
@@ -389,14 +405,6 @@ When & \textbf{IndependenceYear}\\ \hline
     \end{itemize}
     \item Otras soluciones posibles. Si el flujo es igual a la cantidad de tokens de valor en la pregunta es potencialmente una traducción válida. Retiramos ordenadamente las aristas del grafo que ocurren entre la columna 2 y 3 (tokens de valor y valores de la db).
 \end{itemize}
-
-\footnotetext[1]{\footnotesize{El problema de max-flow es un problema de grafos que consiste en “enviar” el máximo flujo posible a través de un grafo dirigido con dos nodos especiales (fuente o source y sumidero o sink) y aristas con cierta capacidad mayor o igual que cero. Este flujo debe ir desde el nodo fuente al nodo sumidero, respetando las capacidades de las aristas y respetando que, para cada nodo, el flujo saliente no puede ser mayor al flujo entrante. \url{http://web.mit.edu/~ecprice/acm/acm08/MaxFlow.java}}}
-
-\footnotetext[2]{\footnotesize{Bloquee alguna funcionalidad basica por pajero.}}
-
-
-%Cabe notarse aquí, como ya mencionamos anteriormente, que no soportamos en nuestra implementación la desambiguación de tokens de relación. Esto significa que: asumimos que un token de relación tiene un solo elemento relación asociado y no será necesario decidir si refiere a una relación u a otra. En todos los ejemplos de bases de datos que consideramos, esta asunción era verdadera (es decir, no existía un token de relación que necesite ser desambiguado) y por ello no implementamos esta capacidad del sistema, que quedará como trabajo futuro. Así mismo, no soportamos tokens multi tipados, prefiriendo relaciones sobre atributos y valores y atributos sobre valores (el caso implementativo es simple: require un grafo extra por cada combinación de tipos distintos por token). Los casos en que esta ambigüedad ocurría eran específicos y la solución no reportaba ninguna mejora cualitativa, por lo que lo dejamos de lado, quedando como una mejora futura.
-
 
 \end{frame}
 
@@ -424,26 +432,15 @@ Notemos que la condición 3 implica que para cada token de relación exista alg�
 
 \end{frame}
 
-\begin{frame}
-\frametitle{Matcher: notas}
-La definición de las reglas se hizo a prueba y error y es posible que sea simple, para alguien con mayores conocimientos lingüísticos, mejorarlas. Probablemente tenga sentido diferenciar entre sustantivos principal y modificador (Unix y system, por ejemplo) y modificar las reglas 3 y 4 para conectar solo los principales, entre otras mejoras. El sistema ofrece también la opción de no evaluar las asociaciones sintácticas en absoluto, en cuyo caso se mejora la performance pero aparecen nuevas traducciones válidas que podrían haber sido filtradas por estas condiciones, que el usuario deberá desambiguar manualmente).
-Además, estas reglas seguramente sean insuficientes y estén dejando afuera varias preguntas que deberían poder procesarse.
-
-Finalmente, todos los resultados de max-flow que cumplen con las condiciones de 1 a  4 son traducciones válidas, que pasan al MappingFilter, que realiza ciertos filtrados que describiremos, de nuevo, en un título aparte.
-
-El resultado de este módulo es una lista de Mappings (una estructura que contiene 1) una tokenización completa de la pregunta original y 2) un mapeo válido entre cada token de la misma en un elemento de la base de datos). Cada mapeo es una traducción válida de la pregunta. Si existe solo uno, entonces este mapeo se traducirá en una query que generará el resultado. Si no, corresponde al MappingFilter realizar filtrados inteligentes de las múltiples soluciones y, en caso de que continuen existiendo múltiples soluciones, entonces se consultará al usuario qué quiso preguntar. Por otro lado, si no fue posible generar ninguna traducción válida, se retornará al usuario sin respuesta, pidiéndole que vuelva a escribir su pregunta de otro modo.
-
-
-\end{frame}
-
-
 
 \begin{frame}
-\frametitle{Charniak}
-Para verificar las condiciones de asociación sintáctica (2.b y 3.b) utilizamos la implementación oficial del árbol sintáctico de Charniak (\url{github.com/BLLIP/bllip-parser}), con un wrapper en java que es la clase $uba.nlp.CharniakParseTree$. Las reglas sintácticas utilizadas por Precise no están especificadas en los trabajos, por lo que creamos nuestras propias reglas tomando los ejemplos de asociaciones sintácticas dadas en los trabajos, evaluando los resultados de diferentes ejemplos y extrapolando reglas a partir de allí.
-
-
-Veamos, en primer lugar, ejemplos del parse tree para tres preguntas:
+\frametitle{Charniak: chequeo sintáctico}
+\begin{itemize}
+\item No especificado. Experimental. Sin virtuosismos
+\item Vinculan hoja sustantivo, adjetivo o adverbio $\rightarrow$ (JJ, JJR, JJS, NN, NNS, NNP, NNPS, RB, RBR, RBS, CD)
+\item Hojas sustantivo $\rightarrow$ )NN, NNS, NNP, NNPS)
+\item Qwords $\rightarrow$ (WDT, WP, WP\$, WRB)
+\end{itemize}
 
 \end{frame}
 
@@ -454,71 +451,77 @@ Veamos, en primer lugar, ejemplos del parse tree para tres preguntas:
 
 \end{frame}
 
+
+
+
 \begin{frame}
 \frametitle{Charniak}
+\Tree [.S1 [.WHNP [.WP What ] ] [.SQ [.VP [.AUX are ] [.{\color{red}NP} [.DT the ] [.{\color{red}NNP} {\color{red}HP} ] [.{\color{red}NNS} {\color{red}jobs} ] ] [.PP [.IN on ] [.{\color{red}NP} [.DT a ] [.{\color{red}NNP} {\color{red}Unix} ] [.{\color{red}NN} {\color{red}system} ] ] ] ] ] [.. ? ] ] \\
+{\color{red}Regla 1 - Sustantivos \dq{hermanos}}
 
-\Tree [.S1 [.WHNP [.WP What ] ] [.SQ [.VP [.AUX are ] [.NP [.NP [.DT the ] [.NNS capitals ] ] [.PP [.IN of ] [.NP [.DT the ] [.NNP US ] [.NNS states ] ] ] ] ] ] [.. ? ] ] \\
-``What are the capitals of the US states?''
+\end{frame}
+
+\begin{frame}
+\frametitle{Charniak}
+\Tree [.{\color{blue}S1} [.{\color{blue}WHNP} [.{\color{blue}WP} {\color{blue}What} ] ] [.{\color{blue}SQ} [.{\color{blue}VP} [.AUX are ] [.{\color{blue}NP} [.DT the ] [.{\color{blue}NNP} {\color{blue}HP} ] [.{\color{blue}NNS} {\color{blue}jobs} ] ] [.PP [.IN on ] [.NP [.DT a ] [.NNP Unix ] [.NN system ] ] ] ] ] [.. ? ] ] \\
+{\color{blue}Regla 2: qwords a sustantivos}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Charniak}
+\Tree [.S1 [.WHNP [.WP What ] ] [.SQ [.{\color{purple}VP} [.AUX are ] [.{\color{purple}NP} [.DT the ] [.{\color{purple}NNP} {\color{purple}HP} ] [.NNS jobs ] ] [.{\color{purple}PP} [.IN on ] [.{\color{purple}NP} [.DT a ] [.{\color{purple}NNP} {\color{purple}Unix} ] [.{\color{purple}NN} {\color{purple}system} ] ] ] ] ] [.. ? ] ] \\
+{\color{purple}Regla 3: sintagma nominal a sintagma preposicional}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Charniak}
+\Tree [.S1 [.WHNP [.WP What ] ] [.SQ [.{\color{purple}VP} [.AUX are ] [.{\color{purple}NP} [.DT the ] [.NNP HP ] [.{\color{purple}NNS} {\color{purple}jobs} ] ] [.{\color{purple}PP} [.IN on ] [.{\color{purple}NP} [.DT a ] [.{\color{purple}NNP} {\color{purple}Unix} ] [.{\color{purple}NN} {\color{purple}system} ] ] ] ] ] [.. ? ] ] \\
+{\color{purple}Regla 3: sintagma nominal a sintagma preposicional (otra)}
 
 \end{frame}
 
 
 \begin{frame}
-\frametitle{Charniak: reglas}
-as reglas que construimos son las siguientes (notar que los nombres pueden denotar una direccionalidad, pero las relaciones son simétricas).
-Utilizamos NNx para denotar cualquier hoja sustantivo, adjetivo o adverbio (JJ, JJR, JJS, NN, NNS, NNP, NNPS, RB, RBR, RBS, CD), NN para denotar estrictamente sustantivos (NN, NNS, NNP, NNPS), Nx para denotar cualquier sintagma relacionado a estos tipos de hojas (nodos intermedios): (ADJP, ADVP, NP, S) y Wx para denotar alguna de estas hojas: WDT, WP, WP\$ y WRB.
+\frametitle{Matcher, filtro, queries}
+ No usar charniak. Mejora la performance. Empeora filtro. Mas desambiguaciones mas tontas.
 
-\begin{enumerate}
-\item Hermanos:
-  \begin{itemize}
-    \item  NNx $\Leftrightarrow$ NNx $\Leftrightarrow$ Wx si comparten el mismo el mismo padre
-  \end{itemize}
-\item Qwords a sustantivo:
-  \begin{itemize}
-    \item Una Wx dentro de un WHNP $\Rightarrow$ un NN dentro de uno o más Nx dentro de un VP dentro de un SQ con el mismo SBARQ como padre que la WHNP mencionada.
-  \end{itemize}
-\item Sintagma nominal a sintagma preposicional:
-  \begin{itemize}
-    \item NN dentro de un Nx (1) $\Rightarrow$ NNx dentro de uno o más Nx dentro de un PP con el mismo padre que el Nx marcado con el (1)
-  \end{itemize}
-\item Sintagma nominal a sintagma verbal
-    \begin{itemize}
-      \item NN dentro de un Nx (1) $\Rightarrow$ NNx dentro de uno o más Nx dentro de un VP del mismo padre que el Nx marcado con el (1)
-    \end{itemize}
-\item Sintagma preposicional a sintagma preposicional:
-  \begin{itemize}
-    \item NNx dentro de un PP (1) $\Rightarrow$ NNx dentro de uno o más Nx dentro de un PP con el mismo padre que el PP marcado con el (1)
-  \end{itemize}
-  \item Términos a tokens:
-  \begin{itemize}
-    \item Dos tokens están asociados si cualquier término de uno está asociado a cualquier término de otro.
-  \end{itemize}
-\end{enumerate}
+Finalmente, todos los resultados de max-flow que cumplen con las condiciones de 1 a  4 son traducciones válidas, que pasan al MappingFilter, que realiza ciertos filtrados que describiremos, de nuevo, en un título aparte.
 
+Resultado e Mappings (una estructura que contiene 1) una tokenización completa de la pregunta original y 2) un mapeo válido entre cada token de la misma en un elemento de la base de datos). 
+Cada mapeo es una traducción válida de la pregunta. Si existe solo uno, entonces este mapeo se traducirá en una query que generará el resultado. Si no, corresponde al MappingFilter realizar filtrados inteligentes de las múltiples soluciones y, en caso de que continuen existiendo múltiples soluciones, entonces se consultará al usuario qué quiso preguntar. Por otro lado, si no fue posible generar ninguna traducción válida, se retornará al usuario sin respuesta, pidiéndole que vuelva a escribir su pregunta de otro modo.
 
-En los ejemplos presentados, los pares de términos asociados según estas reglas son los siguientes. Para el primero, (hp, jobs), (unix, system)  (regla 1), (what, hp), (what, jobs) (regla 2) y, finalmente, (hp, unix), (hp, system), (job, unix), (jobs, system) (regla 3). Para el segundo, (us, states) (regla 1), (what, capitals) (regla 2) y (capitals, us) y (capitals, states) (regla 3). Para el tercero, (what, names) (regla 2), (names, cities) y (cities, argentina) (regla 3).
 
 \end{frame}
 
 
 \begin{frame}
-\frametitle{MappingFilter, QueryGenerator, MainProcessor}
+\frametitle{Filtros, Generación de queries}
 
 \textbf{MappingFilter}
-
-La clase $uba.app.MappingFilter$ es responsable, en primer lugar, de quitar las traducciones válidas repetidas y, en segundo lugar, de aplicar una serie de reglas también de filtrado. Para eliminar las traducciones repetidas, las transformamos en queries y simplemente comparamos por igualdad, ya que el generador de queries ordena las cláusulas generando, para inputs iguales pero diferentemente ordenados, la misma query.
-Además de este filtro, aplicamos tres reglas más, de creación propia. En primer lugar, eliminamos ``semi duplicados'', que consisten en atributos similares en la base de datos, en concreto, para esta base de datos, consideramos semi-duplicada a una query que consulta por Country.Name y por Country.LocalName solamente. La segunda y la tercera regla están basadas en la siguiente idea: en el caso en que exista más de una traducción válida en la cual la qword esté asociada con un atributo \textit{implícito}, por como está el sistema definido, también estará asociado con todos los atributos que pueda estarlo (ver tabla table:atributos-qwords para las compatibilidades definidas). Esto implica que, por ejemplo, para cualquier pregunta cuya qword sea 'what' y no tenga su atributo asociado explícito, habrá 16 diferentes traducciones válidas. En los trabajos sobre los que basamos nuestro proyecto este problema no está mencionado y en los ejemplos presentados no es visible. Lo que hicimos en este caso es aplicar dos conceptos de preferencia. La segunda regla prefiere, entre los atributos implícitos posibles, aquellos cuya relación está mencionada en la pregunta (si hubiera alguna). La tercer regla señala un orden de preferencia entre los atributos mismos, una vez especificada la relación. El atributo implicito preferido está marcado en negrita en la tablatable:atributos-qwords. Si tras aplicar estar reglas siguen existiendo más de una traducción válida, entonces damos al usuario el control, pidiendo por una desambiguación.
-
-
+\begin{itemize}
+\item Elimina repetidas (según su query SQL).
+\item Regla 1 - ``semi duplicados'': atributos similares de la DB\footnotemark 
+\item Regla 2 y 3 - Fundamento. si una traducción válida tiene su qword asociado a un atributo \textit{implícito}, también estará asociado con todos los atributos que pueda estarlo (ver tabla table:atributos-qwords para las compatibilidades definidas).\footnotemark 
+\item Regla 2 - Preferir, entre los atributos implícitos, aquellos cuya relación está mencionada en la pregunta (si hubiera alguna). 
+\item Regla 3 - Una vez especificada la relación, priorizar el atributo implicito preferido en negrita en la tabla table:atributos-qwords. 
+\item Si después de MappingFilter hay más de una traducción, vuelve al usuario a desambiguar
+\end{itemize}
 \textbf{QueryGenerator}
 
-El procedimiento para generar una query a partir de una traducción válida es exactamente el mismo que se desarrollo en subsec:closed-domain y está implementado en el método Mapping.query().
+\centering
+\begin{tabular}{ r | l }
+SELECT &  Elementos apareados con qwords \\
+WHERE & Pares de atributos y valores generados por el Matcher\\
+FROM & Todas las relaciones mencionadas \\
+\end{tabular}
 
 
-\textbf{MainProcessor}
 
-Finalmente, el punto de entrada de todo el sistema es $uba.app.MainProcessor$, que puede utilizarse especificando el parámetro -q QUESTION en cuyo caso responderá a esa pregunta y retornará el control o bien sin parámetros, en cuyo caso ingresa en un loop de preguntas-respuestas. El resultado para cada pregunta es cero, una o más queries de SQL.
-Agregamos la opción de desambiguación para que el usuario elija entre dos o más queries si no se pudo generar una y también una presentación de las respuestas una vez determinada la query final, pero es más bien experimental y poco sólido.
+\footnotetext[1]{ en concreto, una query que consulta por Country.Name Country.LocalName}
+\footnotetext[2]{Esto implica que, por ejemplo, para cualquier pregunta cuya qword sea 'what' y no tenga su atributo asociado explícito, habrá 16 diferentes traducciones válidas.}
+
 \end{frame}
 
 \subsubsection*{Ejemplos}
@@ -536,4 +539,300 @@ Agregamos la opción de desambiguación para que el usuario elija entre dos o m�
   \begin{itemize}
     \item {\color{red} FILL ME}
   \end{itemize}
+\end{frame}
+
+\begin{frame}[t]
+\frametitle{Ejemplo 1: ``Who is the head of state of Zimbabwe?''}
+Ejemplo 1:\newline
+  \Large{``Who is the head of state of Zimbabwe?''}
+\end{frame}
+
+\begin{frame}[t]
+\frametitle{Ejemplo 1: Tokenizer}
+1. Separar en palabras, eliminar puntuaciones y pasar a lower case:\newline
+  \Large{``{\color{blue}w}ho is the head of state of {\color{blue}z}imbabwe{\color{red}\st{?}}''}
+\end{frame}
+
+
+\begin{frame}[t]
+\frametitle{Ejemplo 1: Tokenizer}
+1. Separar en palabras, eliminar puntuaciones y pasar a lower case:\newline
+  \Large{\{{\color{blue}w}ho, is, the, head, of, state, of, {\color{blue}z}imbabwe\}}
+\end{frame}
+\begin{frame}[t]
+\frametitle{Ejemplo 1: Tokenizer (2)}
+2. Lematizar las palabras, eliminar marcadores sintácticos:\newline
+  \Large{\{who, {\color{red}\st{is}}, {\color{red}\st{the}}, head, {\color{red}\st{of}}, state, {\color{red}\st{of}}, zimbabwe\}}
+\end{frame}
+
+\begin{frame}[t]
+\frametitle{Ejemplo 1: Tokenizer (2)}
+2. Lematizar las palabras, eliminar marcadores sintácticos:\newline
+  \Large{\{who, head, state, zimbabwe\}}
+\end{frame}
+
+\begin{frame}[t]
+\frametitle{Ejemplo 1: Tokenizer - tokens para who}
+3. Obtener tokens para cada lema \newline
+    \Large{$getTokens(who)\ \rightarrow \{$'who'$\}$}
+\end{frame}
+
+\begin{frame}[t]
+\frametitle{Ejemplo 1: Tokenizer - tokens para head}
+3. Obtener tokens para cada lema \newline
+    \Large{$
+    getTokens(head)\ \rightarrow \{$ 'head country', 'head teacher body politic', 'head body politic', 'head teacher land', 'read / write head dos', 'heading provincial', 'heading state', 'heading commonwealth', 'read / write head body politic', 'head word land', 'head state of matter', 'read / write head provincial', 'read / write head state department', 'head province',  'heading res publica', 'read / write head nation', (51 más)...$\}$}
+\end{frame}
+
+\begin{frame}[t]
+\frametitle{Ejemplo 1: Tokenizer - tokens para state}
+3. Obtener tokens para cada lema \newline
+  \Large{ $getTokens(state)\ \rightarrow  \{$'heart eastern united states', 'centre eastern united states', 'central eastern united states', 'centrical eastern united states', 'midsection eastern united states', 'midriff eastern united states', 'centric eastern united states', 'center eastern united states', 'north western united states', (702 más)...$\}$}
+\end{frame}
+
+\begin{frame}[t]
+\frametitle{Ejemplo 1: Tokenizer - tokens para Zimbabwe}
+3. Obtener tokens para cada lema \newline
+  \Large{$getTokens(zimbabwe)\ \rightarrow \{$'zimbabwe', 'republic of zimbabwe', 'capital of zimbabwe'$\}$}
+
+\end{frame}
+
+\begin{frame}[t]
+\frametitle{Ejemplo 1: Tokenizer - intersección}
+4. Filtrar solo tokens cuyos lemas estén en la pregunta\newline
+  \Large{$getTokens(zimbabwe)\ \rightarrow \{$'zimbabwe', {\color{red}\st{'republic of zimbabwe'}}, {\color{red}\st{'capital of zimbabwe'}}$\}$ }
+\end{frame}
+
+
+\begin{frame}[t]
+\frametitle{Ejemplo 1: Tokenizer - intersección}
+4. Filtrar solo tokens cuyos lemas estén en la pregunta\newline
+  \Large{$getTokens(zimbabwe)\ \rightarrow \{$'zimbabwe'$\}$}
+\end{frame}
+
+
+\begin{frame}[t]
+\frametitle{Ejemplo 1: Tokenizer - intersección}
+4. Filtrar solo tokens cuyos lemas estén en la pregunta\newline
+  \Large{
+    $getTokens(zimbabwe) \rightarrow \{$'zimbabwe'$\}$\newline
+    $getTokens(who)\ \rightarrow \{$'who'$\}$\newline
+    $getTokens(head) \rightarrow \{$'head state','heading state'$\}$\newline
+    $getTokens(state) \rightarrow  \{$'state','head state','heading state'$\}$
+}
+\end{frame}
+
+\begin{frame}[t]
+\frametitle{Ejemplo 1: ``Who is the head of state of Zimbabwe?''}
+  Generar el conjunto de partes de todos los tokens.\newline
+%ACA
+  \Large{
+      $\emptyset$,\newline
+      \{'zimbabwe', 'state'\},\newline
+      \{'zimbabwe', 'state', 'head state', 'who'\},\newline
+      \{'head state', 'zimbabwe', 'who'\},\newline
+      \{'heading state', 'zimbabwe', 'head state', 'who'\},\newline
+      ...
+  }\newline
+
+  \normalsize{Para cada uno de estas \textit{tokenizaciones}, verificar:
+  \begin{itemize}
+    \item Que sus palabras cubran la pregunta original.
+    \item Que no haya palabras repetidas entre los tokens.
+  \end{itemize}
+  }
+\end{frame}
+
+\begin{frame}
+\frametitle{Ejemplo 1: Tokenizaciones completas}
+
+\begin{center}
+
+$q = \text{``Who is the head of state of Zimbabwe?''}$
+\end{center}
+ \begin{equation*}
+    CompleteTokenizations(q) = \begin{cases}
+               \text{who, head state, zimbabwe} \\
+               \\
+               \\
+               \text{who, heading state, zimbabwe} \\
+           \end{cases}
+\end{equation*}
+
+\end{frame}
+
+\begin{frame}[t]
+\frametitle{Ejemplo 1: Matcher - Tokens $\rightarrow$ Elementos}
+Obtener elementos de la DB para cada token\newline
+  \Large{
+    $zimbabwe \rightarrow Zimbabwe$ (Valor de Country.Name)
+    }
+\end{frame}
+
+\begin{frame}[t]
+\frametitle{Ejemplo 1: Matcher - Tokens $\rightarrow$ Elementos}
+Obtener elementos de la DB para cada token\newline
+  \Large{
+    $\text{head state} \rightarrow HeadOfState$ (Atributo de Country)
+    }
+\end{frame}
+
+\begin{frame}[t]
+\frametitle{Ejemplo 1: Matcher - Tokens $\rightarrow$ Elementos}
+Obtener elementos de la DB para cada token\newline
+  \Large{
+    $\text{heading state} \rightarrow HeadOfState$ (Atributo de Country)
+    }
+\end{frame}
+
+\begin{frame}[t]
+\frametitle{Ejemplo 1: Matcher - Tokens $\rightarrow$ Elementos}
+Obtener elementos de la DB para cada token\newline
+  \Large{
+    $who \rightarrow Who$ (Qword compatible con HeadOfState)
+    }
+\end{frame}
+
+\begin{frame}
+\frametitle{Ejemplo 1: Matcher - Grafo de atributos y valores}
+\begin{figure}
+  \centering
+    \includegraphics[scale=.33]{graficos/presentacion/ejemplo-grafo-matcher-1-2}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{Ejemplo 1: Matcher - Grafo de atributos y valores}
+\begin{figure}
+  \centering
+    \includegraphics[scale=.33]{graficos/presentacion/ejemplo-grafo-matcher-1-3}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{Ejemplo 1: Matcher - Grafo de atributos y valores}
+\begin{figure}
+  \centering
+    \includegraphics[scale=.33]{graficos/presentacion/ejemplo-grafo-matcher-1-4}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{Ejemplo 1: Matcher - Grafo de atributos y valores}
+\begin{figure}
+  \centering
+    \includegraphics[scale=.33]{graficos/presentacion/ejemplo-grafo-matcher-1-5}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{Ejemplo 1: Matcher - Grafo de atributos y valores}
+\begin{figure}
+  \centering
+    \includegraphics[scale=.33]{graficos/presentacion/ejemplo-grafo-matcher-1-6}
+\end{figure}
+\end{frame}
+\begin{frame}[t]
+\frametitle{Ejemplo 1: Matcher - notas}
+\Large{``{\color{blue}Who} \st{is} \st{the} {\color{blue}head} \st{of} {\color{blue}state} \st{of} {\color{purple}Zimbabwe}?''}
+\normalsize{
+\begin{itemize}
+  \item {\color{blue}head state} es el atributo {\color{blue}Country.HeadOfState}
+  \item {\color{blue}Who} es un valor (especial) de {\color{blue}Country.HeadOfState}
+  \item {\color{purple}Zimbabwe} es un valor de Country.Name ({\color{purple}implícito})
+  \item No desambigua nada (los tokens tiene un solo elemento asociado)
+\end{itemize}
+}
+\bigskip
+Los tokens `Who' y `Head state' deben estar sintácticamente asociados
+
+\end{frame}
+\begin{frame}[t]
+\frametitle{Ejemplo 1: Matcher - Asociación sintáctica - Regla 1}
+\Large{Regla 1: who $\rightarrow$ head}
+\begin{center}
+\begin{figure}
+  \centering
+    \includegraphics[scale=.5]{graficos/presentacion/ejemplo-charniak-2}
+\end{figure}
+
+\end{center}
+\end{frame}
+
+\begin{frame}[t]
+\frametitle{Ejemplo 1: Matcher - Asociación sintáctica - Regla 6}
+\Large{Regla 6: head $\rightarrow$ state}
+\begin{center}
+
+\begin{figure}
+  \centering
+    \includegraphics[scale=.5]{graficos/presentacion/ejemplo-charniak-1}
+\end{figure}
+\end{center}
+\end{frame}
+
+\begin{frame}[t]
+\frametitle{Ejemplo 1: Final}
+\Large{Who is the head of state of Zimbabwe? 
+\bigskip
+\newline
+{\color{white}\textbf{{\color{white}SELECT}} HeadOfState \newline
+{\color{white}\textbf{FROM}} Country \newline
+{\color{white}\textbf{WHERE}} Country.Name$=$ {\color{white}`Zimbabwe'}
+}}
+
+\bigskip
+
+{\color{white}\textbf{``Robert G. Mugabe''}}
+
+\end{frame}
+
+
+
+\begin{frame}[t]
+\frametitle{Ejemplo 1: Final}
+\Large{{\color{blue}Who} \st{is} \st{the} {\color{blue}head} \st{of} {\color{blue}state} \st{of} {\color{purple}Zimbabwe}? 
+\bigskip
+\newline
+{\color{white}\textbf{{\color{white}SELECT}} HeadOfState \newline
+{\color{white}\textbf{FROM}} Country \newline
+{\color{white}\textbf{WHERE}} Country.Name$=$ {\color{white}`Zimbabwe'}
+}}
+
+\bigskip
+
+{\color{white}\textbf{``Robert G. Mugabe''}}
+
+\end{frame}
+
+\begin{frame}[t]
+\frametitle{Ejemplo 1: Final}
+\Large{{\color{blue}Who} \st{is} \st{the} {\color{blue}head} \st{of} {\color{blue}state} \st{of} {\color{purple}Zimbabwe}? 
+\bigskip
+\newline
+\textbf{{\color{blue}Who}} $\rightarrow$ Valor de Country.HeadOfState \newline
+\textbf{{\color{blue}head state}} $\rightarrow$ Atributo Country.HeadOfState \newline
+\textbf{{\color{purple}Zimbabwe}} $\rightarrow$ Valor implícito de Country.Name \newline
+}
+
+\bigskip
+
+{\color{white}\textbf{``Robert G. Mugabe''}}
+
+\end{frame}
+
+\begin{frame}[t]
+\frametitle{Ejemplo 1: Final}
+\Large{{\color{blue}Who} \st{is} \st{the} {\color{blue}head} \st{of} {\color{blue}state} \st{of} {\color{purple}Zimbabwe}? 
+\bigskip
+\newline
+\textbf{{\color{purple}SELECT}} HeadOfState \newline
+{\color{purple}\textbf{FROM}} Country \newline
+{\color{purple}\textbf{WHERE}} Country.Name$=$ {\color{green}`Zimbabwe'}
+}
+
+\bigskip
+
+\textbf{``Robert G. Mugabe''}
+
 \end{frame}

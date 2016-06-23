@@ -1,3 +1,5 @@
+\fontsize{9.5pt}{7.2}\selectfont
+
 \section{Dominio abierto (Qanus/Freeling/CLEF)}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -10,18 +12,18 @@
 \begin{frame}
 \frametitle{Introducción}
   \begin{itemize}
-    \item Sistema de dominio abierto multilingüe
+    \item Sistema QA de dominio abierto con soporte multilingüe
     \item Basado en Qanus, adaptado para usar Freeling.
     \item Ejercicios de CLEF'07 monolingüe para español y portugués
     \item Wikipedia como base de conocimiento
+    \item IR + NLP + Heurísticas
+    \item Agregamos: 
+    \begin{itemize}
+        \item Heurísticas de generación de queries (de Lasso y de \textit{topics})
+        \item Heurística de ranking de pasajes
+    \end{itemize}
+    \item Experimentamos y sacamos conclusiones.
   \end{itemize}
-
-  Adoptamos el framework Qanus y el sistema QA-sys para:
-  \begin{enumerate}
-    \item Incorporar Freeling como librería de herramientas de procesamiento del lenguaje permitiendo un funcionamiento multilenguaje. 
-    \item Trabajar sobre el corpus de datos y preguntas de los ejercicios de CLEF '07 de español y portugués
-    \item Incorporamos y evaluamos algunas mejoras tomadas de la reseña a la literatura científica
-  \end{enumerate}
 
 \end{frame}
 
@@ -32,17 +34,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Marco teórico}
 
-\begin{frame}
-\frametitle{Dominio de problemas y enfoque}
-     \begin{block}{Dominio general y universal}<1->
-      \begin{itemize}
-          \item Cualquier cosa
-          \item Corpora de texto $\rightarrow$ datos no estructurados
-          \item Question answering como sistema de pipeline
-          \item IR + NLP + Heurísticas
-      \end{itemize}
-    \end{block}
-\end{frame}
 
 \begin{frame}
 \frametitle{Marco teórico}
@@ -70,6 +61,33 @@
 \end{frame}
 
 \begin{frame}
+\frametitle{Dominio de problemas, módulos}
+\begin{columns}[T] % align columns
+\begin{column}{.48\textwidth}
+  \begin{figure}
+      \includegraphics[scale=0.3]{graficos/qa-open-domain}
+    \caption{Módulos y submódulos de un sistema de QA}
+    \label{fig:tareas}
+  \end{figure}
+\end{column}%
+\hfill%
+\begin{column}{.48\textwidth}
+
+\begin{block}{Dominio general}<1->
+      \begin{itemize}
+          \item Cualquier tema y tipo de pregunta
+          \item Corpora de texto $\rightarrow$ datos no estructurados
+          \item Question answering como sistema de pipeline
+          \item IR + NLP + Heurísticas
+      \end{itemize}
+    \end{block}
+\end{column}%
+\end{columns}
+
+\end{frame}
+
+
+\begin{frame}
 \frametitle{Heurística de generación de queries [Lampert, 2004]}
 \begin{block}{8 pasos}<1->
 \begin{enumerate}
@@ -84,14 +102,6 @@
 \end{enumerate}
 \end{block}
 \end{frame}
-
-\begin{frame}
-\frametitle{Competencias y métricas}
-\begin{itemize}
-\item {\color{red}FILL ME}
-\end{itemize}
-\end{frame}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
@@ -131,7 +141,7 @@
 
 
 \begin{frame}
-  \frametitle{Tareas activadas en CLEF '07}
+  \frametitle{Tareas activadas en Clef '07}
   \begin{figure}
       \includegraphics[scale=0.4]{graficos/clef07}
     \caption{Tareas activadas en la competencia Clef '07}
@@ -145,12 +155,12 @@
   \begin{table}
   \centering
   \begin{tabular}{| l | l | l | l | l | l |}
-  \hline
-  Subset & Idioma & Factoid & Definition & List & Total \\ \hline
-  \multirow{2}{*}{Todo} & es & 158 & 32 & 10 & 200 \\ \cline{2-6}
+  
+  Subset & Idioma & Factoid & Definition & List & Total \\ 
+  \multirow{2}{*}{Todo} & es & 158 & 32 & 10 & 200 \\ 
    & pt & 159 & 31 & 10 & 200 \\ \hline
-   \multirow{2}{*}{Wiki} & es & 130 & 24 & 9 & 163 \\ \cline{2-6}
-   & pt & 104 & 18 & 8 & 130 \\ \hline
+   \multirow{2}{*}{Wiki} & es & 122 & 24 & 9 & 163 \\ 
+   & pt & 104 & 18 & 8 & 130 \\ 
   \end{tabular}
   \caption{Totales por tipo de pregunta}
   \label{table:totals-type-question}
@@ -196,72 +206,107 @@
   \end{figure}
 \end{frame}
 
+
 \begin{frame}
-\frametitle{El pipeline de QA-Sys}
-  \textbf{1. Preparación de la fuente de información: } Preprocesa XML de Aquaint (datos de la TREC 07) de manera offline (llamado previo) en un índice Lucene \newline
+\frametitle{QA-Sys - Qanus @ Trec 07}
+\begin{columns}[T] % align columns
+\begin{column}{.48\textwidth}
+  \begin{figure}
+      \includegraphics[scale=0.5]{graficos/trec-7-accuracy-reduced}
+    \caption{Resultados de Trec 07}
+    \label{fig:tareas}
+  \end{figure}
+\end{column}%
+\hfill%
+\begin{column}{.48\textwidth}
 
-\textbf{2. Análisis de la pregunta: } Anota la pregunta con POS, NER y QC. \newline
-
-\textbf{3. Generación de respuestas: } Busca la pregunta en el índice, separa los documentos en pasajes y los rankea con métricas heurísticas y luego, dependiendo del tipo de QC, aplica heurísticas basadas en NER, POS y QC sobre los pasajes para extraer una respuesta\newline
-  
-
-  \begin{block}{QA-Sys}
-    \begin{itemize}
-      \item Compitió en TREC 07 con buenos resultados:
+  \begin{block}{TREC 07}
       \begin{itemize}
-        \item  LymbaPA07 (privado)  $\rightarrow$ 0.706, 1ero
-        \item Quanta (universitario) $\rightarrow$ 0.206, 10mo
-        \item QA-Sys $\rightarrow$ 0.119
-      \end{itemize}
-      \item {\color{red}Qué métrica}
-    \end{itemize}
+          \item Monolingue, Inglés. Competencia importante
+          \item Una respuesta por pregunta
+          \item 200 preguntas en total
+          \item Evaluada por humanos
+          \item \textit{Precisión}: respuestas exactas sobre respuestas totales
+          \item LymbaPA $\rightarrow$ {\color{blue}0.706} (70\%)
+          \item QA-Sys $\rightarrow$ {\color{blue}0.119} (12\%)
+        \end{itemize}
   \end{block}
+\end{column}%
+\end{columns}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Baseline: QA-Sys}
+  \textbf{1. Preparación de la fuente de información: } Preprocesa XML de Aquaint de manera offline en un índice Lucene. \newline
+
+\textbf{2. Análisis de la pregunta: } \newline Anota la pregunta con POS, NER y QC. \newline
+
+\textbf{3. Generación de respuestas: } Busca la pregunta en el índice, separa los documentos en pasajes y los rankea con métricas heurísticas y luego, dependiendo del tipo de QC, aplica heurísticas basadas en NER, POS y QC sobre los pasajes para extraer una respuesta.\newline
 
 \end{frame}
 
 \begin{frame}
 \frametitle{Baseline: ML QA-Sys}
   \begin{itemize}
-    \item QA-sys multilingüe monolingüe no crosslingüe.
+    \item Soporte multi idioma no simultaneo.
     \begin{itemize}
       \item Soporta varios idiomas, pero de a uno a la vez.
     \end{itemize}
     \item Indice invertido de Wikipedia
-    \item Reemplazamos las herramientas NLP por Freeling y sacamos todo lo dependiente al idioma.
+    \item Reemplazamos las herramientas NLP por Freeling y sacamos reglas dependiente al idioma.
   \end{itemize}
 \end{frame}
 
+
 \begin{frame}
-\frametitle{1. Base de Conocimiento}
+\frametitle{Pipeline}
+  \begin{figure}
+      \includegraphics[scale=0.3]{graficos/pipeline}
+  \end{figure}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{1. Preparación de la base de conocimiento}
+  \begin{figure}
+      \includegraphics[scale=0.33]{graficos/pipeline-ibp}
+  \end{figure}
     \begin{table}
     \centering
     \begin{center}
     \begin{tabular}{| l | l | l | l | l | l| l|}
-    \hline
-    Wikipedia & \# Entradas & Nulas & Redirects & Filtradas & Válidas \\ \hline 
-    simple-06 & 18273 & 22 &  3452 & 5241 & 9558  \\ \hline
-    es-06 & 233750 & 52 & 62805 & 34947 & 135946 \\ \hline
-    pt-07 & 498039 & 80 & 210983 & 43390 & 243586 \\ \hline
-    simple-13 & 180067 & 8 & 35600 & 41902 & 102557\\ \hline
+    Wikipedia & \# Entradas & Nulas & Redirects & Filtradas & \textbf{Válidas} \\ 
+    simple-06 & 18273 & 22 &  3452 & 5241 & 9558 \\ 
+    simple-13 & 180067 & 8 & 35600 & 41902 & 102557\\
+    \textbf{es-06} & \textbf{233750} & 52 & 62805 & 34947 & \textbf{{\color{green}135946}} \\ 
+    \textbf{pt-07} & \textbf{498039} & 80 & 210983 & 43390 & \textbf{{\color{green}243586}} \\ 
     \end{tabular}
     \caption{Wikipedias: cantidad de entradas válidas e inválidas}
     \label{table:creacion-indices}
     \end{center}
     \end{table}
-    \begin{itemize}
-      \item Wikipedia $\rightarrow$ Lucene (id, title, body, all)
-      \item Reemplazamos el componente del framework por gwtwiki
-    \end{itemize}
 \end{frame}
 
+
+% \begin{frame}
+% \frametitle{2. Procesamiento de la pregunta}
+%   \begin{figure}
+%       \includegraphics[scale=0.3]{graficos/pipeline-qp}
+%     \label{fig:Quanus}
+%   \end{figure}
+% \end{frame}
+
 \begin{frame}
-\frametitle{2. Anotado de la pregunta}
+\frametitle{2. Procesamiento de la pregunta}
   \begin{itemize}
-    \item Preguntas Aquaint, Stanford NER, POS, QC
-    \item Preguntas de CLEF '07, Freeling NER y POS, Stanford QC (en)
+    \item NER $\rightarrow$ Freeling
+    \item POS $\rightarrow$ Freeling {\color{red} Explicar que es quizas con graficos?}
+    \item QC $\rightarrow$ {\color{red}No hay} (tesista?)
     \begin{itemize}
-        \item No hay QC en español ni portugués
-        \item Tareas en-es y en-pt activas $\rightarrow$ Preguntas en inglés
+        \item Aprovechando que estaban activas las tareas en-es y en-pt
+        \item Hack (truchada)  $\rightarrow$ pasamos QC sobre preguntas en inglés
     \end{itemize}
   \end{itemize}
 
@@ -269,28 +314,44 @@
     \centering
     \begin{center}
     \begin{tabular}{| l | l | l | }
-    \hline
-    Clase & \# Preguntas (es)  & \# Preguntas (pt)\\ \hline
-    HUM &  62 & 53 \\ \hline
-    NUM &  53 & 52\\ \hline
-    ENTY &  34 & 28\\ \hline
-    DESC &  25 & 30\\ \hline
-    LOC &  24 & 36\\ \hline
-    ABBR &  2 & 1\\ \hline
+    Clase & \# ES  & \# PT \\ 
+    HUM &  62 & 53 \\ 
+    NUM &  53 & 52\\ 
+    ENTY &  34 & 28\\ 
+    DESC &  25 & 30\\ 
+    LOC &  24 & 36\\ 
+    ABBR &  2 & 1\\ 
+    Total & 200 & 200 \\
     \end{tabular}
-    \caption{Distribución por clases de las preguntas para español y portugués (Li \& Roth, Stanford)}
+    \caption{Clases de las preguntas para ES y PT, Stanford Classifier (Li \& Roth, Stanford)}
     \label{table:qc-es-pt}
     \end{center}
   \end{table}
 \end{frame}
 
+
+% \begin{frame}
+% \frametitle{Pipeline}
+%   \begin{figure}
+%       \includegraphics[scale=0.3]{graficos/pipeline}
+%     \caption{Pipeline}
+%     \label{fig:Quanus}
+%   \end{figure}
+% \end{frame}
+
 \begin{frame}
 \frametitle{3. Generación de Respuestas}
-  \begin{itemize}
-    \item Sacamos Stanford y pusimos Freeling. 
-    \item Eliminamos reglas basadas en el inglés.
-  \end{itemize}
-  El algoritmo tiene los siguientes pasos:
+  \begin{columns}[T] % align columns
+\begin{column}{.38\textwidth}
+      \begin{figure}
+          \includegraphics[scale=0.3]{graficos/pipeline-ar}
+        %\caption{Módulos y submódulos de un sistema de QA}
+        %\label{fig:tareas}
+      \end{figure}
+\end{column}%
+\hfill%
+\begin{column}{.58\textwidth}
+El algoritmo tiene los siguientes pasos:
   \begin{enumerate}
     \item Filtrado de preguntas
     \item Generación de Queries
@@ -299,62 +360,49 @@
     \item POS tagging de las mejores oraciones
     \item Heurísticas de AR basadas en el QC
   \end{enumerate}
-  \begin{block}{3.1 Filtrado de preguntas}
-  \begin{itemize}
-      \item Descarta preguntas no \textit{factoid}.
-      \item 32 de tipo \textit{definition} y 10 de tipo \textit{list} para español (24 y 9, respectivamente, solo wikipedia) y 31 \textit{definition} y 10 \textit{list} para portugués (18 y 8, para wikipedia).
-    \end{itemize}
-  \end{block}
+\end{column}%
+\end{columns}
 \end{frame}
 
 \begin{frame}
 \frametitle{3. Generación de Respuestas (2)}
+   \begin{block}{3.1 Filtrado de preguntas}
+  \begin{itemize}
+      \item Solo factoids (no definition, no list, no nil), solo de wikipedia
+      \item Total: 122 es, 104 pt
+    \end{itemize}
+  \end{block}
   \begin{block}{3.2 Generación de Queries}
   \begin{itemize}
-      \item QA-Sys tiene 2 algoritmos:
-      \item 1. Para \sq{HUM:ind}: expresiones regulares escritas a mano (en inglés):
+      \item Descartamos caso (\dq{Who (is|was) (the) NN ... NN?} )
+      \item 2. Caso baseline
       \begin{itemize}
-        \item \dq{Who (is|was) (the) NN ... NN?} (NN $=$ sustantivo). Por ejemplo: \dq{Who is the CEO of Microsoft?}. 
-        \item \dq{Who VERBO ...?}. 
-        \item  Eliminamos este caso, depende de inglés.
-      \end{itemize}
-      \item 2. $FormQuery$. No \sq{HUM:ind}
-      \begin{itemize}
-        \item Espera \sq{target} (TREC). Lo vinculamos con el tópico de CLEF (ver más adelante) .
-        \item  Todas las palabras no-stopwords del campo \textit{target} y todos los sustantivos, verbos y adjetivos de la pregunta completa.
-        \item Este método adaptado a Freeling es nuestro baseline.
-        \item Usos de target:
+        \item Espera \sq{target}(TREC) / tópico (Clef) y pregunta. 
+        \item Query:
+        \begin{itemize}
+              \item  Palabras no stop-words de \textit{target} 
+              \item  Sustantivos, verbos y adjetivos de la pregunta.
+        \end{itemize}
       \end{itemize}
     \end{itemize}
   \end{block}
 \end{frame}
-\begin{frame}
-\frametitle{3. Generación de Respuestas (3)}
-  \begin{block}{3.3 IR}
-  \begin{itemize}
-      \item Pedido a Lucene y lista de $N$ documentos.
-    \end{itemize}
-  \end{block}
 
-  \begin{block}{3.4 Extracción y rankeo de oraciones}
+
+\begin{frame}
+\frametitle{3. Generación de Respuestas (IR)}
+  \begin{block}{3.3, 3.4, 3.5 - IR + Extracción y rankeo de oraciones}
     \begin{itemize}
       \item Documentos divididos en oraciones (no heredan rank)
-      \item Peso ponderado por features.
-      \item $PassageScore = (0.9)*CoverageScore + (0.05)*FreqScore+ (0.05)*ProxScore;$
-      \item Scorers entre 0 y 1, ver próxima slide
-    \end{itemize}
-  \end{block}
-
-  \begin{block}{3.5 POS tagging de las mejores oraciones}
-  \begin{itemize}
-      \item Se aplica POS tag a las 40 oraciones mejor rankeadas según $PassageScore$
-      \item Se desecha el resto
+      \item Peso ponderado por scorers entre 0 y 1:
+      \item $rank = 0.9\times covr + 0.05\times freq + 0.05\times prox;$
+      \item Primeras $K$ oraciones pos-taggeadas, el resto se desecha
     \end{itemize}
   \end{block}
 \end{frame}
 
 \begin{frame}
-\frametitle{Scorers: Freq, Cov, Prox, Span}
+\frametitle{Scorers: Freq, Cov, Prox}
   \begin{block}{Freq \& Cov: Ocurrencia de la query en la respuesta candidata}
   \begin{itemize}
       \item Frecuencia: tokens de la query que ocurren en la oración sobre tokens de la oración 
@@ -365,7 +413,7 @@
   \begin{itemize}
       \item $s_1=$\dq{Argentina es un país americano} y $s_2=$\dq{independizado en 1810}
       \item $t=$\dq{Argentina es un país americano, originalmente una colonia española, independizado en 1810}
-      \item $prox(s_1, s_2, t)= fraq{dist(s_1, s_2)}{len(t)} = fraq{7}{12} = 0.58 $, 
+      \item $prox(s_1, s_2, t)= frac{dist(s_1, s_2)}{len(t)} = frac{7}{12} = 0.58 $, 
       \begin{itemize}
           \item $dist(s_1, s_2)=$ cantidad de strings entre \sq{un} y \sq{en} (tokens intermedios de $s_{1,2}$)
           \item $len(t)=$ cantidad de strings del texto
@@ -388,156 +436,153 @@
   \end{block}
 \end{frame}
 
-\begin{frame}
-  \frametitle{Heurísticas de AR - Casos}
-    \begin{block}{3.6 Heurísticas de AR basadas en el QC}
-  \begin{itemize}
-      \item Extracción de respuestas en base al tipo de pregunta generado por el clasificador en el paso anterior.
-      \item Casos: ABBR:exp, ABBR:abb, HUM:gr y ENTY:cremat, HUM:ind, HUM general, LOC general, NUM:date, NUM:period, NUM:count, NUM general, ENTY general.\
 
-    \end{itemize}
-  \end{block}
-\textbf{Caso ABBR:exp - expansión de una abreviación}\newline
+\begin{frame}
+\frametitle{Scorers: Span}
+  \begin{block}{Span: similar a Prox, pero sobre un string y sus tokens}
   \begin{itemize}
-    \item Se extraen las entidades nombradas de tipo \sq{Organización} desde la pregunta. 
-    \item Se generan regex de expansión de esa abreviación. Por ejemplo, \dq{IGFA} $\rightarrow$ $[I][A-Za-z0-9][G][A-Za-z0-9][F][A-Za-z0-9][A][A-Za-z0-9]$.
+  \item $s = \{token_1, token_2, ..., token_n\}$ y $t$ un texto
+  \item Sea $r$ la cantidad de tokens de $s$ que aparecen en $t$
+  \item Sea $d$ la distancia de los tokens de $s$ más distantes en $t$
+  \item Entonces, $\text{Span}=fraq{r}{d}$
+  \item Un score cercano a 1 significa que los términos del string buscado están cerca en el string en el que se buscan.
+  \item Ejemplo (match es una X):
+        ..... X ..... X ..... X ...... \newline
+        ......a ...... b ...... c ...... \newline
+    $Span$ = \#total de tokens encontrados / $| c - a |$.
+  \end{itemize}
+  \end{block}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{3.6 Heurísticas de AR}
+\begin{columns}[T] % align columns
+\begin{column}{.48\textwidth}
+    \begin{block}{3.6 Heurísticas de AR}
+  \begin{itemize}
+      \item Basadas en Question Type
+      \item Re ranking
+      \item Extracción especifica
+  \end{itemize}
+  \end{block}
+
+\end{column}%
+\hfill%
+\begin{column}{.48\textwidth}
+
+Casos
+  \begin{itemize}
+  \item ABBR:exp
+  \item ABBR:abb $\rightarrow$ $\emptyset$
+  \item HUM:gr y ENTY:cremat
+  \item HUM:ind
+  \item HUM general
+  \item LOC general
+  \item NUM:date
+  \item NUM:period
+  \item NUM:count
+  \item NUM general
+  \item ENTY general.
+\end{itemize}
+
+\end{column}%
+\end{columns}
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%    Casos de Heuristicas de AR
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{frame}
+  \frametitle{Casos - ABBR:exp}
+  \textbf{Caso ABBR:exp - expansión de una abreviación}\newline
+  \begin{itemize}
+    \item Se extraen las entidades nombradas de tipo \textit{Organización} de la pregunta. 
+    \item Se generan regex de expansión de esas abreviaciones. 
+    \begin{itemize}
+       \item UBA $\rightarrow$ $[U][A-Za-z0-9][B][A-Za-z0-9][A][A-Za-z0-9]$.
+    \end{itemize}    
     \item Busca este patrón en las 40 oraciones, devuelve el primer match. \newline
   \end{itemize}
-\textbf{Caso ABBR:abb - contracción de una abreviación}\newline
-  \begin{itemize}
-    \item  Por ejemplo: \dq{¿Con qué siglas se conoce a la corporación \sq{International Business Machines}?} $\rightarrow$ IBM
-    \item  El caso no tiene código: \textit{// Abbreviations : Contractions -> What can we do?} \newline
-  \end{itemize}
-
-
 \end{frame}
 
-%%
-%% Estoy aca, haciendo los diferentes casos del sistema baseline.
-%%
-%%
 
 \begin{frame}
 \frametitle{Casos - HUM:gr y ENTY:cremat}
-\textbf{Caso HUM:gr y ENTY:cremat - grupos y objetos humanos} \newline
+\textbf{Caso HUM:gr y ENTY:cremat - grupos humanos (compañías, organizaciones) y objetos humanos (libros, inventos, discos, etc)} \newline
   \begin{itemize}
-    \item HUM:gr refiere a grupos humanos, como compañías u organizaciones, 
-    \item ENTY:cremat refiere a entidades de creación humana (como libros, inventos, discos, etc).
-    \item Extraer nombres propios (proper nouns, NNPs) de todas las oraciones rankeadas 
-    \begin{itemize}
+    \item Respuestas candidatas $\rightarrow$ extraer nombres propios (proper nouns, NNPs) de todas las oraciones rankeadas .
+      \begin{itemize}
         \item Nombres propios consecutivos se agrupan (Tiger Woods)/NNP 
-        \item Respuestas candidatas
     \end{itemize}
-    \item Filtro candidatas que contengan palabras en diccionario. \footnotemark
-    \item Re ranking de las candidatas según {\color{red}COMENTADO}: 
-    % \begin{itemize}
-    %     \item $TotalScore = (0.55 * CoverageScore) + (0.2 * SentenceScore)  + (0.1 * ProximityScore) + (0.15 * RepeatedTermScore)$
-    %     \item $CoverageScore$ es el cubrimiento del \sq{$target$} de la pregunta en la oración de soporte de la respuesta
-    %     \item $ProximityScore$ mide la distancia entre el \sq{target} de la pregunta y la respuesta candidata en el contexto de la oración de soporte
-    %     \item $SentenceScore$ considera la posición de la oración en el ranking de las 40 oraciones
-    %     \item $RepeatedTermScore$ es una penalización (su valor es negativo) si la respuesta candidata tiene tokens en común con el \sq{target} de la pregunta
-    % \end{itemize}
-    \item En la adaptación eliminamos el filtrado por diccionarios ya que depende del idioma
+    \item \st{Filtro candidatas que contengan palabras en diccionario.} \footnotemark
+    \item Re ranking de las candidatas según scores: 
+    \begin{itemize}
+        \item \tiny{$Total = 0.55 * Coverage + 0.2 * Sentence + 0.1 * Proximity + 0.15 * RepeatedTerm$}
+        \item \tiny{$Coverage$: cubrimiento del target en la oración de soporte}
+        \item \tiny{$Proximity$: distancia entre el target y la respuesta candidata en la oración}
+        \item \tiny{$Sentence$: posición de la oración en las 40 seleccionadas}
+        \item \tiny{$RepeatedTerm$: penalización. negativa. si la respuesta candidata tiene tokens en común con el target}
+    \end{itemize}
   \end{itemize}
 
-  \footnotetext[1]{\footnotesize{En concreto: \{Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday\}, \{January, February, March, April, May, June, July, August, September, October, November, December\}, y \{us, uk, france, england, cuba, japan, u.s, america\}.}}
+  \footnotetext[1]{\tiny{En concreto: \{Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday\}, \{January, February, March, April, May, June, July, August, September, October, November, December\}, y \{us, uk, france, england, cuba, japan, u.s, america\}.}}
 \end{frame}
 
 \begin{frame}
-\frametitle{Casos - HUM:gr y ENTY:cremat}
-\textbf{Caso HUM:ind - individuo humano}
-\ChangeItemFont{\footnotesize}{\footnotesize}{\footnotesize}
-\begin{itemize}
-  \item Respuestas candidatas = Extraer NER tipo \sq{PERSON} de las oraciones.
-  \item Score: $(0.5 * CoverageScoreTarget)+ (0.25 * CoverageScoreSubject) + (0.35 * SentenceScore) +
-             (0.25 * ProximityScore)  + (0.1 * RepeatedTermScore) + (0.5 * IsPronoun)$
+  \frametitle{Casos - HUM:ind - individuo humano}
+  \textbf{Caso HUM:ind - individuo humano}
+  %\ChangeItemFont{\footnotesize}{\footnotesize}{\footnotesize}
   \begin{itemize}
-    \item CoverageScoreTarget: cuántos tokens del \sq{target} aparecen en la oración fuente de la respuesta candidata
-    \item CoverageScoreSubject: cuántos tokens del \sq{subject} aparecen en la oración fuente de la respuesta candidata (si se pudo encontrar un subject, cero si no - en nuestra adaptación es siempre cero)
-    \item SentenceScore: puntaje derivado de la posición de la oración-fuente en el ranking de oraciones
-    \item ProximityScore: cuán cerca están la query utilizada como input del módulo de information retrieval (sin stop-words) y la respuesta candidata en el contexto de la oración de la que se extrajo la respuesta candidata.
-    \item RepeatedTermScore: penalización (negativo). Coverage entre el \sq{target} y la respuesta candidata
-    \item IsPronoun: Penaliza si la respuesta candidata contiene pronombres. En concreto, verifica si algún token pertenece a la lista \{it, we, he, she, they, our, their\}.
+    \item Respuestas candidatas = Extraer NER tipo \textit{PERSON} de las oraciones.
+    \item Score: $0.5 \times CoverageTarget+ 0.25 \times CoverageSubject + 0.35 \times Sentence +
+               0.25 \times Proximity  + 0.1 \times RepeatedTerm + 0.5 \times IsPronoun$
+    \begin{itemize}
+      \item \tiny{CoverageTarget: cuántos tokens del target aparecen en la oración fuente de la respuesta candidata}
+      \item \tiny{CoverageSubject: cuántos tokens del subject aparecen en la oración fuente de la respuesta candidata (si se pudo encontrar un subject, cero si no - en nuestra adaptación es siempre cero)}
+      \item \tiny{Sentence: derivado de la posición de la oración en el ranking}
+      \item \tiny{Proximity: cuán cerca están la query utilizada como input del módulo de information retrieval (sin stop-words) y la respuesta candidata en el contexto de la oración de la que se extrajo la respuesta candidata.}
+      \item \tiny{RepeatedTerm: penalización (negativo). Coverage entre el target y la respuesta candidata}
+      \item \tiny{IsPronoun: Penaliza si la respuesta candidata contiene pronombres. En concreto, verifica si algún token pertenece a la lista \{it, we, he, she, they, our, their\}.}
+    \end{itemize}
   \end{itemize}
-  \item Respuestas candidatas = Extraer NER tipo \sq{PERSON} de las oraciones.
-\end{itemize}
-{\footnotesize Notar que eliminamos un paso que utilizaba el inglés para extraer el subject "Who is...?"
-
-%El algoritmo en este caso intenta generar, para ciertos patrones de preguntas, el \textit{subject} de la pregunta (aplicando el mismo procedimiento descripto en el caso eliminado de generación de queries). Eliminamos este caso ya que se basa en expresiones regulares específicas por idioma.
-}
 
 \end{frame}
 
+
 \begin{frame}
-\frametitle{Casos}
+\frametitle{Casos - otros casos}
 
-\textbf{Caso HUM general} \newline
+\textbf{HUM general y ENTY general:} - otros temas humanos y otros objetos - Primer nombre propio de la oración mejor rankeada y se utiliza eso como respuesta. \newline
 
-Este caso contempla todos los tipos de respuestas esperadas de clase HUM (humano) que no son gr ni ind (estos son dos casos: título y descripción). En este caso, se toma el primer nombre propio de la oración mejor rankeada y se utiliza eso como respuesta. \newline
+\textbf{LOC general:} - preguntas que refieren a lugares - Se extraen todas las entidades nombradas de tipo \sq{LOCATION} de las oraciones rankeadas y se las evalúa según un score ponderado \newline
+%de cubrimiento, posición en el ranking de oraciones, proximidad y penalización por repeticiones.
 
-\textbf{Caso LOC general} \newline
+% $TotalScore = (0.6 * CoverageScore) + (0.1 * SentenceScore) + (0.2 * ProximityScore)  + (0.5 * SanityScore) + (0.3 * RepeatedTermScore)$ \newline
 
-La clase LOC (location o locación) incluye preguntas que refieren a lugares.  En este caso, se extraen todas las entidades nombradas de tipo \sq{LOCATION} de las oraciones rankeadas y se las evalúa según el siguiente scoring:
-
-$TotalScore = (0.6 * CoverageScore) + (0.1 * SentenceScore) + (0.2 * ProximityScore)  + (0.5 * SanityScore) + (0.3 * RepeatedTermScore)$ \newline
-
-Donde los scores representan lo siguiente:
+% Donde los scores representan lo siguiente:
+% \begin{itemize}
+%   \item CoverageScore: cuántos tokens del \sq{target} aparecen en la oración fuente de la respuesta candidata
+%   \item SentenceScore: puntaje derivado de la posición de la oración-fuente en el ranking de oraciones
+%   \item ProximityScore: cuán cerca están la query utilizada como input del módulo de information retrieval (sin stop-words) y la respuesta candidata en el contexto de la oración de la que se extrajo la respuesta candidata.
+%   \item RepeatedTermScore: penalización (negativo). Coverage entre el \sq{target} y la respuesta candidata.
+%   \item SanityScore: es un placeholder para implementar código comentado. En el código que encontramos, vale 1 (constante).
+% \end{itemize}
+\textbf{Casos NUM} - fechas, períodos, cuentas y números en general -
 \begin{itemize}
-  \item CoverageScore: cuántos tokens del \sq{target} aparecen en la oración fuente de la respuesta candidata
-  \item SentenceScore: puntaje derivado de la posición de la oración-fuente en el ranking de oraciones
-  \item ProximityScore: cuán cerca están la query utilizada como input del módulo de information retrieval (sin stop-words) y la respuesta candidata en el contexto de la oración de la que se extrajo la respuesta candidata.
-  \item RepeatedTermScore: penalización (negativo). Coverage entre el \sq{target} y la respuesta candidata.
-  \item SanityScore: es un placeholder para implementar código comentado. En el código que encontramos, vale 1 (constante).
+\item La primer fecha encontrada según rank de pasajes (NUM:Date)
+\item El primer número encontrado según pasajes (NUM:Count)
+\item El primer numérico (número o fecha) para los otros casos NUM
 \end{itemize}
 
-\end{frame}
-
-\begin{frame}
-\frametitle{Casos}
-
-\textbf{Caso NUM:date} \newline
-
-Este tipo de respuesta esperada representa una fecha. El algoritmo verifica la ocurrencia del término \sq{year} en la pregunta. Si la pregunta contiene el término, genera un patrón para buscar años (una expresión regular) y devuelve el primero que encuentra. En caso contrario, devuelve el título del primer documento encontrado (ya que el módulo está implementado para responder preguntas de TREC y los documentos son artículos cuyos títulos tienen, en general, fechas). Como oración de justificación, toma la primer oración del documento.
-
-En nuestra adaptación, recaímos en el caso general para la clase NUM, especificándole a Freeling que solo considere fechas (ver tres títulos más abajo).\newline
-
-\textbf{Caso NUM:period} \newline
-
-Este tipo de respuesta esperada representa un periodo de tiempo. El código busca en la pregunta por el patrón \dq{How old (is|was) NNP{1,}?} (donde \dq{NNP{1,}} significa uno o más nombres propios seguidos) y se queda con la secuencia de nombres propios como \textit{subject}.
-Si logra detectarse este subject, se busca en las oraciones rankeadas por números y por números seguidos de los tokens \dq{years old}. Luego se rankean estos números según la siguiente fórmula:\newline
-
-$TotalScore = (0.8 * ProximityScore) + (0.2 * SentenceRankScore)$ \newline
-
-Donde ProximityScore mide la distancia entre el número y el subject en el contexto de la oración de la que se extrajo el número y SentenceRankScore representa el ranking de la oración dentro de las 40 oraciones.
-
-Si la detección del subject o de los números es infructuosa, se recae en una estrategia general para la clase NUM, que consiste en buscar el primer número encontrado por el pos tagger (hardcodeado para los tags usados por Stanford como CD) y devolverlo.
-
-En nuestra adaptación, eliminamos el caso del subject porque dependía del idioma y recaímos en el el caso general. \newline
-\end{frame}
-
-\begin{frame}
-\frametitle{Casos}
-
-
-\textbf{Caso NUM:count} \newline
-
-Este tipo de respuesta esperada representa un número. El algoritmo busca por el patrón \dq{How many ...?} intentado extraer el \textit{subject}, por ejemplo, para la pregunta \dq{How many miners...?} el subject es \dq{miners}. Con este subject, realiza exactamente los mismos pasos que el caso inmediatamente anterior y nosotros realizamos la misma adaptación, esta vez especificando que los números buscados no sean fechas. \newline
-
-
-\textbf{Caso NUM general} \newline
-
-Considera los casos numéricos no contemplados en los tres casos anteriores. El algoritmo ejecutado consiste en encontrar el primer set continuo de tokens taggeados como \sq{CD} (números) por el POS tagger de Stanford. En nuestra adaptación a Freeling, pudimos mejorar esto separado dos tipos de números: los referidos a fechas y los referidos a cantidades. En el caso general, se busca cualquier tipo de números. Sin embargo, como especificamos en los títulos inmediatamente anteriores, para ciertos casos especificamos o bien fechas, o bien cantidades. \newline
-
-\textbf{Caso ENTY general} \newline
-
-El caso de entidades general incluye todas las subclases que no son \sq{cremat}. El algoritmo implementado es el mismo que para el caso de \sq{HUM} general, este es: tomar el primer nombre propio de la oración mejor rankeada y utilizarlo como respuesta. \newline
-
-\textbf{Otro caso} \newline
-
-Se implementa el mismo algoritmo que el caso anterior. \newline
-
 
 \end{frame}
+
 
 \begin{frame}
 \frametitle{Modificaciones}
@@ -566,7 +611,7 @@ Se implementa el mismo algoritmo que el caso anterior. \newline
       \item Sustantivos
       \item 2 y 3
     \end{enumerate}
-    \item 2, 3 y 4 basados solo en la pregunta 1.
+    \item 2, 3 y 4 basados solo en la 1er pregunta del cluster.
   \end{itemize}
 \end{frame}
 
@@ -582,13 +627,13 @@ Se implementa el mismo algoritmo que el caso anterior. \newline
     \item Baseline \dq{mejorado}: \textit{(TITLE: target)$^n$ OR \textbf{query baseline}},  $n=5$
     \item Lasso: como describimos en Estado de Arte
       \begin{enumerate}
-        \item Todas las palabras no stop words entre comillas
-        \item Todas las entidades nombradas reconocidas
-        \item Todas las construcciones nominales con sus adjetivos
-        \item Todas las demás construcciones nominales
-        \item Todos los sustantivos con sus adjetivos
-        \item Todos los demás sustantivos
-        \item Todos los verbos
+        \item Palabras no stop words entre comillas
+        \item NERs
+        \item Construcciones nominales con sus adjetivos
+        \item Demás construcciones nominales
+        \item Sustantivos con sus adjetivos
+        \item Demás sustantivos
+        \item Verbos
         \item \st{El focus de la pregunta}
         \end{enumerate}
   \end{enumerate}
@@ -598,26 +643,31 @@ Se implementa el mismo algoritmo que el caso anterior. \newline
 
 \begin{frame}
 \frametitle{Generación de respuestas}
-\ChangeItemFont{\scriptsize}{\scriptsize}{\scriptsize}
+%\ChangeItemFont{\scriptsize}{\scriptsize}{\scriptsize}
   \begin{itemize}
     \item Scorers nuevos para rankear los pasajes
     \item No tocamos las heurísticas
     \item Scorers:
     \begin{itemize}
-      \item LengthScore : Contempla la longitud del pasaje, priorizando oraciones cortas pero no demasiado cortas. Este score trata de evitar problemas vinculados con mala redacción en los documentos que generaban pasajes enormes y sin sentido para las librerías.
-      \item QVerbScore: Contempla la presencia de verbos de la pregunta en el pasaje candidato.
-      \item QNounScore: Contempla la presencia de sustantivos de la pregunta en el pasaje candidato.
-      \item QNERScore: Contempla la presencia de las entidades nombradas de la pregunta en el pasaje candidato.
+      \item Length : Prioriza oraciones cortas pero no demasiado cortas.
+      \item QVerb: Presencia de verbos de la pregunta en la oración.
+      \item QNoun: Presencia de sustantivos.
+      \item QNER: Presencia de NERs.
       \end{itemize}
-      \item Tres métodos de rankeo de pasajes:
-        \begin{itemize}
-        \item Baseline: $pscore_{bl} = (0.9)*CoverageScore + (0.05)*FreqScore+ (0.05)*ProxScore;$
-        \item $pscore_2 =  pscore_{bl} * 0.4 + QNERScore * 0.2 + QVerbScore*0.15  + QNounScore * 0.25 $
-        \item $pscore_3 =  pscore_{bl} * 0.4 + LengthScore * 0.15 + QNERScore * 0.1 + QVerbScore*0.1  + QNounScore * 0.25 $
-        \end{itemize}
+      \item Tres métodos de rankeo de pasajes: \newline
+        $pscore_{bl} = 0.9 \times Coverage + 0.05 \times Freq + 0.05 \times Prox;$ \newline
+        $pscore_2 = 0.4 \times pscore_{bl} + 0.2 \times QNER +  0.15 \times QVerb + 0.25 \times QNoun$ \newline
+        $pscore_3 =  0.4 \times pscore_{bl} + 0.15 \times Length + 0.1 \times QNER + 0.1 \times QVerb + 0.1 \times QNoun$
   \end{itemize}
 \end{frame}
 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%      Experimentación
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 \subsubsection*{Experimientación}
@@ -626,11 +676,11 @@ Se implementa el mismo algoritmo que el caso anterior. \newline
 Corridas
 \begin{itemize}
   \item Idioma: español, portugués (2 opciones)
-  \item Cantidad de Documentos retornados por el módulo de IR: 50, 100, 200 (3 opciones)
-  \item Cantidad de Pasajes extraídos de esos documentos: 20, 40, 70 (3 opciones)
-  \item Método de Generación de Queries: baseline (1), improved baseline (2), lasso (3) (3 opciones)
-  \item Método de Inferencia de Temas: Test (1), NERs (2), sustantivos (3), híbrido (4) (4 opciones)
-  \item Método de Ranking de Pasajes: baseline (1), 2, 3 (3 opciones)
+  \item Documentos retornados por Lucene: 50, 100, 200 (3 opciones)
+  \item Pasajes extraídos de los documentos: 20, 40, 70 (3 opciones)
+  \item Generación de Queries: baseline (1), improved baseline (2), lasso (3) (3 opciones)
+  \item Inferencia de Temas: Test (1), NERs (2), sustantivos (3), híbrido (4) (4 opciones)
+  \item Ranking de Pasajes: baseline (1), 2, 3 (3 opciones)
 \end{itemize}
 
 Evaluación de resultados
@@ -643,25 +693,19 @@ Evaluación de resultados
 \begin{frame}
 \frametitle{Corrida 1: instanciación de cantidades}
 
-Variables variables
-\begin{itemize}
-  \item \# docs retornados por Lucene $=$ $\{50, 100, 200\}$
-  \item \# pasajes extraidos por documento $=$ $\{20, 40, 70\}$
-\end{itemize}
-
-Variables fijas
 \begin{itemize}
   \item Idioma: Español
-  \item Método de Generación de Queries: 1 (baseline)
-  \item Método de Temas: 2 (NERs propio)
-  \item Método de Ranking: 1 (baseline)
+  \item \textbf{{\color{blue}Documentos retornados por Lucene: 50, 100, 200}}
+  \item \textbf{{\color{blue} Pasajes extraídos de los documentos: 20, 40, 70}}
+  \item Generación de Queries: Baseline (1)
+  \item Inferencia de Temas: NERs propio (2)
+  \item Ranking de Pasajes: Baseline (1)
 \end{itemize}
 
 \end{frame}
 
 \begin{frame}
 \frametitle{Corrida 1: resultados}
-
 
 \begin{table}
 \centering
@@ -686,51 +730,34 @@ $MRR_{10}$ & 9.31 & 9.38 & 10.16 & 12.55 & 14.03 & 14.10  \\
 $MRR_{25}$ & 9.54 & 9.61 & 10.39 & 12.89 & 14.41 & 14.48  \\ 
 \end{tabular}
 \caption{Corrida 1: con 50 documentos de Lucene y 20, 40 pasajes}
-\label{table:1_50_getExactMRRWikiFactoid_getCovrMRRWikiFactoid}
 \end{center}
 \end{table}
 
-
-Conclusiones
+Observaciones y conclusiones
 \begin{itemize}
-  \item 9 ejecuciones
+  \item 9 ejecuciones en total
   \item Más documentos de Lucene, peor en todas las permutaciones
   \item Muchos pasajes (70) también es malo en general
-  \item 20 y 40 se comportan raro. 
-  \item 40 es mejor para evaluaciones más exactas
+  \item 20 y 40 se comportan raro. $\rightarrow$ 40 es mejor para evaluaciones más exactas
   \item Fijamos 50 y 40 para el resto de las corridas
 \end{itemize}
 
 \end{frame}
 
 
-
-
 \begin{frame}
 \frametitle{Corrida 2.1: Generación de Queries}
 
-Variables variables
 \begin{itemize}
-  \item Método de generación de queries: Baseline, Baseline \dq{mejorado}, Lasso
-  \item 
+  \item Idioma: Español
+  \item Documentos retornados por Lucene: \textbf{50}
+  \item Pasajes extraídos de los documentos: \textbf{40}
+  \item \textbf{{\color{blue}Generación de Queries: Baseline, Baseline mejorado, Lasso}}
+  \item Inferencia de Temas: NERs propio (2)
+  \item Ranking de Pasajes: Baseline (1)
 \end{itemize}
-
-Variables fijas
-\begin{itemize}
-  \item Español, 50 documentos, 40 pasajes
-  \item Método de Temas: 2 (NERs propio)
-  \item Método de Ranking: 1 (baseline)
-\end{itemize}
-
-Conclusiones
-\begin{itemize}
-  \item Método 3 (Lasso) ligeramente superior a baseline
-  \item Baseline \dq{mejorado} rezagado siempre
-\end{itemize}
-
 
 \end{frame}
-
 
 \begin{frame}
 \frametitle{Corrida 2.1: Resultados}
@@ -741,69 +768,39 @@ Conclusiones
 \begin{center}
 \begin{tabular}{|l | l | l | l | l | l | l |}
 
-\multicolumn{7}{|c|}{1) Baseline}  \\ 
-Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ 
+& \multicolumn{2}{|c|}{Baseline} & \multicolumn{2}{|c|}{Baseline mejorado} & \multicolumn{2}{|c|}{Lasso}\\ 
+Medida & Exacto & Covr 1 & Exacto & Covr 1 & Exacto & Covr 1 \\ 
 
-$MRR_{1}$ & 7.75 & 7.75 & 8.53 & 10.08 & 10.08 & 10.08  \\ 
-$MRR_{5}$ & 8.94 & 9.25 & 10.03 & 12.42 & 13.39 & 13.45  \\ 
-$MRR_{10}$ & 9.31 & 9.38 & 10.16 & 12.55 & 14.03 & 14.10  \\ 
-$MRR_{25}$ & 9.54 & 9.61 & 10.39 & 12.89 & 14.41 & 14.48  \\ 
+\textbf{$MRR_{1}$} & \textbf{7.75} & \textbf{7.75} &  \textbf{3.91} & \textbf{3.91} & \textbf{{\color{green}7.81}} & \textbf{{\color{green}7.81}} \\ 
+$MRR_{5}$ & \textbf{8.94} & \textbf{9.25} &  \textbf{5.36} & \textbf{5.91} & \textbf{9.27} & \textbf{9.58}   \\ 
+$MRR_{10}$ & 9.31 & 9.38 &  5.96 & 6.43 & 9.64 & 9.71   \\ 
+$MRR_{25}$ & 9.54 & 9.61 &  5.96 & 6.43 & 9.94 & 10.01  \\ 
 \end{tabular}
 
-\medskip
-
-\begin{tabular}{|l | l | l | l | l | l | l |}
-
-\multicolumn{7}{|c|}{2) Improved Baseline}  \\ 
-Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ 
-
-$MRR_{1}$ & 3.91 & 3.91 & 3.91 & 3.91 & 3.91 & 3.91  \\ 
-$MRR_{5}$ & 5.36 & 5.91 & 5.91 & 8.50 & 9.31 & 9.31  \\ 
-$MRR_{10}$ & 5.96 & 6.43 & 6.43 & 9.02 & 10.18 & 10.18  \\ 
-$MRR_{25}$ & 5.96 & 6.43 & 6.49 & 9.20 & 10.46 & 10.46  \\ 
-\end{tabular}
-
-
-\medskip
-
-\begin{tabular}{|l | l | l | l | l | l | l |}
-
-\multicolumn{7}{|c|}{3) Lasso}  \\ 
-Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ 
-
-$MRR_{1}$ & 7.81 & 7.81 & 8.59 & 10.16 & 10.94 & 10.94  \\ 
-$MRR_{5}$ & 9.27 & 9.58 & 10.76 & 13.52 & 14.49 & 14.56  \\ 
-$MRR_{10}$ & 9.64 & 9.71 & 10.89 & 13.65 & 15.15 & 15.21  \\ 
-$MRR_{25}$ & 9.94 & 10.01 & 11.18 & 14.05 & 15.59 & 15.65  \\ 
-\end{tabular}
-
-\caption{Corrida 2.1: Generación de Queries 1, 2 y 3 respectivamente}
-\label{table:2_1_50_40_getExactMRRWikiFactoid_getCovrMRRWikiFactoidx}
+\caption{Corrida 2.1: Generación de Queries}
 \end{center}
 \end{table}
 
+Observaciones y Conclusiones
+\begin{itemize}
+  \item Método lasso ligeramente superior a baseline
+  \item Baseline \dq{mejorado} rezagado siempre
+\end{itemize}
+
 \end{frame}
-
-
 
 
 \begin{frame}
 \frametitle{Corrida 2.2: Inferencia de Temas}
 
-En esta corrida variamos únicamente el método de inferencia de temas, generando un total de 4 ejecuciones y dejando fijos los siguiente parámetros: \newline
-
-
 \begin{itemize}
   \item Idioma: Español
-  \item Cantidad de documentos retornados: 50
-  \item Cantidad de pasajes extraídos: 40
-  \item Método de Generación de Queries: 1
-  \item Método de Ranking de Pasajes: 1
+  \item Documentos retornados por Lucene: 50
+  \item Pasajes extraídos de los documentos: 40
+  \item Generación de Queries: \textbf{Baseline}
+  \item \textbf{{\color{blue}Inferencia de Temas: Test (1), NERs (2), sustantivos (3), híbrido (4)}}
+  \item Ranking de Pasajes: Baseline (1)
 \end{itemize}
-
-Conclusiones:
- El método utilizado (NERs + números de la primer pregunta como target) es el más efectivo en todos los casos.
-
 
 \end{frame}
 
@@ -813,160 +810,91 @@ Conclusiones:
 \begin{table}
 \centering
 \begin{center}
-\begin{tabular}{|l | l | l | l | l | l | l |}
+\begin{tabular}{|l | l | l | l | l |}
 
-\multicolumn{7}{|c|}{1) Tema Test}  \\ 
-Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ 
-$MRR_{1}$ & 6.15 & 6.15 & 6.15 & 6.92 & 6.92 & 6.92  \\ 
-$MRR_{5}$ & 7.87 & 8.41 & 8.79 & 10.21 & 10.85 & 10.85  \\ 
-$MRR_{10}$ & 8.08 & 8.49 & 8.87 & 10.53 & 11.77 & 11.77  \\ 
-$MRR_{25}$ & 8.29 & 8.72 & 9.16 & 10.91 & 12.18 & 12.18  \\ 
+& \multicolumn{2}{|c|}{1) Test} & \multicolumn{2}{|c|}{2) NERs}  \\ 
+Medida & Exacto & Covr 1 & Exacto & Covr 1 \\ 
+$MRR_{1}$ & 6.15 & 6.15 & \textbf{{\color{green}7.75}} & \textbf{{\color{green}7.75}} \\ 
+$MRR_{5}$ & 7.87 & 8.41 & \textbf{{\color{green}8.94}} & \textbf{{\color{green}9.25}}  \\ 
+$MRR_{10}$ & 8.08 & 8.49 & 9.31 & 9.38  \\ 
+$MRR_{25}$ & 8.29 & 8.72 & 9.54 & 9.61  \\ 
 \end{tabular}
 
 \medskip
 
-\begin{tabular}{|l | l | l | l | l | l | l |}
+\begin{tabular}{|l | l | l | l | l |}
 
-\multicolumn{7}{|c|}{2) Tema NERs}  \\ 
-Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ 
-$MRR_{1}$ & 7.75 & 7.75 & 8.53 & 10.08 & 10.08 & 10.08  \\ 
-$MRR_{5}$ & 8.94 & 9.25 & 10.03 & 12.42 & 13.39 & 13.45  \\ 
-$MRR_{10}$ & 9.31 & 9.38 & 10.16 & 12.55 & 14.03 & 14.10  \\ 
-$MRR_{25}$ & 9.54 & 9.61 & 10.39 & 12.89 & 14.41 & 14.48  \\ 
+& \multicolumn{2}{|c|}{3) Sustantivos} & \multicolumn{2}{|c|}{4) 2+3} \\ 
+Medida & Exacto & Covr 1 & Exacto & Covr 1 \\ 
+$MRR_{1}$ & 3.85 & 3.85 & 5.47 & 5.47 \\ 
+$MRR_{5}$ & 4.19 & 4.19 & 7.12 & 7.43 \\ 
+$MRR_{10}$ & 4.19 & 4.30 & 7.36 & 7.43 \\ 
+$MRR_{25}$ & 4.47 & 4.58 & 7.64 & 7.71 \\ 
 \end{tabular}
-
-\medskip
-
-
-\begin{tabular}{|l | l | l | l | l | l | l |}
-
-\multicolumn{7}{|c|}{3) Tema Sustantivos}  \\ 
-Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ 
-$MRR_{1}$ & 3.85 & 3.85 & 3.85 & 4.62 & 4.62 & 4.62  \\ 
-$MRR_{5}$ & 4.19 & 4.19 & 4.45 & 5.88 & 6.14 & 6.14  \\ 
-$MRR_{10}$ & 4.19 & 4.30 & 4.56 & 5.99 & 6.43 & 6.43  \\ 
-$MRR_{25}$ & 4.47 & 4.58 & 4.83 & 6.46 & 7.08 & 7.08  \\ 
-\end{tabular}
-
-\medskip
-
-\begin{tabular}{|l | l | l | l | l | l | l |}
-
-\multicolumn{7}{|c|}{4) Tema NERs + Sustantivos}  \\ 
-Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ 
-$MRR_{1}$ & 5.47 & 5.47 & 6.25 & 7.03 & 7.03 & 7.03  \\ 
-$MRR_{5}$ & 7.12 & 7.43 & 8.22 & 9.77 & 10.51 & 10.57  \\ 
-$MRR_{10}$ & 7.36 & 7.43 & 8.22 & 9.77 & 11.03 & 11.10  \\ 
-$MRR_{25}$ & 7.64 & 7.71 & 8.49 & 10.15 & 11.45 & 11.52  \\ 
-\end{tabular}
-
-
 \caption{Corrida 2.2: Métodos 1, 2, 3 y 4 respectivamente}
-\label{table:2_2_40_getExactMRRWikiFactoid_getCovrMRRWikiFactoidy}
 \end{center}
 \end{table}
+
+Conclusiones:
+\begin{itemize}
+ \item El método utilizado (NERs + números de la primer pregunta como target) es el más efectivo en todos los casos.
+ \item {\color{red}Esto es raro en relación al método 1}
+\end{itemize}
+
+
 \end{frame}
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 \begin{frame}
 \frametitle{Corrida 2.3: Ranking de Pasajes}
 
-
-
-En esta corrida variamos únicamente el método de ranking de pasajes, generando un total de 3 ejecuciones y dejando fijos los siguiente parámetros:
-
-
 \begin{itemize}
   \item Idioma: Español
-  \item Cantidad de documentos retornados: 50
-  \item Cantidad de pasajes extraídos: 40
-  \item Método de Generación de Queries: 1
-  \item Método de Temas: 2
+  \item Documentos retornados por Lucene: 50
+  \item Pasajes extraídos de los documentos: 40
+  \item Generación de Queries: Baseline
+  \item Inferencia de Temas: \textbf{NERs (2)}
+  \item \textbf{{\color{blue}Ranking de Pasajes:  Baseline (1), $pscore_2$, $pscore_3$}}
 \end{itemize}
 \end{frame}
 
-
-
-
 \begin{frame}
-\frametitle{Corrida 2.3: Aclaraciones}
-Los resultados pueden observarse en la tabla \ref{table:2_3_40_getExactMRRWikiFactoid_getCovrMRRWikiFactoidq}. Las fórmulas nuevas propuestas no resultaron de utilidad en ningún caso. Viendo la diferencia de resultados entre los métodos 2 y 3, se hace claro que el $LengthScore$ aporta, ya que es el único agregado sustantivo en el método 3 y este tiene una mejoría significativa en comparación con el 2. De allí surgió la idea de aplicarlo a la fórmula baseline.
-Hicimos dos modificaciones: Una ponderando 90 / 10 y otra ponderando 80 / 20 y 70 / 30 dando buenos resultados las tres (Ver tabla \ref{table:2_4_broken_ref}).
-La fórmula del score es la siguiente:
-
-\begin{equation*}
-    LengthScore = \begin{cases}
-               1.0     & 4 <   \#tokens < 100\\
-               0.5     & 100 \leq \#tokens < 200 \\
-               0.0     & \text{En cualquier otro caso}\\
-           \end{cases}
-\end{equation*}
-
-
-Como se puede ver en \ref{table:2_4_broken_ref}, agregar este valor en el score general del pasaje mejora los resultados. Las causas más evidentes son que el score funciona como un filtro para pasajes mal formados (es decir, que por alguna razón el splitter no logró \sq{separar} bien) o bien pasajes bien formados pero excesivamente largos. En ambos casos, las herramientas de procesamiento de lenguajes pierden su performance, por lo que pasajes bien rankeados, en el momento de la extracción de la respuesta no son de utilidad. Evaluamos tres ponderaciones -9/1, 8/2 y 7/3-, dando mejores resultados cuanto más se ponderó el score, salvo para $MRR_1$ que se redujo en la tercer corrida. Dado que esta métrica es la preferida, decidimos quedarnos con esta fórmula (ponderando 8/2 y no 7/3). Eventualmente podría evaluarse otra métricas y descubrir por qué se dio que esta funcionó mejor para $MMR_1$ y 7/3 funcionó mejor para el resto. Todo parece indicar que por este camino pueden encontrarse mejoras sustantivas con bajo costo de implementación, sea mejorando la ponderación, sea complejizando la formulación del score, que, como puede verse, es realmente simple.
-
-\end{frame}
-
-\begin{frame}
-\frametitle{Corrida 2.3: Resultados 1}
+\frametitle{Corrida 2.3: Resultados}
 \begin{table}
 \centering
 \begin{center}
 
 \begin{tabular}{|l | l | l | l | l | l | l |}
 
-\multicolumn{7}{|c|}{$PassageScore_{bl}$}  \\ 
-Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ 
-$MRR_{1}$ & 7.75 & 7.75 & 8.53 & 10.08 & 10.08 & 10.08  \\ 
-$MRR_{5}$ & 8.94 & 9.25 & 10.03 & 12.42 & 13.39 & 13.45  \\ 
-$MRR_{10}$ & 9.31 & 9.38 & 10.16 & 12.55 & 14.03 & 14.10  \\ 
-$MRR_{25}$ & 9.54 & 9.61 & 10.39 & 12.89 & 14.41 & 14.48  \\ 
+& \multicolumn{2}{|c|}{$PassageScore_{bl}$} & \multicolumn{2}{|c|}{$PassageScore_2$} & \multicolumn{2}{|c|}{$PassageScore_3$}\\ 
+Medida & Exacto & Covr 1 & Exacto & Covr 1 & Exacto & Covr 1 \\ 
+$MRR_{1}$ & 7.75 & 7.75 & 3.10 & 3.10 & 5.38 & 5.38  \\ 
+$MRR_{5}$ & 8.94 & 9.25 & 5.06 & 5.22 &  6.69 & 6.85  \\ 
+$MRR_{10}$ & 9.31 & 9.38 & 5.35 & 5.50 &  7.15 & 7.31  \\ 
+$MRR_{25}$ & 9.54 & 9.61 & 5.39 & 5.55 &  7.19 & 7.35  \\ 
 \end{tabular}
-
-\medskip
-
-\begin{tabular}{|l | l | l | l | l | l | l |}
-
-\multicolumn{7}{|c|}{$PassageScore_2$}  \\ 
-Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ 
-$MRR_{1}$ & 3.10 & 3.10 & 3.10 & 4.65 & 4.65 & 4.65  \\ 
-$MRR_{5}$ & 5.06 & 5.22 & 5.22 & 7.51 & 8.35 & 8.41  \\ 
-$MRR_{10}$ & 5.35 & 5.50 & 5.50 & 7.89 & 9.18 & 9.24  \\ 
-$MRR_{25}$ & 5.39 & 5.55 & 5.55 & 8.10 & 9.60 & 9.67  \\ 
-\end{tabular}
-
-
-\medskip
-
-
-\begin{tabular}{|l | l | l | l | l | l | l |}
-
-\multicolumn{7}{|c|}{$PassageScore_3$}  \\ 
-Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ 
-$MRR_{1}$ & 5.38 & 5.38 & 5.38 & 6.15 & 6.15 & 6.15  \\ 
-$MRR_{5}$ & 6.69 & 6.85 & 7.10 & 9.35 & 10.69 & 10.88  \\ 
-$MRR_{10}$ & 7.15 & 7.31 & 7.56 & 9.98 & 11.66 & 11.85  \\ 
-$MRR_{25}$ & 7.19 & 7.35 & 7.60 & 10.21 & 11.99 & 12.19  \\ 
-\end{tabular}
-
-
 \caption{Corrida 2.3: Fórmulas 1, 2 y 3 respectivamente}
-\label{table:2_3_40_getExactMRRWikiFactoid_getCovrMRRWikiFactoidq}
 \end{center}
 \end{table}
+
+Observaciones y conclusiones
+\begin{itemize}
+  \item Todo mal
+  \item diff $pscore_2$ y $pscore_3$ $\rightarrow$ $LengthScore$ 
+  \begin{itemize}
+    \item Único agregado sustantivo a $pscore_3$
+    \item Aplicarlo al baseline
+  \end{itemize}
+  \item Nuevas corridas con LenghtScore: 90/10 80/20 y 70/30
+  \item La fórmula del score es la siguiente:
+    \begin{equation*}
+        LengthScore = \begin{cases}
+                   1.0     & 4 <   \#tokens < 100\\
+                   0.5     & 100 \leq \#tokens < 200 \\
+                   0.0     & \text{En cualquier otro caso}\\
+               \end{cases}
+    \end{equation*}
+  \end{itemize}
 
 \end{frame}
 
@@ -978,42 +906,29 @@ $MRR_{25}$ & 7.19 & 7.35 & 7.60 & 10.21 & 11.99 & 12.19  \\
 \begin{center}
 \begin{tabular}{|l | l | l | l | l | l | l |}
 
-\multicolumn{7}{|c|}{ $PassageScore_{bl} \times 0.9 + LengthScore \times 0.1$ }  \\ 
-Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ 
-$MRR_{1}$ & 7.81 & 7.81 & 8.59 & 10.16 & 10.16 & 10.16  \\ 
-$MRR_{5}$ & 9.47 & 9.78 & 10.56 & 12.97 & 13.95 & 14.14  \\ 
-$MRR_{10}$ & 9.71 & 9.78 & 10.56 & 12.97 & 14.47 & 14.66  \\ 
-$MRR_{25}$ & 10.01 & 10.08 & 10.86 & 13.38 & 14.92 & 15.11  \\ 
+& \multicolumn{2}{|c|}{0.9 + 0.1} &
+  \multicolumn{2}{|c|}{0.8 + 0.2} &
+  \multicolumn{2}{|c|}{0.7 + 0.3} \\ 
+Medida & Exacto & Covr 1 & Exacto & Covr 1 & Exacto & Covr 1 \\ 
+$MRR_{1}$ & 7.81 & 7.81 & \textbf{10.08} & \textbf{10.08} & 10.00 & 10.00  \\ 
+$MRR_{5}$ & 9.47 & 9.78 & 11.68 & 11.99 & 11.94 & 12.50  \\ 
+$MRR_{10}$ & 9.71 & 9.78 & 11.92 & 11.99 & 12.35 & 12.67  \\ 
+$MRR_{25}$ & 10.01 & 10.08 & 12.27 & 12.34 & 12.58 & 12.91  \\ 
 \end{tabular}
-
-\medskip
-
-\begin{tabular}{|l | l | l | l | l | l | l |}
-
-\multicolumn{7}{|c|}{ $PassageScore_{bl} \times 0.8 + LengthScore \times 0.2$ }  \\ 
-Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ 
-$MRR_{1}$ & \textbf{10.08} & \textbf{10.08} & \textbf{10.85} & \textbf{12.40} & \textbf{13.18} & \textbf{13.18}  \\ 
-$MRR_{5}$ & 11.68 & 11.99 & 13.15 & 15.80 & 16.58 & 16.77  \\ 
-$MRR_{10}$ & 11.92 & 11.99 & 13.15 & 15.80 & 16.99 & 17.18  \\ 
-$MRR_{25}$ & 12.27 & 12.34 & 13.51 & 16.26 & 17.55 & 17.74  \\ 
-\end{tabular}
-
-\medskip
-
-\begin{tabular}{|l | l | l | l | l | l | l |}
-
-\multicolumn{7}{|c|}{$PassageScore_{bl} \times 0.7 + LengthScore \times 0.3$}  \\ 
-Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ 
-$MRR_{1}$ & 10.00 & 10.00 & 10.77 & 12.31 & 13.08 & 13.08  \\ 
-$MRR_{5}$ & 11.94 & 12.50 & 13.65 & 17.04 & 17.81 & 18.00  \\ 
-$MRR_{10}$ & 12.35 & 12.67 & 13.83 & 17.12 & 18.32 & 18.51  \\ 
-$MRR_{25}$ & 12.58 & 12.91 & 14.06 & 17.46 & 18.70 & 18.90  \\ 
-\end{tabular}
-\caption{Corrida 2.3: Combinación métodos 1 y 3}
-
-\label{table:2_4_broken_ref}
+\caption{Corrida 2.3: Combinación ponderada de métodos 1 y 3}
 \end{center}
 \end{table}
+
+
+Observaciones y conclusiones
+\begin{itemize}
+  \item El score funciona como filtro de pasajes mal formados o bien formados pero largos. En ambos casos, NLP pierde eficacia.
+  \item Mejor resultado cuando más ponderacion salvo $MRR_1$ que se redujo en la tercer corrida. 
+  \begin{itemize}
+    \item Dado que esta métrica es la preferida, decidimos quedarnos con esta fórmula (8/2 y no 7/3)
+    \end{itemize}
+  \item Mejoras fáciles acá.
+  \end{itemize}
 
 \end{frame}
 
@@ -1027,33 +942,24 @@ $MRR_{25}$ & 12.58 & 12.91 & 14.06 & 17.46 & 18.70 & 18.90  \\
 Datos de la corrida 3.1, para español:
 \begin{itemize}
   \item Idioma: Español
-  \item Cantidad de documentos retornados: 50
-  \item Cantidad de pasajes extraídos: 40
-  \item Método de Generación de Queries: 3
-  \item Método de Temas: 2
-  \item Fórmula de Ranking de Pasajes:  $PassageScore_{bl} \times 0.8 + LengthScore \times 0.2$
+  \item Documentos retornados por Lucene: 50
+  \item Pasajes extraídos de los documentos: 40
+  \item Generación de Queries: Baseline
+  \item Inferencia de Temas: NERs (2)
+  \item Ranking de Pasajes: $PassageScore_{bl} \times 0.8 + LengthScore \times 0.2$
 \end{itemize}
+
 \medskip
 Datos de la corrida 3.2, para portugués:
 \begin{itemize}
-  \item Idioma: Portugués
-  \item Cantidad de documentos retornados: 50
-  \item Cantidad de pasajes extraídos: 40
-  \item Método de Generación de Queries: 3
-  \item Método de Temas: 2
-  \item Fórmula de Ranking de Pasajes:  $PassageScore_{bl} \times 0.8 + LengthScore \times 0.2$
+  \item Idioma: {\color{blue}Portugués}
+  \item Documentos retornados por Lucene: 50
+  \item Pasajes extraídos de los documentos: 40
+  \item Generación de Queries: Baseline
+  \item Inferencia de Temas: NERs (2)
+  \item Ranking de Pasajes: $PassageScore_{bl} \times 0.8 + LengthScore \times 0.2$
 \end{itemize}
 
-\end{frame}
-
-\begin{frame}
-\frametitle{Corrida 3: Notas}
-
-En esta última corrida, utilizamos los métodos que mejores resultados dieron, por sección, todos juntos, primero para español y luego para portugués.
-Hay dos observaciones importantes. Primero, con respecto a la corrida en español, es notorio como el $MRR_1$ y, en general, todos los valores salvo el $MRR_5$ con matching exacto, tienen una performance peor que en la corrida 2.3, lo cual se debe, seguramente, a una interacción compleja entre los distintos pasos que conduce a este comportamiento.
-
-
-En segundo lugar, con respecto a la corrida en portugués, es notoria su baja performance en relación con los resultados en español, obteniendo apenas un 3.16 considerando la métrica $MRR_5$. Existen varios factores para explicar esto. En primer lugar, que las herramientas para portugués no son tan maduras como las herramientas para español; en segundo lugar, que la evaluación de los métodos óptimos y, en general, todo el enfoque al sistema, estuvieron marcados por el español, siendo las adaptaciones para portugués un momento secundario que intentó mostrar, simplemente, que este soporte estaba accesible; en tercer lugar, también es posible que el sistema per se y el enfoque, aún sin otro inconveniente, se desempeñe peor para el set de preguntas para el portugués. A fin de cuentas, no hay que perder de vista que los sets de test usables por nuestro sistema son de 130 preguntas para español y 104 para portugués, a partir de los cuales no es posible extrapolar un comportamiento general, sino presentar resultados concretos.
 \end{frame}
 
 \begin{frame}
@@ -1064,12 +970,12 @@ En segundo lugar, con respecto a la corrida en portugués, es notoria su baja pe
 \centering
 \begin{center}
 \begin{tabular}{|l | l | l | l | l | l | l |}
-\hline
-Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
-$MRR_{1}$ & 10.00 & 10.00 & 10.77 & 12.31 & 13.08 & 13.08  \\ \hline
-$MRR_{5}$ & \textbf{12.00} & 12.31 & 13.46 & 16.18 & 16.95 & 17.01  \\ \hline
-$MRR_{10}$ & 12.24 & 12.31 & 13.46 & 16.26 & 17.44 & 17.50  \\ \hline
-$MRR_{25}$ & 12.55 & 12.62 & 13.78 & 16.72 & 18.00 & 18.06  \\ \hline
+
+Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ 
+$MRR_{1}$ & {\color{green}\textbf{10.65}} & 10.65 & 10.77 & 12.31 & 13.08 & 13.08  \\ 
+$MRR_{5}$ & {\color{green}\textbf{12.00}} & 12.31 & 13.46 & 16.18 & 16.95 & 17.01  \\ 
+$MRR_{10}$ & 12.24 & 12.31 & 13.46 & 16.26 & 17.44 & 17.50  \\ 
+$MRR_{25}$ & 12.55 & 12.62 & 13.78 & 16.72 & 18.00 & 18.06  \\ 
 \end{tabular}
 \medskip
 \caption{Corrida 3.1: Combinación de óptimos para español}
@@ -1081,12 +987,12 @@ $MRR_{25}$ & 12.55 & 12.62 & 13.78 & 16.72 & 18.00 & 18.06  \\ \hline
 \centering
 \begin{center}
 \begin{tabular}{|l | l | l | l | l | l | l |}
-\hline
-Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
-$MRR_{1}$ & 1.92 & 2.88 & 2.88 & 3.85 & 3.85 & 3.85  \\ \hline
-$MRR_{5}$ & 3.16 & 5.03 & 5.03 & 6.91 & 7.15 & 7.15  \\ \hline
-$MRR_{10}$ & 3.45 & 5.33 & 5.33 & 7.33 & 7.71 & 7.86  \\ \hline
-$MRR_{25}$ & 4.08 & 6.00 & 6.00 & 8.21 & 8.84 & 8.94  \\ \hline
+
+Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ 
+$MRR_{1}$ & {\color{green}\textbf{1.92}} & 2.88 & 2.88 & 3.85 & 3.85 & 3.85  \\ 
+$MRR_{5}$ & {\color{green}\textbf{3.16}} & 5.03 & 5.03 & 6.91 & 7.15 & 7.15  \\ 
+$MRR_{10}$ & 3.45 & 5.33 & 5.33 & 7.33 & 7.71 & 7.86  \\ 
+$MRR_{25}$ & 4.08 & 6.00 & 6.00 & 8.21 & 8.84 & 8.94  \\ 
 \end{tabular}
 \caption{Corrida 3.2: Combinación de óptimos sobre portugués}
 \label{table:2_3_2_40_getExactMRRWikiFactoid_getCovrMRRWikiFactoid}
@@ -1094,6 +1000,103 @@ $MRR_{25}$ & 4.08 & 6.00 & 6.00 & 8.21 & 8.84 & 8.94  \\ \hline
 \end{table}
 
 \end{frame}
+
+
+\begin{frame}
+\frametitle{Resultados de competidores de Clef '07}
+
+\begin{columns}[T] % align columns
+\begin{column}{.48\textwidth}
+  \begin{figure}
+      \includegraphics[scale=0.4]{graficos/resultados-espaniol-resumen}
+    \caption{Competidores español}
+  \end{figure}
+\end{column}%
+\hfill%
+\begin{column}{.48\textwidth}
+
+  \begin{figure}
+      \includegraphics[scale=0.4]{graficos/resultados-portugues}
+    \caption{Competidores portugués}
+  \end{figure}
+\end{column}%
+\end{columns}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Corrida 3: observaciones y conclusiones}
+
+\begin{itemize}
+  \item Métodos que mejores resultados dieron para español
+  \item Quizás, mal extrapolados a portugués
+  \item Español peor que en 2.3 para muchas métricas
+  \item Portugués: baja performance
+  \begin{itemize}
+    \item Apenas un 3.16\% considerando la métrica $MRR_5$. 
+    \item Las herramientas para portugués no son tan maduras como las herramientas para español; 
+    \item Todo el desarrollo y el análisis estuvo basado en español
+    \item Solo POC de soporte para otros idiomas
+  \end{itemize}
+  \item Español: 10.65\% exacto con una sola respuesta! 
+  \item No es el peor
+\end{itemize}
+\begin{itemize}
+  \item $10.65\% = \frac{13}{122}$
+  \item $1.92\% = \frac{2}{104}$
+\end{itemize}
+\end{frame}
+
+
+
+
+\begin{frame}
+\frametitle{Corrida 3: Respuestas ES}
+\fontsize{7.5pt}{7.2}\selectfont
+\begin{table}
+\centering
+\begin{center}
+\begin{tabular}{|p {6cm} | l |}
+
+Q & A\\ 
+¿De dónde es típica la ensaimada? & Mallorca \\
+¿De cuántos bits era este procesador? & 8 bits \\
+¿En qué fecha El Corte Inglés compró Galerías Preciados? &  24 de noviembre de 1995\\
+¿Qué empresa preside Steve Jobs? &  Apple Computer \\
+¿Dé qué organización es comisionado David Stern? &  NBA\\
+¿Qué animales tiran del carro de Cibeles? & leones\\
+¿Cuántos Premios Goya ganó \dq{Torrente: El brazo tonto de la ley}? & dos\\
+¿Quién fue la primera mujer que viajó al espacio? & Valentina Vladimírovna Tereshkova\\
+¿A cuántos kilómetros de Huesca está el Castillo de Loarre? &   35 kilómetros\\
+¿Cuál es el nombre del presidente de Burundi que murió en 1994? &  Cyprien Ntaryamira\\
+¿Qué día se promulgó la constitución española de 1812?  & 19 de marzo\\
+¿Qué dibujó Leonardo Da Vinci en 1492? & Hombre de Vitruvio\\
+¿Qué programa de televisión presentó Takeshi Kitano de 1986 a 1989? &   Humor Amarillo\\
+\end{tabular}
+\caption{Respuestas español}
+\end{center}
+\end{table}
+\end{frame}
+
+\begin{frame}
+\frametitle{Corrida 3: Respuestas PT}
+
+\begin{table}
+\centering
+\begin{center}
+\begin{tabular}{| p {7cm} | l |}
+Q & A\\ 
+De que estado foi governador Adhemar de Barros? & São Paulo\\
+Quando foi fundado o Nacional da Madeira? & 8 de Dezembro de 1910\\
+\end{tabular}
+\caption{Respuestas portugués}
+\end{center}
+\end{table}
+
+
+\end{frame}
+
 
 
 
