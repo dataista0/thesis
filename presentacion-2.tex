@@ -130,14 +130,15 @@
       \end{itemize}
       \item \textbf{Compatibilidad}
       \begin{itemize}
-          \item Valor $\rightarrow$ atributo (Macri $\rightarrow$ HeadOfState)
-          \item Atributo  $\rightarrow$  relación (HeadOfState $\rightarrow$ Country)
-          \item Valor $\rightarrow$ relaciones de sus atributos (Macri $\rightarrow$ Country)
-          \item {\color{blue}Q-words $\rightarrow$ atributos}
+          \item Valor $\rightarrow$ Atributo (Macri $\rightarrow$ HeadOfState)
+          \item Atributo  $\rightarrow$  Relación (HeadOfState $\rightarrow$ Country)
+          \item Valor $\rightarrow$ Relaciones de sus atributos (Macri $\rightarrow$ Country)
+          \item {\color{blue}Q-words $\rightarrow$ Atributos}
           \begin{itemize}
             \item Definición a mano especifica por DB
             \item Who $\rightarrow$ HeadOfState
             \item When $\rightarrow$ IndependenceYear 
+            \item What $\rightarrow$ Varios atributos.
           \end{itemize}
       \end{itemize}
     \end{itemize}
@@ -145,18 +146,20 @@
 
 
 \begin{frame}[<+->]
-  \frametitle{Token, marcador sintáctico}
+  \frametitle{Marcador sintáctico, token}
    \begin{itemize}
-          \item \textbf{Token}: un conjunto de (lemas de) palabras que corresponden a un elemento de la base de datos.
-      \begin{itemize}
-            \item Por ejemplo, \{experiencia, requerir\} y \{experiencia, necesario\} son dos tokens para ``Experiencia Requerida''
-            \item El {\color{red}\textbf{lexicón}} genera todos los tokens válidos a partir de los elementos de la DB usando Wordnet
-      \end{itemize}
       \item \textbf{Marcador sintáctico} (stopword):
       \begin{itemize}
         \item Palabras que no aportan y se tiran (v.gr: y, el, la, etc.)
         \item Definidas a mano. Problemático.
       \end{itemize}
+
+          \item \textbf{Token}: un conjunto de (lemas de) palabras que corresponden a un elemento de la base de datos.
+      \begin{itemize}
+            \item Por ejemplo, \{experiencia, requerir\} y \{experiencia, necesario\} son dos tokens para ``Experiencia Requerida''
+            \item El {\color{red}\textbf{lexicón}} genera todos los tokens válidos a partir de los elementos de la DB usando Wordnet
+      \end{itemize}
+
     \end{itemize}
 \end{frame}
 
@@ -779,12 +782,77 @@ Los tokens `who' y `head state' deben estar sintácticamente asociados
 
 
 
-\begin{frame}
+\begin{frame}[<+->]
 \frametitle{Ejemplo 2: What caribbean countries are also considered north american?}
-  \begin{enumerate}
-    \item {\color{red}FILL ME}
-  \end{enumerate}
+  \begin{itemize}
+    \item ``What caribbean countries are also considered north american?''
+    \item Separar, puntuacion, lower case: \{what, caribbean, countries, are, also, considered, north, american\}
+    \item Lematizar: \{what, caribbean, {\color{blue}country}, {\color{blue}is}, also, {\color{blue}consider}, north, american\}
+    \item Stopwords: \{what, caribbean, country, north, american\}
+    \item Obtener tokens para cada lema y preservar los presentes en la pregunta:
+      \begin{itemize}
+        \item $getTokens(what)\ \rightarrow \{$'what'$\}$
+        \item $getTokens(caribbean)\ \rightarrow \{$'caribbean'$\}$
+        \item $getTokens(country)\ \rightarrow  \{$'country'$\}$
+        \item $getTokens(north)\ \rightarrow \{$'north american'$\}$
+        \item $getTokens(american)\ \rightarrow \{$'north american', 'american'$\}$
+      \end{itemize}
+  \end{itemize}
+  
 \end{frame}
+\begin{frame}[<+->]
+\frametitle{Ejemplo 2: Tokenizer}
+
+  \begin{itemize}
+  \item Generar el conjunto de partes de todos los tokens hasta aquí obtenidos.
+    \begin{itemize}
+      \item    \{ $\emptyset$, \{'north american'\}, \{'what', 'american', 'country'\}, \{'north american', 'what', 'american', 'country'\}, \{'american', 'caribbean'\}, ...\}
+    \end{itemize}
+  \item Para cada uno de estos subconjuntos, verificar:
+  \begin{enumerate}
+    \item que los lemas de sus tokens cubran completamente la pregunta original
+    \item que no haya lemas repetidos entre los tokens.
+    \end{enumerate}
+      \item Los lemas significativos son: \newline \{what, caribbean, country, north, american\}
+      \item Solo una tokenización los cubren sin repetir lemas: \newline \{'north american', 'what', 'caribbean', 'country'\}
+      \item Queda eliminado el token 'american'.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Lexicón: Tokens $\rightarrow$ Elementos DB}
+Se obtienen todos los elementos que \textit{corresponden} a cada token:
+  \begin{itemize}
+    \item caribbean $\rightarrow$ Caribbean (Valor de Country.Region \textbf{y} Valor de Country.Continent)
+    \item north america $\rightarrow$ North America (Valor de Country.Region)
+    \item country $\rightarrow$ Country (Relación)
+    \item what $\rightarrow$ What (Q-valor \textit{compatible} con un montón de Atributos)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Matcher: Grafo atributo-valor}
+\begin{figure}
+  \centering
+    \includegraphics[scale=.43]{graficos/presentacion/ejemplo-grafo-2}
+    \caption{Grafo con desambiguación}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{Ejemplo 2: Notas y query}
+Notar en el grafo:
+  \begin{itemize}
+    \item Caribbean es ambigüo.
+    \item Como north american solo puede ser Continent, caribbean va a ser Region (para maximizar el flujo)
+  \end{itemize}
+
+Query final:\newline
+\Large{\textbf{{\color{purple}SELECT DISTINCT} Country.Name \newline{\color{purple}FROM} Country \newline{\color{purple}WHERE} Country.Continent $=$ {\color{green}'North America'} \newline{\color{purple}AND} Country.Region $=$ {\color{green}'Caribbean'}}}
+
+\end{frame}
+
+
 
 \subsubsection*{Conclusiones y limitaciones}
 \begin{frame}
