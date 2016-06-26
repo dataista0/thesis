@@ -2,12 +2,16 @@
 \chapter{Marco teórico}
 \label{chap:teorico}
 
-En este capítulo vamos a recorrer algunos términos básicos y problemas de procesamiento de lenguaje e information retrieval que deben conocerse para comprender mejor lo que discutiremos sobre question answering en los siguientes capítulos. En la primer sección (\ref{sec:terminologia}) vamos a introducir terminología básica como $token$, \textit{n-grama}, \textit{ontología} y $feature$, en la segunda (\ref{sec:information-retrieval}) comentaremos qué es information retrieval, cuales son las métricas de evaluación del área y qué es un índice invertido de búsqueda y, finalmente (\ref{sec:nlp}), describiremos los principales problemas propios de procesamiento de lenguajes relacionados con QA (POS tagging o etiquetado gramatical, NE tagging o reconocimiento de entidades y clasificación de preguntas) y mencionamos algunas otras herramientas y conceptos de uso frecuente.
+En este capítulo vamos a recorrer algunos términos básicos y problemas de procesamiento de lenguaje e information retrieval que deben conocerse para comprender mejor lo que discutiremos sobre question answering en los siguientes capítulos. En la primer sección (\ref{sec:terminologia}) vamos a introducir terminología básica como $token$, \textit{n-grama}, \textit{ontología} y $feature$. En la segunda (\ref{sec:information-retrieval}) comentaremos qué es information retrieval, cuales son las métricas de evaluación del área y qué es un índice invertido de búsqueda. Finalmente (\ref{sec:nlp}), describiremos los principales problemas propios de procesamiento de lenguajes relacionados con QA (POS tagging o etiquetado gramatical, NE tagging o reconocimiento de entidades y clasificación de preguntas) y mencionamos algunas otras herramientas y conceptos de uso frecuente. 
+
+Para referencias en general sobre temas de recuperación de la información puede consultarse el texto de Manning\cite{MANNING-IR}, mientras que para temas de procesamiento de lenguajes en general puede consultarse el de Jurasky\cite{POS0}. Por otro lado, para temas específicos de POS tagging puede verse la web de Van Guilder \footnote{\url{http://ccl.pku.edu.cn/doubtfire/NLP/Lexical_Analysis/Word_Segmentation_Tagging/POS_Tagging_Overview/POS\%20Tagging\%20Overview.htm}} y los papers utilizados \cite{POS1} \cite{POS2}, sobre Question Classification los papers \cite{QC2} \cite{QC1} \cite{QC3} \cite{QC-other} y para reconocimiento de entidades \cite{RE1} \newline
+\cite{NER1} \cite{NER2}.
+
 
 \section{Terminología}
 \label{sec:terminologia}
 \subsection*{Tokens}
-Un token es una palabra o un signo de puntuación en el contexto de un texto.
+Un token es una palabra o un signo de puntuación o, más en general, una cadena de carácteres con algún significado en el contexto de un texto.
 Por ejemplo, el texto {\textquotedblleft}El sol
 brilla.{\textquotedblright} tiene cuatro tokens:
 \{{\textquoteleft}El{\textquoteright}, {\textquoteleft}sol{\textquoteright}, {\textquoteleft}brilla{\textquoteright}, {\textquoteleft}.{\textquoteright} \}.
@@ -31,18 +35,18 @@ Un sólo trigrama & : & \{ {\textquotedblleft}Hoy está nublado{\textquotedblrig
 \end{tabular}
 \medskip
 
-Los n-gramas son útiles para recorrer un texto con distintos tamaños de ventana en busca de algún patrón conocido, por ejemplo: buscando entidades nombradas que no fueron reconocidas por otras herramientas.
+Los n-gramas son útiles para recorrer un texto con distintos tamaños de ventana en busca de algún patrón conocido, por ejemplo: buscando entidades nombradas que no fueron reconocidas por otras herramientas. Cabe notarse que la definición general de n-grama es la de una secuencia continua de \textit{n} items cualesquiera (por ejemplo, caracteres; y no solo de tokens como mencionamos aquí).
 
 \subsection*{Ontología}
 El término `ontología' es un término originalmente filosófico, que refiere al estudio de lo que hay, de lo que es, o, dicho de otro modo, a la definición y al estudio de los entes que existen en la realidad última y de sus cualidades esenciales y sus relaciones intrínsecas. Aplicado a ciencias informáticas, principalmente dentro áreas como inteligencia artificial y representación del conocimiento, esta noción original se sostiene, acotando la noción de realidad a uno o varios dominios de problemas. Más concretamente, la noción de ontología en informática refiere a la definición formal y exhaustiva de un conjunto de conceptos que representan entidades, tipos o clases de entidades, propiedades y relaciones entre estas entidades relevantes para el modelado de un dominio de problemas dado. Esta ontología formal define un vocabulario inicial fijo que determina el tipo entidades, atributos de entidades y relaciones entre ellas que existen en un dominio dado, permitiendo definir formalmente los problemas que se pueden plantear (y resolver) para ese dominio en esa ontología.
 
-Algunos ejemplos de ontologías populares son dbPedia\footnote{\url{http://dbpedia.org/}}, Yago\footnote{\url{http://www.mpi-inf.mpg.de/departments/databases-and-information-systems/research/yago-naga/yago/}} y Freebase\footnote{\url{http://www.freebase.com/}}, bases de conocimiento estructuradas extraídas de diferentes fuentes de datos (entre ellas: wikipedia, wordnet) que ofrecen una interfaz de consultas basada en RDF.
+Algunos ejemplos de ontologías populares son dbPedia\footnote{\url{http://dbpedia.org/}}, Yago\footnote{\url{http://www.mpi-inf.mpg.de/departments/databases-and-information-systems/research/yago-naga/yago/}} y Freebase\footnote{\url{http://www.freebase.com/}}, bases de conocimiento estructuradas extraídas de diferentes fuentes de datos (entre ellas: wikipedia, wordnet) que ofrecen una interfaz de consultas basada en RDF\footnote{\url{https://www.w3.org/RDF/}}, un estandar de modelado de metadatos para recursos web.
 
 
 \subsection*{Features}
 \label{subsec:features}
 
-En machine learning, un feature puede definirse como una propiedad medible de un fenómeno siendo observado. En las aplicaciones de procesamiento de lenguaje natural, el dominio de “fenómenos observados” está restringido a los fenómenos lingüísticos y las propiedades medibles también. Un ejemplo de feature es: un booleano indicando \dq{la palabra comienza con mayúscula}. En general, los features toman valores numéricos o booleanos, aunque también es posible utilizar features más complejos (como strings, o listas). Los features se agrupan en vectores. Durante un proceso de análisis, cada entidad procesada tiene un vector de features que la representa de manera tratable. Por ejemplo, podemos asignarle a cada palabra de una oración el siguiente vector de tres features:
+En machine learning\footnote{Machine learning es una rama del estudio sobre inteligencia artificial que busca desarrollar técnicas que permitan a las computadoras generalizar comportamientos a partir de una fuente de información no estructurada que sirve como ejemplo para esta generalización, que le permite al programa inducir conocimiento.} en general, un \textit{feature} puede definirse como una propiedad medible de un fenómeno siendo observado. En las aplicaciones de procesamiento de lenguaje natural (que son un aplicaciones de machine learning), el dominio de “fenómenos observados” está restringido a los fenómenos lingüísticos y las propiedades medibles también. Un ejemplo de feature es: un booleano indicando \dq{la palabra comienza con mayúscula}. En general, los features toman valores numéricos o booleanos, aunque también es posible utilizar features más complejos (como strings, o listas). Los features se agrupan en vectores. Durante un proceso de análisis, cada entidad procesada tiene un vector de features que la representa de manera tratable. Por ejemplo, podemos asignarle a cada palabra de una oración el siguiente vector de tres features:
 
 \begin{center}
 \begin{tabular}{ll}
@@ -123,13 +127,14 @@ Features & Ejemplo \\ \hline
 \label{sec:information-retrieval}
 \label{subsec:information-retrieval}
 
-El problema conocido como recuperación de la información (o \textit{information retrieval}) consiste, formalmente, en retornar \textit{información relevante} para una \textit{consulta} (\textit{information need}) a partir de una \textit{base de conocimiento}.
+El problema conocido como recuperación de la información (o \textit{information retrieval}) consiste, formalmente, en retornar \textit{información relevante} para una \textit{consulta} (\textit{information need}) a partir de una \textit{base de conocimiento}.\cite{MANNING-IR}
 
-Como la generalidad de esta definición sugiere, information retrieval es un área de trabajo amplia que abarca disciplinas variadas y problemas diversos (como por ejemplo: el almacenamiento físico de la información y su calidad, la representación de la información en modelos formales, el modelado semántico de las nociones de ``similaridad`` y ``relevancia`` entre las consultas de usuarios y los diferentes documentos de la base de información).
+Como la generalidad de esta definición sugiere, information retrieval es un área de trabajo amplia que abarca disciplinas variadas y problemas diversos (como por ejemplo: el almacenamiento físico de la información y su calidad, la representación de la información en modelos formales, el modelado semántico de las nociones de ``similaridad'' y ``relevancia'' entre las consultas de usuarios y los diferentes documentos de la base de información).
 
-El caso de uso socialmente más relevante y conocido son los motores de búsqueda web: en los motores de búsqueda, la base de conocimiento son las páginas de la web, la consulta es la cadena de texto que ingresamos en el input del buscador, y la información relevante es una lista de documentos priorizados que, se espera, satisfará la necesidad de información del usuario. En estos sistemas, las consultas se interpretan como una serie de tokens concatenados con distintos operadores lógicos binarios, donde la barra espaciadora funciona como or inclusivo. El núcleo del sistema es un \textit{índice de búsqueda} de los documentos de la base de conocimiento, que en principio podemos pensar como un diccionario indexado de palabras en documentos (más adelante veremos índices invertidos). El proceso de creación y mantenimiento de estos índices depende del tipo y del dinamismo de la base de conocimiento, y oscila entre un modesto setup a mano de una lista de documentos estáticos hasta el ejército de \textit{spiders} de Google indexando la web en tiempo real.
+El caso de uso socialmente más relevante y conocido son los motores de búsqueda web: en los motores de búsqueda, la base de conocimiento son las páginas de la web, la consulta es la cadena de texto que ingresamos en el input del buscador, y la información relevante es una lista de documentos priorizados que, se espera, satisfará la necesidad de información del usuario. En estos sistemas, las consultas se interpretan como una serie de tokens seguidos (con la opción de agregar diferentes operadores lógicos, pero, en general, tomandolos como una serie concatenada por un OR inclusivo). El núcleo del sistema es un \textit{índice de búsqueda} de los documentos de la base de conocimiento, que en principio podemos pensar como un diccionario indexado de palabras en documentos (más adelante veremos índices invertidos). El proceso de creación y mantenimiento de estos índices depende del tipo y del dinamismo de la base de conocimiento, y oscila entre un modesto setup a mano de una lista de documentos estáticos hasta los ejércitos de \textit{spiders} de Google, indexando la web.
 
 La consulta no es la necesidad de información del usuario sino lo que el usuario puede expresar de su necesidad dentro de la interfaz de consultas que el sistema de information retrieval sabe interpretar. Question answering puede pensarse como un sistema de recuperación de la información que busca presentar una interfaz de consultas más cercana a la representación lingüística usual de una pregunta concreta y que entiende como información relevante una respuesta concreta en lugar de una lista de documentos.
+
 
 \subsection{Métricas}
 \label{subsec:metricas-ir}
@@ -188,6 +193,10 @@ Un índice invertido contendría las siguientes entradas (dónde el número \tex
 	``ejemplo" & :& \{1, 2\} \\
 	``gran" & :& \{2\} \\
 \end{tabular}
+
+\medskip
+
+Además, un índice suele contener otra información relevante, como por ejemplo: la frecuencia de aparición de cada término en los respectivos documentos.
 
 
 \section{Procesamiento de Lenguaje Natural}
