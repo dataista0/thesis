@@ -94,6 +94,34 @@ La dificultad principal de esta métrica es determinar un $R_i$ exhaustivo. Una 
 
 Nuevamente, vale que $K1 \in \mathbb{R} \wedge  K1 \in [-1,1]$ y $K1=0$ se condice con un sistema sin conocimiento.
 
+\bigskip
+
+Con respecto de los resultados concretos de sistemas existentes, podemos mencionar aquí como ilustración los resultados de la TREC'07 (En la que participó Qanus, nuestro framework baseline para nuestro sistema con soporte multilenguaje) y la CLEF'07, de la que tomamos los ejercicios para evaluar nuestra adaptación multilingüe de dominio abierto. En ambas competencias se permitía solo una respuesta, juzgada por su exactitud por por jueces humanos (con diferentes mecanismos de supervisión y control cruzado, excelentemente explicados en \cite{TREC07} y \cite{TREC08}, para TREC y en \cite{OverviewClef07} para CLEF). La precisión se define como la cantidad de respuestas exactas sobre la cantidad de preguntas totales. En la tabla \ref{fig:resultados-trec-07} puede observarse la precisión de los 10 mejores sistemas competidores (TREC es una buena métrica del estado para inglés), siendo 70\% de respuestas exactas la precisión del mejor, LympaBA07, 20\% la del décimo, QUANTA y de 12\% la de QA-Sys (el sistema basado en Qanus que compitió en esta competencia). Por otro lado, al respecto del español podemos ver la tabla \ref{fig:resultados-clef-07-es}, donde la precisión baja notablemente a 44\% para el mejor, Pribeam, llegando a 7\% para el quinto TALP, mientras que para el portugués podemos ver la tabla \ref{fig:resultados-clef-07-pt}, con resultados de 60\% para el mejor, prib071ptpt y de 4\% para el séptimo, esfi072ptpt.
+
+\begin{figure}
+  \centering
+    \includegraphics[scale=.5]{graficos/trec-7-accuracy}
+ \caption{Resultados de TREC 07}
+    \label{fig:resultados-trec-07}
+\end{figure}
+
+
+\begin{figure}
+  \centering
+    \includegraphics[scale=.5]{graficos/resultados-espaniol-resumen}
+ \caption{Resultados de CLEF'07 para tareas ES-ES}
+    \label{fig:resultados-clef-07-es}
+\end{figure}
+
+
+\begin{figure}
+  \centering
+    \includegraphics[scale=.5]{graficos/resultados-portugues}
+ \caption{Resultados de CLEF'07 para tareas PT-PT}
+    \label{fig:resultados-clef-07-pt}
+\end{figure}
+
+
 \section{Literatura y sistemas}
 \label{sec:literatura}
 
