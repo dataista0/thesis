@@ -113,7 +113,7 @@ El módulo de procesamiento de la pregunta tiene como subcomponente principal un
 
 En el núcleo del módulo de procesamiento de documentos, por lo general, hay uno o más índices invertidos (por ejemplo, de Lucene o Indri) como el descripto en \allref{subsec:indice-invertido}, o bien accesos a un buscador web, o, más en general, estructuras de information retrieval. Como vimos (\ref{subsec:metricas-ir}), existen dos métricas fundamentales a la hora de evaluar el funcionamiento de un módulo de information retrieval: precisión y recall. La precisión es la proporción de documentos relevantes devueltos sobre el total documentos devueltos por el módulo, mientras que el recall es la proporción de documentos relevantes devueltos sobre el total de documentos relevantes existentes en la base de conocimientos. Estas dos métricas suelen comportarse una con la otra como un trade-off, es decir: suelen aparecer escenarios de diseño en los que se deberá optar por priorizar una o bien la otra. Considerando esto, existe una tercera métrica extendida, la medida $F$, que busca parametrizar este compromiso.
 
-En el contexto de uso de los sistemas de QA, la métrica que se busca maximizar para el módulo de procesamiento de documentos es el recall, es decir, no interesa que el módulo no recupere documentos no relevantes siempre y cuando recupere todos los documentos relevantes existentes que pueda. El motivo es simple: se espera que el análisis lingüístico fino del módulo de procesamiento de la respuesta sea capaz de eliminar texto irrelevante en la misma o en mejor medida que el sistema de information retrieval subyacente al módulo de documentos. Por otro lado, si al recuperar los documentos se filtra una respuesta válida como irrelevante, entonces el resto del pipeline verá sus probabilidades de éxito mermadas (sino directamente anuladas).  La expansión/reformulación de la pregunta del paso anterior apunta, justamente, a generar una query que priorice el recall sobre la precisión.
+En el contexto de uso de los sistemas de QA, la métrica que se busca maximizar para el módulo de procesamiento de documentos es el recall, es decir: no es importante que el módulo sepa no dejar de lado documento no relevantes (precisión), lo esencial es que recupere todos los documentos relevantes existentes que pueda (exhaustividad). El motivo es simple: se espera que el análisis lingüístico fino del módulo de procesamiento de la respuesta sea capaz de eliminar texto irrelevante en la misma o en mejor medida que el sistema de information retrieval subyacente al módulo de documentos. Por otro lado, si al recuperar los documentos se filtra una respuesta válida como irrelevante, entonces el resto del pipeline verá sus probabilidades de éxito mermadas (sino directamente anuladas).  La expansión/reformulación de la pregunta del paso anterior apunta, justamente, a generar una query que priorice el recall sobre la precisión.
 
 Otras tareas que se realizan en el módulo de procesamiento de documentos es la división de los documentos en parágrafos, el filtrado de documentos o parágrafos irrelevantes y el ranking de los resultados. Si bien los sistemas de information retrieval suelen rankear sus resultados, este ranking puede resultar no del todo adecuado para la tarea en cuestión y mejorable teniendo en cuenta la información disponible.
 
@@ -126,7 +126,7 @@ Este módulo recibe como input una pregunta formulada en algún lenguaje natural
 
 La etiqueta principal generada es el tipo de pregunta (\textit{question type}) y para obtenerlo se utiliza un clasificador como el que describimos en (\ref{subsec:qc})· Lamentablemente, la clasificación de preguntas no está desarrollada para otros idiomas que el inglés, al menos, no con el mismo grado de precisión y visibilidad que, por ejemplo, el clasificador de Stanford \cite{QC1} \cite{QC2}. Como vimos anteriormente, el principal problema a la hora de clasificar una pregunta es la ambigüedad intrínseca de ciertas clases de preguntas.
 
-A partir del tipo de pregunta se define el tipo de respuesta esperada (\textit{answer type}). No existe un algoritmo automático estándar difundido para generar el tipo de respuesta esperado. El enfoque general encontrado es la aplicación de un mapeo simple basado en reglas, desde el tipo de pregunta generado por el clasificador a una serie de tipos de respuestas predefinido para el dominio de problema.
+A partir del tipo de pregunta se define el tipo de respuesta esperada (\textit{answer type}). No existe un algoritmo automático estándar difundido para generar el tipo de respuesta esperado (por ejemplo: individuo humano, grupo humano, creación humana, lugar, número en general, cantidad, fecha, cantidad de dinero) El enfoque general encontrado es la aplicación de un mapeo simple basado en reglas, desde el tipo de pregunta generado por el clasificador a una serie de tipos de respuestas predefinido para el dominio de problema. El
 
 Otro análisis interesante pero, según nuestra investigación, no sistematizado, es el análisis del \dq{foco} (\textit{question focus}). En \cite{QA3} se define el foco como una palabra o secuencia de palabras que indican qué se está preguntando. Por ejemplo, para la pregunta \dq{¿Quién fue nombrado presidente de Argentina en  1983?} el foco sería \dq{presidente}). El concepto aparece también en \cite{WATSON1} pero no encontramos detalles sobre los mecanismos técnicos implicados en la extracción y todo parece señalar a una serie de heurísticas de procesamiento lingüístico escritas a mano.
 
@@ -297,14 +297,14 @@ Siguiendo al paper original, presentaremos aquí, en primer lugar, un ejemplo de
 
 \medskip
 
-Comencemos con el ejemplo: veamos los pasos por los cuales Precise traduce la pregunta \textit{``What are the HP jobs on a Unix system?''} en una consulta SQL. Esta pregunta fue elegida para ilustrar la clase de ambigüedades que el modelo puede resolver automáticamente. Por brevedad y claridad, asumamos que la base de datos consta de una sola relación (\textbf{Jobs}) con atributos \textbf{Description}, \textbf{Platform} y  \textbf{Company}. En primer lugar, el tokenizador produce una única tokenización completa de la pregunta: \{what, HP, job, Unix, system\}. Notar que el tokenizer elimina marcadores sintácticos tales como ``the'' y ``a''.
+Comencemos con el ejemplo del paper\cite{QADB1}: veamos los pasos por los cuales Precise traduce la pregunta \textit{``What are the HP jobs on a Unix system?''} en una consulta SQL. Esta pregunta fue elegida para ilustrar la clase de ambigüedades que el modelo puede resolver automáticamente. Por brevedad y claridad, asumamos que la base de datos consta de una sola relación (\textbf{Jobs}) con atributos \textbf{Description}, \textbf{Platform} y  \textbf{Company}. En primer lugar, el tokenizador produce una única tokenización completa de la pregunta: \{what, HP, job, Unix, system\}. Notar que el tokenizer elimina marcadores sintácticos tales como ``the'' y ``a''.
 
 Buscando estos tokens en el lexicón, Precise obtiene la lista de los elementos de la base de datos que se corresponden con cada token (ver Figura \ref{fig:popescu-example}).
 
 \begin{figure}
   \centering
     \includegraphics[scale=1.0]{graficos/popescu-example}
-  \caption{La transformación de la pregunta ``What are the HP jobs on a Unix system?'' a una consulta SQL}
+  \caption{La transformación de la pregunta ``What are the HP jobs on a Unix system?'' a una consulta SQL por Precise, el trabajo de Popescu et al.}
   \label{fig:popescu-example}
 \end{figure}
 
@@ -590,7 +590,7 @@ requiere Jeopardy, Watson cuenta con una gran cantidad de
 enciclopedias, diccionarios, tesauros, artículos académicos y de
 literatura, etc. A partir de este corpus inicial, el sistema busca en
 la web documentos relevantes y los relaciona con los documentos ya
-presentes en el corpus.
+presentes en el corpus. Todo esto ocurre previo a la ejecución real, por lo que el sistema no accede a la web en tiempo real, tal como era requerido por los organizadores (dado que sería una ventaja con respecto a los humanos, que no tienen permitido este acceso).
 
 Además de este corpus de documentos no estructurados, DeepQA maneja
 contenidos semi-estructurados  y estructurados, incorporando bases de
