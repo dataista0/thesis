@@ -44,7 +44,7 @@ Para nuestro proyecto, renombramos algunos de los elementos:
 \item El atributo IndepYear de la relación Country fue renombrado a IndependenceYear
 \end{itemize}
 
-Por otro lado, dado que no soportamos más de un JOIN posible entre tablas, tuvimos que eliminar la referencia a la tabla City en el atributo Country.Capital. Lo que hicimos fue rellenar ese campo con el nombre de la ciudad en lugar de su  ID, perdiendo la posiblidad de navegar con preguntas del tipo ¿Cuál es la población de la capital del país X?.
+Por otro lado, dado que, por una cuestión de tiempos y de complejidad del desarrollo, no soportamos más de un join posible entre tablas, eliminamos la referencia a la tabla City en el atributo Country.Capital. Lo que hicimos fue rellenar ese campo con el nombre de la ciudad en lugar de su  ID, perdiendo la posiblidad de navegar con preguntas del tipo ¿Cuál es la población de la capital del país X?.
 Los JOINS que manejamos, en caso de ser necesarios por estarse refiriendo más de una tabla, son City.CountryCode $=$ Country.Code y Language.CountryCode$=$Country.Code.
 
 En las tablas \ref{table:countrylanguage-data}, \ref{table:city-data}, \ref{tab:country-data} y \ref{tab:country-data-2} pueden verse algunas filas de ejemplo de cada una de las tablas.
@@ -141,9 +141,10 @@ Incorporando estos datos al modelo teórico, hasta aquí tenemos definidos: la b
 \section{Implementación}
 \label{sec:popescu-implementacion}
 
-El código de la implementación está disponible en github: \url{http://github.com/julian3833/popescu-world}. Está implementado en java e implementa, con la mayor fidelidad posible, el sistema propuesto por Popescu y descripto en \allref{subsec:closed-domain}.
 
 Estructuramos esta sección como sigue. Primero (\ref{subsec:popescu-codigo}), discutimos la implementación en sí misma, analizando los módulos más importantes del sistema, luego (\ref{subsec:popescu-ejemplos}) mostramos y comentamos algunos ejemplos de ejecuciones y, finalmente (\ref{subsec:popescu-cierre}), analizamos alcances, límites y trabajo futuro.
+
+Este apartado es probablemente el más áspero y técnico de la tesis. Si la cantidad de conceptos presentada se vuelve demasiado difícil de reterner al lector, recomendamos saltear la sección de \allref{subsec:popescu-codigo} y comenzar por \allref{subsec:popescu-ejemplos}, o bien darle una primera lectura aproximativa a ref{subsec:popescu-codigo}, pasar a los ejempos un principio más por arriba y luego sí leer en detalle \ref{subsec:popescu-codigo}.
 
 \subsection{Código}
 \label{subsec:popescu-codigo}
@@ -187,6 +188,8 @@ Finalmente, intentamos obtener sinónimos también de todas las palabras del tok
 El conjunto de tokens sinónimos para cada elementos de la base de datos es luego invertido, es decir, en lugar de disponer de un mapeo de elementos de la base de datos a conjunto de tokens sinónimos, construimos un mapeo de tokens en elementos de la base de datos.
 
 Vale mencionar que en este índice invertido agregamos también tokens para cada qword posible, mapeando a un solo elemento especial, de tipado similar a un valor (WhValue), mediante el cual los tokens de qwords acceden al espacio de elementos de la base de datos. Además, para estos WhValues definimos a mano la relación de compatibilidad con atributos de la base de datos tal como se define en los papers. Esta relación está definida en la clase $uba.db.WhGenerator$ tal como la presentamos en la tabla \ref{table:atributos-qwords}.
+
+El proceso del Lexicón se hace offline y con él queda construido el espacio semántico disponible para comprender palabras.
 
 \begin{center}
 \begin{table}[h]
@@ -529,9 +532,17 @@ parse tree generado por el algoritmo de Charniak según nuestras reglas. El arbo
 La regla 2 (q-word a sustantivo) vincula los términos 'who' con 'head', mientras que la 6 (términos a tokens), asocia los tokens 'who' con 'head state', cumpliendo las condiciones sintácticas requeridas por la definición de traducción válida. Por su parte, el atributo Name es implícito, lo que significa que no posee ningún token asociado y, por lo tanto, no debe cumplir la regla de traducciones válidas. Además, como no hay ninguna relación mencionada explícitamente, los tokens cubren todos los términos significativos de la pregunta y no hay ningún término repetido entre los tokens, esto significa que tenemos una (única) traducción válida para esta tokenización completa, constando de los siguiente elementos de la base de datos apareados: (Atributo Country.Name, Valor Country.Name$=$Zimbabwe), (Atributo Country.HeadOfState, Q-Valor Who).
 
 Las otras dos tokenizaciones generan la misma traducción y sus repeticiones son eliminadas por el $EquivalenceChecker$.
-Finalmente, esta única traducción pasa al $QueryGenerator$ que la traduce univocamente en una query, aplicando las reglas descriptas en \ref{subsec:closed-domain}:
 
-``\textbf{SELECT} Country.HeadOfState \textbf{FROM} Country \textbf{WHERE} Country.Name$=$`Zimbabwe' '', cuyo resultado es ``Robert G. Mugabe''.
+Finalmente, esta única traducción pasa al $QueryGenerator$ que, aplicando las reglas descriptas en \ref{subsec:closed-domain}, genera la siguiente consulta SQL:
+
+\medskip 
+\textbf{SELECT} Country.HeadOfState \textbf{FROM} Country \textbf{WHERE} Country.Name$=$`Zimbabwe'
+\medskip
+
+
+Cuyo resultado es ``Robert G. Mugabe''.
+
+
 
 \subsubsection*{Ejemplo 2: ``What caribbean countries are also considered north american?''}
 
