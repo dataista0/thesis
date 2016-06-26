@@ -1,17 +1,17 @@
 \chapter{Implementación sobre Qanus}
 \label{chap:qanus} \label{chap:5}
 
-En este capítulo veremos la implementación del modelo de question answering multilingüe y diferentes evaluaciones realizadas utilizando como guía dos tareas monolingües de la competencia QA@Clef '07, una para español y otra para portugués. El sistema está basado en un framework académico de código abierto llamado Qanus. Este framework está empaquetado con un sistema de QA simple, QA-sys, que resuelve ejercicios de la competencia Trec '07 con soporte para inglés. Nosotros adaptamos este sistema para utilizar como librería de procesamiento de lenguajes a Freeling, generando un sistema baseline multilingüe. A este sistema le agregamos features reseñados en \allref{sec:literatura} y realizamos diferente mediciones sobre las instancias en español y portugués sobre los ya mencionados ejercicios de Clef '07.
+En este capítulo veremos la implementación del modelo de question answering multilingüe y diferentes evaluaciones realizadas utilizando como guía dos tareas monolingües de la competencia QA@CLEF '07, una para español y otra para portugués. El sistema está basado en un framework académico de código abierto llamado Qanus. Este framework está empaquetado con un sistema de QA simple, QA-sys, que resuelve ejercicios de la competencia Trec '07 con soporte para inglés. Nosotros adaptamos este sistema para utilizar como librería de procesamiento de lenguajes a Freeling, generando un sistema baseline multilingüe. A este sistema le agregamos features reseñados en \allref{sec:literatura} y realizamos diferente mediciones sobre las instancias en español y portugués sobre los ya mencionados ejercicios de CLEF '07.
 
-La estructura de este capítulo es la siguiente: en \allref{sec:ejercicio-de-clef} se describe con detalle el panorama general de tareas de question answering en la competencia Clef '07, haciendo énfasis en las tareas seleccionadas, en los corpora y las preguntas disponibles y en las decisiones tomadas a la hora de elegir estas tareas; en \allref{sec:sistema} reseñamos la implementación de nuestro sistema, presentando el sistema baseline de basado en Qanus (\ref{subsec:baseline}), las adaptaciones multilingües y demás mejoras realizadas (\ref{subsec:modificaciones}), las diferentes corridas que realizamos para evaluarlo (\ref{sec:eval}) y, finalmente, las conclusiones, los límites y potenciales mejoras del sistema (\ref{sec:clef-cierre}).
+La estructura de este capítulo es la siguiente: en \allref{sec:ejercicio-de-clef} se describe con detalle el panorama general de tareas de question answering en la competencia CLEF '07, haciendo énfasis en las tareas seleccionadas, en los corpora y las preguntas disponibles y en las decisiones tomadas a la hora de elegir estas tareas; en \allref{sec:sistema} reseñamos la implementación de nuestro sistema, presentando el sistema baseline de basado en Qanus (\ref{subsec:baseline}), las adaptaciones multilingües y demás mejoras realizadas (\ref{subsec:modificaciones}), las diferentes corridas que realizamos para evaluarlo (\ref{sec:eval}) y, finalmente, las conclusiones, los límites y potenciales mejoras del sistema (\ref{sec:clef-cierre}).
 
-\section{Ejercicio de Clef}
+\section{Ejercicio de CLEF}
 \label{sec:ejercicio-de-clef}
-Tras investigar distintas competencias y métodos de evaluación, optamos por utilizar como guía de trabajo dos ejercicios de la tarea principal de question answering de la competencia Clef de 2007. Principalmente por contar con un subconjunto de ejercicios bastante adecuados para nuestra tesis y disponer de un corpus de datos libre y disponible en el acto para evaluar una parte importante de las funcionalidades implementadas en nuestro proyecto.
+Tras investigar distintas competencias y métodos de evaluación, optamos por utilizar como guía de trabajo dos ejercicios de la tarea principal de question answering de la competencia CLEF de 2007. Principalmente por contar con un subconjunto de ejercicios bastante adecuados para nuestra tesis y disponer de un corpus de datos libre y disponible en el acto para evaluar una parte importante de las funcionalidades implementadas en nuestro proyecto.
 
-Como mencionamos en \allref{subsec:competencias}, Clef (de \textit{Cross-Language Evaluation Forum}) es una organización que busca fomentar la investigación en sistemas de information retrieval cross-language. En particular, una vez por año Clef lanza una competencia de Question Answering multilingüe, con diferentes corpora y diferentes tipos de ejercicios. Estas competencia permiten obtener un patrón estándar de comparación entre distintos desarrollos y una idea general del estado de arte alcanzado en los diferentes idiomas por la diferentes actores académicos y comerciales. Por lo demás, Clef es el principal organizador de conferencias de question answering multilingüe para idiomas europeos y la tarea principal de '07 presentaba una complejidad adecuada para el scope de esta tesis.
+Como mencionamos en \allref{subsec:competencias}, CLEF (de \textit{Cross-Language Evaluation Forum}) es una organización que busca fomentar la investigación en sistemas de information retrieval cross-language. En particular, una vez por año CLEF lanza una competencia de Question Answering multilingüe, con diferentes corpora y diferentes tipos de ejercicios. Estas competencia permiten obtener un patrón estándar de comparación entre distintos desarrollos y una idea general del estado de arte alcanzado en los diferentes idiomas por la diferentes actores académicos y comerciales. Por lo demás, CLEF es el principal organizador de conferencias de question answering multilingüe para idiomas europeos y la tarea principal de '07 presentaba una complejidad adecuada para el scope de esta tesis.
 
-La competencia de 2007 es la quinta campaña de QA multilingüe de Clef, siendo la primera en 2003.
+La competencia de 2007 es la quinta campaña de QA multilingüe de CLEF, siendo la primera en 2003.
 
 La tarea estándar principal de question answering incorpora algunas particularidades que la diferencian de anteriores campañas: los temas o tópicos, la co-referencia y el uso de wikipedia como corpus de datos parcial. Además de la tarea principal se presentaron tres tareas más: Answer Validation Exercise (AVE) y QUAST, question answering in speech transcription y Question Answering Real Time, con métricas de performance temporales. Como nota general, es importante notar que las tareas fueron de una complejidad elevada y en comparación con los resultados del año anterior, la mejor precisión general bajó del 49\% al 41.75\% para tareas multi-lingües, mientras que, más significativamente, bajó de 68\% a 54\% en tareas monolingües.
 
@@ -20,7 +20,7 @@ La tarea estándar principal de question answering incorpora algunas particulari
 \label{subsec:tareas}
 Utilizamos como guía dos ejercicios de la tarea principal de question answering de '07  por varias razones (Ver \cite{GuidelineClef07} y \cite{OverviewClef07} para un detalle exhaustivo de la conferencia en cuestión). Para esta tarea estaban disponibles en acto corpora, inputs de prueba y resultados esperados para una experimentación multilingüe que abarque tanto inglés como español y portugués. Además, estos ejercicios incorporaban, por única vez, diferentes wikipedias como parte del corpus de datos, lo cual resulta de por sí atractivo.
 
-La tarea principal de QA de Clef '07 ofrece dos grandes grupos de ejercicios:
+La tarea principal de QA de CLEF '07 ofrece dos grandes grupos de ejercicios:
 \begin{itemize}
 \item Mono-lingual: donde el idioma de la pregunta y el idioma de la fuente de información son el mismo
 \item Cross-lingual: donde el idioma de la pregunta y el idioma de la fuente de información difieren
@@ -41,7 +41,7 @@ Se propusieron, en total, 37 tareas concretas: 8 monolingües y 29 bilingües. D
 \begin{figure}
   \centering
     \includegraphics[scale=0.5]{graficos/clef07}
-  \caption{Tareas activadas en la competencia Clef '07}
+  \caption{Tareas activadas en la competencia CLEF '07}
   \label{fig:tareas}
 \end{figure}
 
@@ -240,7 +240,7 @@ Total & 200 & 200 & 159 & 158 & 31 & 32  & 10 & 10\\ \hline
 \section{Sistema}
 \label{sec:sistema}
 
-Nuestra implementación está basada en Qanus como framework o arquitectura de diseño de QA y en Freeling como proveedor de servicios de procesamiento de lenguaje multilingüe. Qanus (Question-Answering @ National University of Singapore) es un framework de question answering basado en information retrieval y también un sistema de QA funcional simple construido sobre este framework. El proyecto se actualizó por última vez en noviembre de 2012 y contiene herramientas actuales de nlp para inglés (el POS-tagger, el NER-tagger y el Question Classifier de Stanford) y también de information retrieval (índice de búsquedas lucene) bajo licencia de código abierto. El paquete cuenta con un framework (qanus), que cumple un rol equivalente a la arquitectura DeepQA en la organización del proyecto de IBM, y un sistema montado sobre este framework -QA-sys-, equivalente a Watson (Ver Figura ~\ref{fig:Quanus}).
+Nuestra implementación está basada en Qanus como framework o arquitectura de diseño de QA y en Freeling como proveedor de servicios de procesamiento de lenguaje multilingüe (es decir, no habilitando ejercicios cross-lingual sino mono-lingual en varios idiomas). Qanus (Question-Answering @ National University of Singapore) es un framework de question answering basado en information retrieval y también un sistema de QA funcional simple construido sobre este framework. El proyecto se actualizó por última vez en noviembre de 2012 y contiene herramientas actuales de nlp para inglés (el POS-tagger, el NER-tagger y el Question Classifier de Stanford) y también de information retrieval (índice de búsquedas lucene) bajo licencia de código abierto. El paquete cuenta con un framework (qanus), que cumple un rol equivalente a la arquitectura DeepQA en la organización del proyecto de IBM, y un sistema montado sobre este framework -QA-sys-, equivalente a Watson (Ver Figura ~\ref{fig:Quanus}).
 
 
 \begin{figure}
@@ -287,7 +287,7 @@ Básicamente, cruza las respuestas obtenidas contra unas respuestas
 esperadas escritas a mano y presenta el total de respuestas dadas
 correctamente.\newline
 
-En esta sección de la tesis adoptamos el framework Qanus y adaptamos el sistema QA-sys para 1) incorporar Freeling como librería de herramientas de procesamiento del lenguaje permitiendo un funcionamiento multilenguaje, 2) trabajar sobre el corpus de datos y preguntas de los ejercicios de CLEF '07 de español y portugués descriptos en \allref{sec:ejercicio-de-clef} y, finalmente, 3) incorporamos y evaluamos algunas mejoras tomadas de la reseña a la literatura científica del apartado anterior \allref{sec:literatura}.
+En esta sección de la tesis adoptamos el framework Qanus y adaptamos el sistema QA-sys para 1) incorporar Freeling como librería de herramientas de procesamiento del lenguaje permitiendo un funcionamiento con soporte multilenguaje, 2) trabajar sobre el corpus de datos y preguntas de los ejercicios de CLEF '07 de español y portugués descriptos en \allref{sec:ejercicio-de-clef} y, finalmente, 3) incorporamos y evaluamos algunas mejoras tomadas de la reseña a la literatura científica del apartado anterior \allref{sec:literatura}.
 
 \subsection{Implementación baseline}
 \label{subsec:baseline}
@@ -382,7 +382,7 @@ Al finalizar el paso del anotado de la pregunta, las preguntas tienen asociado s
 
 \subsubsection{Generación de Respuestas}
 
-Como baseline de desarrollo y pruebas, adaptamos los algoritmos de Qanus. En esta subsección vamos a describir esta implementación con detalle, mencionando los cambios más importantes que realizamos para adaptarla a la tarea elegida. En las siguientes comentaremos diferentes modificaciones y algoritmia agregada. El proceso de qanus para la generación de respuestas puede estructurarse así:
+Como baseline de desarrollo y pruebas, adaptamos los algoritmos de Qanus. En esta subsección vamos a describir esta implementación con detalle, mencionando los cambios más importantes que realizamos para adaptarla a la tarea elegida. En las siguientes comentaremos diferentes modificaciones y algoritmia agregada. El proceso de Qanus para la generación de respuestas puede estructurarse así:
 \begin{enumerate}
   \item Filtrado de preguntas
   \item Generación de Queries
@@ -546,7 +546,7 @@ El caso de entidades general incluye todas las subclases que no son \sq{cremat}.
 Se implementa el mismo algoritmo que el caso anterior. \newline
 
 
-\subsection{Modificaciones}
+\subsection{Modificaciones realizadas}
 \label{subsec:modificaciones}
 
 Además de los cambios realizados para convertir al baseline de qanus en un sistema multilingüe basado en la librería freeling, realizamos algunos agregados mínimos a la lógica. En esta sección describiremos diferentes modificaciones realizadas y en la siguiente veremos la evaluación comparativa entre la performance del sistema baseline y las modificaciones en las diferentes tareas que realizan los submódulos.
@@ -632,8 +632,8 @@ A continuación listamos sintéticamente todas las variables libres y las instan
 Por otro lado, las siguientes opciones no determinan corridas pero sí determinan resultados distintos:
 
 \begin{itemize}
-  \item Cantidad de respuestas dadas por el sistema: 1, 5, 10, 25 (4 opciones)
-  \item Forma de evaluación automática: exacto, cubrimiento del 100\%, 75\% y 50\%, 15\%  y 1\% (6 opciones)
+  \item Cantidad de respuestas dadas por el sistema: 1, 5, 10, 25 (4 opciones, $MMR_1$ o exacto, $MRR_5$, $MRR_10$ y $MRR_25$, respectivamente, las filas de las tablas de resultados )
+  \item Forma de evaluación automática: exacto, cubrimiento del 100\%, 75\% y 50\%, 15\%  y 1\% (6 opciones) (Exacto, Covr 1, Covr .75, Covr .5, Covr .15 y Covr .1, respectivamente, columnas en las tablas de los resultados de las corridas)
 \end{itemize}
 
 La cantidad de permutaciones totales es inmensa: 2 idiomas $\times$ 3 métodos de generación de queries $\times$ 4 métodos de generación de tópicos $\times$ 3 métodos de rankeo de pasajes $\times$ $n$ distintas cantidades de documentos retornados por lucene $\times$ $m$ cantidad de pasajes extraídos de los documentos, con $n=3$ y $m=3$ es, 648. Por eso, realizamos el siguiente procedimiento experimental: en primer lugar, evaluamos, para el sistema baseline, variaciones sobre la cantidad de documentos y de pasajes. Como método \sq{baseline} de inferencia de tópicos usamos el método 2), que agrega solo NERs como target, ya que el método baseline de generación de queries contiene sustantivos, adjetivos y verbos, pero no entidades nombradas. Sobre la combinación de totales que dieron mejores resultados para esta combinación, evaluamos los diferentes métodos. Como veremos en la corrida 1, muchas de las variaciones planteadas parecen no generar grandes cambios en los resultados, por lo que redujimos la cantidad de parámetros en las corridas posteriores. \newline
@@ -661,7 +661,7 @@ Las tablas \ref{table:1_50_getExactMRRWikiFactoid_getCovrMRRWikiFactoid}, \ref{t
 \begin{tabular}{|l | l | l | l | l | l | l |}
 \hline
 Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
-$MRR_{1}$ & 7.69 & 7.69 & 8.46 & 10.00 & 10.00 & 10.00  \\ \hline
+Exacto & 7.69 & 7.69 & 8.46 & 10.00 & 10.00 & 10.00  \\ \hline
 $MRR_{5}$ & 8.87 & 9.18 & 9.95 & \textbf{12.51} & \textbf{13.47} & \textbf{13.54}  \\ \hline
 $MRR_{10}$ & \textbf{9.37} & \textbf{9.44} & \textbf{10.21} & \textbf{12.77} & \textbf{14.25} & \textbf{14.31}  \\ \hline
 $MRR_{25}$ & \textbf{9.56} & \textbf{9.63} & \textbf{10.40} & \textbf{13.07} & \textbf{14.58} & \textbf{14.65}  \\ \hline
@@ -672,7 +672,7 @@ $MRR_{25}$ & \textbf{9.56} & \textbf{9.63} & \textbf{10.40} & \textbf{13.07} & \
 \begin{tabular}{|l | l | l | l | l | l | l |}
 \hline
 Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
-$MRR_{1}$ & \textbf{7.75} & \textbf{7.75} & \textbf{8.53} & \textbf{10.08} & \textbf{10.08} & \textbf{10.08}  \\ \hline
+Exacto & \textbf{7.75} & \textbf{7.75} & \textbf{8.53} & \textbf{10.08} & \textbf{10.08} & \textbf{10.08}  \\ \hline
 $MRR_{5}$ & \textbf{8.94} & \textbf{9.25} & \textbf{10.03} & 12.42 & 13.39 & 13.45  \\ \hline
 $MRR_{10}$ & 9.31 & 9.38 & 10.16 & 12.55 & 14.03 & 14.10  \\ \hline
 $MRR_{25}$ & 9.54 & 9.61 & 10.39 & 12.89 & 14.41 & 14.48  \\ \hline
@@ -683,7 +683,7 @@ $MRR_{25}$ & 9.54 & 9.61 & 10.39 & 12.89 & 14.41 & 14.48  \\ \hline
 \begin{tabular}{|l | l | l | l | l | l | l |}
 \hline
 Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
-$MRR_{1}$ & 6.98 & 6.98 & 7.75 & 8.53 & 8.53 & 8.53  \\ \hline
+Exacto & 6.98 & 6.98 & 7.75 & 8.53 & 8.53 & 8.53  \\ \hline
 $MRR_{5}$ & 8.58 & 8.89 & 9.66 & 11.99 & 13.02 & 13.02  \\ \hline
 $MRR_{10}$ & 8.92 & 8.99 & 9.76 & 12.09 & 13.64 & 13.64  \\ \hline
 $MRR_{25}$ & 9.12 & 9.19 & 9.96 & 12.43 & 14.02 & 14.02  \\ \hline
@@ -701,7 +701,7 @@ $MRR_{25}$ & 9.12 & 9.19 & 9.96 & 12.43 & 14.02 & 14.02  \\ \hline
 \begin{tabular}{|l | l | l | l | l | l | l |}
 \hline
 Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
-$MRR_{1}$ & 6.15 & 6.15 & 6.92 & 7.69 & 7.69 & 7.69  \\ \hline
+Exacto & 6.15 & 6.15 & 6.92 & 7.69 & 7.69 & 7.69  \\ \hline
 $MRR_{5}$ & 7.24 & 7.40 & 8.17 & 10.09 & 11.12 & 11.12  \\ \hline
 $MRR_{10}$ & 7.37 & 7.40 & 8.28 & 10.33 & 11.76 & 11.76  \\ \hline
 $MRR_{25}$ & 7.67 & 7.73 & 8.61 & 10.84 & 12.27 & 12.27  \\ \hline
@@ -712,7 +712,7 @@ $MRR_{25}$ & 7.67 & 7.73 & 8.61 & 10.84 & 12.27 & 12.27  \\ \hline
 \begin{tabular}{|l | l | l | l | l | l | l |}
 \hline
 Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
-$MRR_{1}$ & 6.25 & 6.25 & 7.03 & 7.81 & 7.81 & 7.81  \\ \hline
+Exacto & 6.25 & 6.25 & 7.03 & 7.81 & 7.81 & 7.81  \\ \hline
 $MRR_{5}$ & 7.42 & 7.58 & 8.36 & 10.27 & 11.32 & 11.32  \\ \hline
 $MRR_{10}$ & 7.64 & 7.66 & 8.54 & 10.70 & 12.17 & 12.17  \\ \hline
 $MRR_{25}$ & 7.95 & 8.02 & 8.90 & 11.19 & 12.66 & 12.66  \\ \hline
@@ -723,7 +723,7 @@ $MRR_{25}$ & 7.95 & 8.02 & 8.90 & 11.19 & 12.66 & 12.66  \\ \hline
 \begin{tabular}{|l | l | l | l | l | l | l |}
 \hline
 Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
-$MRR_{1}$ & 6.20 & 6.20 & 6.98 & 7.75 & 7.75 & 7.75  \\ \hline
+Exacto & 6.20 & 6.20 & 6.98 & 7.75 & 7.75 & 7.75  \\ \hline
 $MRR_{5}$ & 7.82 & 7.97 & 8.75 & 10.68 & 11.72 & 11.72  \\ \hline
 $MRR_{10}$ & 7.95 & 7.97 & 8.84 & 11.12 & 12.58 & 12.58  \\ \hline
 $MRR_{25}$ & 8.24 & 8.31 & 9.18 & 11.60 & 13.05 & 13.05  \\ \hline
@@ -741,7 +741,7 @@ $MRR_{25}$ & 8.24 & 8.31 & 9.18 & 11.60 & 13.05 & 13.05  \\ \hline
 \begin{tabular}{|l | l | l | l | l | l | l |}
 \hline
 Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
-$MRR_{1}$ & 4.69 & 4.69 & 4.69 & 5.47 & 5.47 & 5.47  \\ \hline
+Exacto & 4.69 & 4.69 & 4.69 & 5.47 & 5.47 & 5.47  \\ \hline
 $MRR_{5}$ & 6.64 & 6.80 & 6.80 & 8.49 & 9.53 & 9.53  \\ \hline
 $MRR_{10}$ & 6.85 & 6.87 & 7.08 & 8.91 & 10.36 & 10.36  \\ \hline
 $MRR_{25}$ & 7.03 & 7.06 & 7.27 & 9.23 & 10.68 & 10.68  \\ \hline
@@ -752,7 +752,7 @@ $MRR_{25}$ & 7.03 & 7.06 & 7.27 & 9.23 & 10.68 & 10.68  \\ \hline
 \begin{tabular}{|l | l | l | l | l | l | l |}
 \hline
 Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
-$MRR_{1}$ & 4.62 & 4.62 & 4.62 & 5.38 & 5.38 & 5.38  \\ \hline
+Exacto & 4.62 & 4.62 & 4.62 & 5.38 & 5.38 & 5.38  \\ \hline
 $MRR_{5}$ & 6.35 & 6.50 & 6.50 & 8.23 & 9.26 & 9.26  \\ \hline
 $MRR_{10}$ & 6.66 & 6.68 & 6.87 & 8.86 & 10.31 & 10.31  \\ \hline
 $MRR_{25}$ & 6.81 & 6.83 & 7.02 & 9.15 & 10.59 & 10.59  \\ \hline
@@ -763,7 +763,7 @@ $MRR_{25}$ & 6.81 & 6.83 & 7.02 & 9.15 & 10.59 & 10.59  \\ \hline
 \begin{tabular}{|l | l | l | l | l | l | l |}
 \hline
 Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
-$MRR_{1}$ & 4.69 & 4.69 & 4.69 & 5.47 & 5.47 & 5.47  \\ \hline
+Exacto & 4.69 & 4.69 & 4.69 & 5.47 & 5.47 & 5.47  \\ \hline
 $MRR_{5}$ & 6.64 & 6.80 & 6.80 & 8.49 & 9.53 & 9.53  \\ \hline
 $MRR_{10}$ & 6.77 & 6.80 & 6.98 & 8.90 & 10.37 & 10.37  \\ \hline
 $MRR_{25}$ & 7.00 & 7.02 & 7.21 & 9.31 & 10.78 & 10.78  \\ \hline
@@ -774,7 +774,7 @@ $MRR_{25}$ & 7.00 & 7.02 & 7.21 & 9.31 & 10.78 & 10.78  \\ \hline
 \end{table}
 
 En primer lugar, observamos que el incremento de documentos retornados por el módulo de recuperación de información empobrece los resultados en todos los casos.
-En segundo lugar, se observa que extraer 70 pasajes empobrece los resultados, también en todos los casos. Las opciones de 20 y 40 pasajes no son tan lineales. En la tabla \ref{table:1_50_getExactMRRWikiFactoid_getCovrMRRWikiFactoid} marcamos en negritas los casos en los que uno u otro dieron mejores resultados. Como se puede apreciar, el cuadrante más exacto (para $MRR_{1}$ y $MRR_{5}$) y para comparaciones exactas, 40 dio mejores resultados. Considerando esto, utilizamos la configuración original del sistema baseline de qanus (50 documentos $\times$ 40 pasajes) para el resto de las corridas. \newline
+En segundo lugar, se observa que extraer 70 pasajes empobrece los resultados, también en todos los casos. Las opciones de 20 y 40 pasajes no son tan lineales. En la tabla \ref{table:1_50_getExactMRRWikiFactoid_getCovrMRRWikiFactoid} marcamos en negritas los casos en los que uno u otro dieron mejores resultados. Como se puede apreciar, el cuadrante más exacto (para Exacto y $MRR_{5}$) y para comparaciones exactas, 40 dio mejores resultados. Considerando esto, utilizamos la configuración original del sistema baseline de qanus (50 documentos $\times$ 40 pasajes) para el resto de las corridas. \newline
 
 
 \textbf{Corrida 2.1: Generación de Queries}\newline
@@ -800,7 +800,7 @@ El método de generación de queries 3, como muestra la tabla, es el método Las
 \multicolumn{7}{|c|}{1) Baseline}  \\ \hline
 Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
 
-$MRR_{1}$ & 7.75 & 7.75 & 8.53 & 10.08 & 10.08 & 10.08  \\ \hline
+Exacto & 7.75 & 7.75 & 8.53 & 10.08 & 10.08 & 10.08  \\ \hline
 $MRR_{5}$ & 8.94 & 9.25 & 10.03 & 12.42 & 13.39 & 13.45  \\ \hline
 $MRR_{10}$ & 9.31 & 9.38 & 10.16 & 12.55 & 14.03 & 14.10  \\ \hline
 $MRR_{25}$ & 9.54 & 9.61 & 10.39 & 12.89 & 14.41 & 14.48  \\ \hline
@@ -813,7 +813,7 @@ $MRR_{25}$ & 9.54 & 9.61 & 10.39 & 12.89 & 14.41 & 14.48  \\ \hline
 \multicolumn{7}{|c|}{2) Improved Baseline}  \\ \hline
 Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
 
-$MRR_{1}$ & 3.91 & 3.91 & 3.91 & 3.91 & 3.91 & 3.91  \\ \hline
+Exacto & 3.91 & 3.91 & 3.91 & 3.91 & 3.91 & 3.91  \\ \hline
 $MRR_{5}$ & 5.36 & 5.91 & 5.91 & 8.50 & 9.31 & 9.31  \\ \hline
 $MRR_{10}$ & 5.96 & 6.43 & 6.43 & 9.02 & 10.18 & 10.18  \\ \hline
 $MRR_{25}$ & 5.96 & 6.43 & 6.49 & 9.20 & 10.46 & 10.46  \\ \hline
@@ -827,7 +827,7 @@ $MRR_{25}$ & 5.96 & 6.43 & 6.49 & 9.20 & 10.46 & 10.46  \\ \hline
 \multicolumn{7}{|c|}{3) Lasso}  \\ \hline
 Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
 
-$MRR_{1}$ & 7.81 & 7.81 & 8.59 & 10.16 & 10.94 & 10.94  \\ \hline
+Exacto & 7.81 & 7.81 & 8.59 & 10.16 & 10.94 & 10.94  \\ \hline
 $MRR_{5}$ & 9.27 & 9.58 & 10.76 & 13.52 & 14.49 & 14.56  \\ \hline
 $MRR_{10}$ & 9.64 & 9.71 & 10.89 & 13.65 & 15.15 & 15.21  \\ \hline
 $MRR_{25}$ & 9.94 & 10.01 & 11.18 & 14.05 & 15.59 & 15.65  \\ \hline
@@ -861,7 +861,7 @@ Los resultados pueden observarse en la tabla \ref{table:2_2_40_getExactMRRWikiFa
 \hline
 \multicolumn{7}{|c|}{1) Tema Test}  \\ \hline
 Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
-$MRR_{1}$ & 6.15 & 6.15 & 6.15 & 6.92 & 6.92 & 6.92  \\ \hline
+Exacto & 6.15 & 6.15 & 6.15 & 6.92 & 6.92 & 6.92  \\ \hline
 $MRR_{5}$ & 7.87 & 8.41 & 8.79 & 10.21 & 10.85 & 10.85  \\ \hline
 $MRR_{10}$ & 8.08 & 8.49 & 8.87 & 10.53 & 11.77 & 11.77  \\ \hline
 $MRR_{25}$ & 8.29 & 8.72 & 9.16 & 10.91 & 12.18 & 12.18  \\ \hline
@@ -873,7 +873,7 @@ $MRR_{25}$ & 8.29 & 8.72 & 9.16 & 10.91 & 12.18 & 12.18  \\ \hline
 \hline
 \multicolumn{7}{|c|}{2) Tema NERs}  \\ \hline
 Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
-$MRR_{1}$ & 7.75 & 7.75 & 8.53 & 10.08 & 10.08 & 10.08  \\ \hline
+Exacto & 7.75 & 7.75 & 8.53 & 10.08 & 10.08 & 10.08  \\ \hline
 $MRR_{5}$ & 8.94 & 9.25 & 10.03 & 12.42 & 13.39 & 13.45  \\ \hline
 $MRR_{10}$ & 9.31 & 9.38 & 10.16 & 12.55 & 14.03 & 14.10  \\ \hline
 $MRR_{25}$ & 9.54 & 9.61 & 10.39 & 12.89 & 14.41 & 14.48  \\ \hline
@@ -886,7 +886,7 @@ $MRR_{25}$ & 9.54 & 9.61 & 10.39 & 12.89 & 14.41 & 14.48  \\ \hline
 \hline
 \multicolumn{7}{|c|}{3) Tema Sustantivos}  \\ \hline
 Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
-$MRR_{1}$ & 3.85 & 3.85 & 3.85 & 4.62 & 4.62 & 4.62  \\ \hline
+Exacto & 3.85 & 3.85 & 3.85 & 4.62 & 4.62 & 4.62  \\ \hline
 $MRR_{5}$ & 4.19 & 4.19 & 4.45 & 5.88 & 6.14 & 6.14  \\ \hline
 $MRR_{10}$ & 4.19 & 4.30 & 4.56 & 5.99 & 6.43 & 6.43  \\ \hline
 $MRR_{25}$ & 4.47 & 4.58 & 4.83 & 6.46 & 7.08 & 7.08  \\ \hline
@@ -898,7 +898,7 @@ $MRR_{25}$ & 4.47 & 4.58 & 4.83 & 6.46 & 7.08 & 7.08  \\ \hline
 \hline
 \multicolumn{7}{|c|}{4) Tema NERs + Sustantivos}  \\ \hline
 Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
-$MRR_{1}$ & 5.47 & 5.47 & 6.25 & 7.03 & 7.03 & 7.03  \\ \hline
+Exacto & 5.47 & 5.47 & 6.25 & 7.03 & 7.03 & 7.03  \\ \hline
 $MRR_{5}$ & 7.12 & 7.43 & 8.22 & 9.77 & 10.51 & 10.57  \\ \hline
 $MRR_{10}$ & 7.36 & 7.43 & 8.22 & 9.77 & 11.03 & 11.10  \\ \hline
 $MRR_{25}$ & 7.64 & 7.71 & 8.49 & 10.15 & 11.45 & 11.52  \\ \hline
@@ -937,7 +937,7 @@ La fórmula del score es la siguiente:
 \end{equation*}
 
 
-Como se puede ver en \ref{table:2_4_broken_ref}, agregar este valor en el score general del pasaje mejora los resultados. Las causas más evidentes son que el score funciona como un filtro para pasajes mal formados (es decir, que por alguna razón el splitter no logró \sq{separar} bien) o bien pasajes bien formados pero excesivamente largos. En ambos casos, las herramientas de procesamiento de lenguajes pierden su performance, por lo que pasajes bien rankeados, en el momento de la extracción de la respuesta no son de utilidad. Evaluamos tres ponderaciones -9/1, 8/2 y 7/3-, dando mejores resultados cuanto más se ponderó el score, salvo para $MRR_1$ que se redujo en la tercer corrida. Dado que esta métrica es la preferida, decidimos quedarnos con esta fórmula (ponderando 8/2 y no 7/3). Eventualmente podría evaluarse otra métricas y descubrir por qué se dio que esta funcionó mejor para $MMR_1$ y 7/3 funcionó mejor para el resto. Todo parece indicar que por este camino pueden encontrarse mejoras sustantivas con bajo costo de implementación, sea mejorando la ponderación, sea complejizando la formulación del score, que, como puede verse, es realmente simple.
+Como se puede ver en \ref{table:2_4_broken_ref}, agregar este valor en el score general del pasaje mejora los resultados. Las causas más evidentes son que el score funciona como un filtro para pasajes mal formados (es decir, que por alguna razón el splitter no logró \sq{separar} bien) o bien pasajes bien formados pero excesivamente largos. En ambos casos, las herramientas de procesamiento de lenguajes pierden su performance, por lo que pasajes bien rankeados, en el momento de la extracción de la respuesta no son de utilidad. Evaluamos tres ponderaciones -9/1, 8/2 y 7/3-, dando mejores resultados cuanto más se ponderó el score, salvo para Exacto (o $MRR_1$) que se redujo en la tercer corrida. Dado que esta métrica es la preferida, decidimos quedarnos con esta fórmula (ponderando 8/2 y no 7/3). Eventualmente podría evaluarse otra métricas y descubrir por qué se dio que esta funcionó mejor para $MMR_1$ y 7/3 funcionó mejor para el resto. Todo parece indicar que por este camino pueden encontrarse mejoras sustantivas con bajo costo de implementación, sea mejorando la ponderación, sea complejizando la formulación del score, que, como puede verse, es realmente simple.
 
 
 \begin{table}
@@ -948,7 +948,7 @@ Como se puede ver en \ref{table:2_4_broken_ref}, agregar este valor en el score 
 \hline
 \multicolumn{7}{|c|}{$PassageScore_{bl}$}  \\ \hline
 Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
-$MRR_{1}$ & 7.75 & 7.75 & 8.53 & 10.08 & 10.08 & 10.08  \\ \hline
+Exacto & 7.75 & 7.75 & 8.53 & 10.08 & 10.08 & 10.08  \\ \hline
 $MRR_{5}$ & 8.94 & 9.25 & 10.03 & 12.42 & 13.39 & 13.45  \\ \hline
 $MRR_{10}$ & 9.31 & 9.38 & 10.16 & 12.55 & 14.03 & 14.10  \\ \hline
 $MRR_{25}$ & 9.54 & 9.61 & 10.39 & 12.89 & 14.41 & 14.48  \\ \hline
@@ -960,7 +960,7 @@ $MRR_{25}$ & 9.54 & 9.61 & 10.39 & 12.89 & 14.41 & 14.48  \\ \hline
 \hline
 \multicolumn{7}{|c|}{$PassageScore_2$}  \\ \hline
 Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
-$MRR_{1}$ & 3.10 & 3.10 & 3.10 & 4.65 & 4.65 & 4.65  \\ \hline
+Exacto & 3.10 & 3.10 & 3.10 & 4.65 & 4.65 & 4.65  \\ \hline
 $MRR_{5}$ & 5.06 & 5.22 & 5.22 & 7.51 & 8.35 & 8.41  \\ \hline
 $MRR_{10}$ & 5.35 & 5.50 & 5.50 & 7.89 & 9.18 & 9.24  \\ \hline
 $MRR_{25}$ & 5.39 & 5.55 & 5.55 & 8.10 & 9.60 & 9.67  \\ \hline
@@ -974,7 +974,7 @@ $MRR_{25}$ & 5.39 & 5.55 & 5.55 & 8.10 & 9.60 & 9.67  \\ \hline
 \hline
 \multicolumn{7}{|c|}{$PassageScore_3$}  \\ \hline
 Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
-$MRR_{1}$ & 5.38 & 5.38 & 5.38 & 6.15 & 6.15 & 6.15  \\ \hline
+Exacto & 5.38 & 5.38 & 5.38 & 6.15 & 6.15 & 6.15  \\ \hline
 $MRR_{5}$ & 6.69 & 6.85 & 7.10 & 9.35 & 10.69 & 10.88  \\ \hline
 $MRR_{10}$ & 7.15 & 7.31 & 7.56 & 9.98 & 11.66 & 11.85  \\ \hline
 $MRR_{25}$ & 7.19 & 7.35 & 7.60 & 10.21 & 11.99 & 12.19  \\ \hline
@@ -994,7 +994,7 @@ $MRR_{25}$ & 7.19 & 7.35 & 7.60 & 10.21 & 11.99 & 12.19  \\ \hline
 \hline
 \multicolumn{7}{|c|}{ $PassageScore_{bl} \times 0.9 + LengthScore \times 0.1$ }  \\ \hline
 Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
-$MRR_{1}$ & 7.81 & 7.81 & 8.59 & 10.16 & 10.16 & 10.16  \\ \hline
+Exacto & 7.81 & 7.81 & 8.59 & 10.16 & 10.16 & 10.16  \\ \hline
 $MRR_{5}$ & 9.47 & 9.78 & 10.56 & 12.97 & 13.95 & 14.14  \\ \hline
 $MRR_{10}$ & 9.71 & 9.78 & 10.56 & 12.97 & 14.47 & 14.66  \\ \hline
 $MRR_{25}$ & 10.01 & 10.08 & 10.86 & 13.38 & 14.92 & 15.11  \\ \hline
@@ -1006,7 +1006,7 @@ $MRR_{25}$ & 10.01 & 10.08 & 10.86 & 13.38 & 14.92 & 15.11  \\ \hline
 \hline
 \multicolumn{7}{|c|}{ $PassageScore_{bl} \times 0.8 + LengthScore \times 0.2$ }  \\ \hline
 Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
-$MRR_{1}$ & \textbf{10.08} & \textbf{10.08} & \textbf{10.85} & \textbf{12.40} & \textbf{13.18} & \textbf{13.18}  \\ \hline
+Exacto & \textbf{10.08} & \textbf{10.08} & \textbf{10.85} & \textbf{12.40} & \textbf{13.18} & \textbf{13.18}  \\ \hline
 $MRR_{5}$ & 11.68 & 11.99 & 13.15 & 15.80 & 16.58 & 16.77  \\ \hline
 $MRR_{10}$ & 11.92 & 11.99 & 13.15 & 15.80 & 16.99 & 17.18  \\ \hline
 $MRR_{25}$ & 12.27 & 12.34 & 13.51 & 16.26 & 17.55 & 17.74  \\ \hline
@@ -1018,7 +1018,7 @@ $MRR_{25}$ & 12.27 & 12.34 & 13.51 & 16.26 & 17.55 & 17.74  \\ \hline
 \hline
 \multicolumn{7}{|c|}{$PassageScore_{bl} \times 0.7 + LengthScore \times 0.3$}  \\ \hline
 Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
-$MRR_{1}$ & 10.00 & 10.00 & 10.77 & 12.31 & 13.08 & 13.08  \\ \hline
+Exacto & 10.00 & 10.00 & 10.77 & 12.31 & 13.08 & 13.08  \\ \hline
 $MRR_{5}$ & 11.94 & 12.50 & 13.65 & 17.04 & 17.81 & 18.00  \\ \hline
 $MRR_{10}$ & 12.35 & 12.67 & 13.83 & 17.12 & 18.32 & 18.51  \\ \hline
 $MRR_{25}$ & 12.58 & 12.91 & 14.06 & 17.46 & 18.70 & 18.90  \\ \hline
@@ -1041,7 +1041,7 @@ $MRR_{25}$ & 12.58 & 12.91 & 14.06 & 17.46 & 18.70 & 18.90  \\ \hline
 \begin{tabular}{|l | l | l | l | l | l | l |}
 \hline
 Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
-$MRR_{1}$ & 10.00 & 10.00 & 10.77 & 12.31 & 13.08 & 13.08  \\ \hline
+Exacto & 10.00 & 10.00 & 10.77 & 12.31 & 13.08 & 13.08  \\ \hline
 $MRR_{5}$ & \textbf{12.00} & 12.31 & 13.46 & 16.18 & 16.95 & 17.01  \\ \hline
 $MRR_{10}$ & 12.24 & 12.31 & 13.46 & 16.26 & 17.44 & 17.50  \\ \hline
 $MRR_{25}$ & 12.55 & 12.62 & 13.78 & 16.72 & 18.00 & 18.06  \\ \hline
@@ -1058,7 +1058,7 @@ $MRR_{25}$ & 12.55 & 12.62 & 13.78 & 16.72 & 18.00 & 18.06  \\ \hline
 \begin{tabular}{|l | l | l | l | l | l | l |}
 \hline
 Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ \hline
-$MRR_{1}$ & 1.92 & 2.88 & 2.88 & 3.85 & 3.85 & 3.85  \\ \hline
+Exacto & 1.92 & 2.88 & 2.88 & 3.85 & 3.85 & 3.85  \\ \hline
 $MRR_{5}$ & 3.16 & 5.03 & 5.03 & 6.91 & 7.15 & 7.15  \\ \hline
 $MRR_{10}$ & 3.45 & 5.33 & 5.33 & 7.33 & 7.71 & 7.86  \\ \hline
 $MRR_{25}$ & 4.08 & 6.00 & 6.00 & 8.21 & 8.84 & 8.94  \\ \hline
@@ -1070,7 +1070,7 @@ $MRR_{25}$ & 4.08 & 6.00 & 6.00 & 8.21 & 8.84 & 8.94  \\ \hline
 
 
 En esta última corrida, utilizamos los métodos que mejores resultados dieron, por sección, todos juntos, primero para español (\ref{table:optimos}) y luego para portugués (\ref{table:2_3_2_40_getExactMRRWikiFactoid_getCovrMRRWikiFactoid}).
-Hay dos observaciones importantes. Primero, con respecto a la corrida en español, es notorio como el $MRR_1$ y, en general, todos los valores salvo el $MRR_5$ con matching exacto, tienen una performance peor que en la corrida 2.3, lo cual se debe, seguramente, a una interacción compleja entre los distintos pasos que conduce a este comportamiento.
+Hay dos observaciones importantes. Primero, con respecto a la corrida en español, es notorio como el Exacto y, en general, todos los valores salvo el $MRR_5$ con matching exacto, tienen una performance peor que en la corrida 2.3, lo cual se debe, seguramente, a una interacción compleja entre los distintos pasos que conduce a este comportamiento.
 
 
 En segundo lugar, con respecto a la corrida en portugués, es notoria su baja performance en relación con los resultados en español, obteniendo apenas un 3.16 considerando la métrica $MRR_5$. Existen varios factores para explicar esto. En primer lugar, que las herramientas para portugués no son tan maduras como las herramientas para español; en segundo lugar, que la evaluación de los métodos óptimos y, en general, todo el enfoque al sistema, estuvieron marcados por el español, siendo las adaptaciones para portugués un momento secundario que intentó mostrar, simplemente, que este soporte estaba accesible; en tercer lugar, también es posible que el sistema per se y el enfoque, aún sin otro inconveniente, se desempeñe peor para el set de preguntas para el portugués. A fin de cuentas, no hay que perder de vista que los sets de test usables por nuestro sistema son de 130 preguntas para español y 104 para portugués, a partir de los cuales no es posible extrapolar un comportamiento general, sino presentar resultados concretos.
@@ -1102,11 +1102,11 @@ Datos de la corrida 3.2, para portugués:
 
 El sistema implementado en este capítulo es un sistema de question answering de dominio abierto con soporte para diferentes idiomas. El mismo utiliza como base el código de Qanus y Qasys - monolingüe, con soporte solo para el idioma inglés - y agrega sobre el mismo las adaptaciones necesarias para trabajar con diferentes idiomas - con los límites mencionados-, utilizando la librería de procesamiento de lenguajes Freeling y, en consecuencia, soportando tantos idiomas como esta soporta. Agregamos, asímismo, mejoras simples en los módulos de recuperación de documentos (la incorporación del algoritmo Lasso de generación de queries) y también en el de generación de respuestas (la introducción de nuevos scores generales). Para ejecutar y poder evaluar la performance de nuestro sistema con soporte multilingüe baseline, asi como de estas diferentes mejoras y diferentes configuraciones del sistema, tomamos una tarea monolingüe de la competencia CLEF '07 y evaluamos nuestro modelo sobre una parte limitada de la misma, para los idiomas español y portugués (lo hicimos, en realidad, en un principio, para español y para inglés, para darnos cuenta finalmente que las respuestas esperadas para la tarea en inglés no estaban disponibles). Las partes que evaluamos consisten, en concreto, en preguntas de tipo factoid con respuesta válida en entradas de wikipedia.
 
-Para darnos una idea de la escala de valores manejados, debemos señalar que, en primer lugar, en el documento retrospectivo de CLEF '07 se señala que ``las tareas fueron de una complejidad elevada y en comparación con los resultados del año anterior, la mejor precisión general bajó del 49\% al 41.75\% para tareas multi-lingües, mientras que, más significativamente, bajó de 68\% a 54\% en tareas monolingües.'' En nuestro trabajo, tomamos tareas monolingües - con soporte para varias lenguas, pero monolingües - y nos restringimos a una subsección sencilla (eliminando preguntas de tipo DEFINITION y LIST), por lo que no es del todo válido comparar esta performance con la nuestra. Por otro lado, de Qasys, el sistema baseline que adaptamos para soportar diferentes idiomas, sabemos que en la TREC 07 (en inglés), competencia en la que Qasys participó, el mejor sistema, LumbaPA07, obtuvo una exactitud de 70,06\%, mientas que el décimo (Quanta) obtuvo 20,6\% y Qasys logró un 11,9\%.
+Para darnos una idea de la escala de valores manejados, debemos señalar que, en primer lugar, en el documento retrospectivo de CLEF '07 se señala que ``las tareas fueron de una complejidad elevada y en comparación con los resultados del año anterior, la mejor precisión general bajó del 49\% al 41.75\% para tareas multi-lingües, mientras que, más significativamente, bajó de 68\% a 54\% en tareas monolingües.'' En nuestro trabajo, tomamos tareas monolingües - con soporte para varias lenguas, pero monolingües - y nos restringimos a una subsección sencilla (eliminando preguntas de tipo DEFINITION y LIST), por lo que no es del todo válido comparar esta performance con la nuestra. Por otro lado, de Qasys, el sistema baseline que adaptamos para soportar diferentes idiomas, sabemos que en la TREC 07 (en inglés), competencia en la que Qasys participó, el mejor sistema, LumbaPA07, obtuvo una precisión del 70,06\% considerando, como ya mencionamos, solo respuestas exactas, mientas que el décimo (Quanta) obtuvo 20,6\% y Qasys logró un 11,9\%.
 
-Nuestro sistema adaptado al español, con todas las mejoras en su óptimo, logra un nada despreciable 10,08 para $MRR_1$ y un 12,00 para $MRR_5$.
+Nuestro sistema adaptado al español, con todas las mejoras en su óptimo, logra un nada despreciable 10,08\% de precisión con resultados exactos y un 12,00\% para $MRR_5$.
 
-Es importante destacar, con respecto a este modelo de dominio abierto, un punto clave que saltó a la vista tanto en la reseña bibliográfica como en el código del sistema baseline Qanus, que es la limitación de las mejoras a zonas acotadas y sin enfoques sistémicos. Una mejora argumentada y con cierta presencia en la literatura del área fue el mecanismo de generación de queries que llamamos Lasso (por el sistema en el que fue implementado por primera vez) y nosotros lo incorporamos aquí, logrando mejoras mínimas en la performance, pasando de 7.75 a 7.81 en $MRR_1$ exacto (+0.26), de 8.94 a 9.27 en $MRR_5$ exacto (+0.31). Más allá de esta mejora, los puntos en los que podríamos haber enfocado nuestras mejoras eran un incremento en la eficacia de las estrategias de generación de respuestas con enfoques ad-hoc basados en nuestra intuición y en la experimentación. Esto podría ser una falla en nuestra investigación, pero más bien parece que no están estudiados ni sistematizados procedimientos sistémicos a la hora de enfrentar, en concreto, el paso de la generación de respuestas. Por su parte, un subsistema muy interesante que no pudimos encontrar y que representaría un gran avance para el área es un módulo open source que permita extraer el \textit{focus} de las preguntas. Este módulo sí representa un problema acotado y bien definido.
+Es importante destacar, con respecto a este modelo de dominio abierto, un punto clave que saltó a la vista tanto en la reseña bibliográfica como en el código del sistema baseline Qanus, que es la limitación de las mejoras a zonas acotadas y sin enfoques sistémicos. Una mejora argumentada y con cierta presencia en la literatura del área fue el mecanismo de generación de queries que llamamos Lasso (por el sistema en el que fue implementado por primera vez) y nosotros lo incorporamos aquí, logrando mejoras mínimas en la performance, pasando de 7.75 a 7.81 en Exacto - $MRR_1$ - (+0.26), de 8.94 a 9.27 en $MRR_5$ (+0.31). Más allá de esta mejora, los puntos en los que podríamos haber enfocado nuestras mejoras eran un incremento en la eficacia de las estrategias de generación de respuestas con enfoques ad-hoc basados en nuestra intuición y en la experimentación. Esto podría ser una falla en nuestra investigación, pero más bien parece que no están estudiados ni sistematizados procedimientos sistémicos a la hora de enfrentar, en concreto, el paso de la generación de respuestas. Por su parte, un subsistema muy interesante que no pudimos encontrar y que representaría un gran avance para el área es un módulo open source que permita extraer el \textit{focus} de las preguntas. Este módulo sí representa un problema acotado y bien definido.
 
 El sistema que hacemos público en este trabajo (y que puede encontrarse, como dijimos, en \url{http://github.com/julian3833/multilingual-qanus}, con sus límites, es un buen baseline para emprender trabajos de question answering de dominio abierto sobre bases de conocimiento no estructuradas con soporte para diferentes idiomas.
 
