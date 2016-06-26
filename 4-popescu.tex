@@ -392,7 +392,7 @@ El resultado de este módulo es una lista de Mappings (una estructura que contie
 \label{subsubsec:mapping-filter}
 
 La clase $uba.app.MappingFilter$ es responsable, en primer lugar, de quitar las traducciones válidas repetidas y, en segundo lugar, de aplicar una serie de reglas también de filtrado. Para eliminar las traducciones repetidas, las transformamos en queries y simplemente comparamos por igualdad, ya que el generador de queries ordena las cláusulas generando, para inputs iguales pero diferentemente ordenados, la misma query.
-Además de este filtro, aplicamos tres reglas más, de creación propia. En primer lugar, eliminamos ``semi duplicados'', que consisten en atributos similares en la base de datos, en concreto, para esta base de datos, consideramos semi-duplicada a una query que consulta por Country.Name y por Country.LocalName solamente. La segunda y la tercera regla están basadas en la siguiente idea: en el caso en que exista más de una traducción válida en la cual la qword esté asociada con un atributo \textit{implícito}, por como está el sistema definido, también estará asociado con todos los atributos que pueda estarlo (ver tabla \allref{table:atributos-qwords} para las compatibilidades definidas). Esto implica que, por ejemplo, para cualquier pregunta cuya qword sea 'what' y no tenga su atributo asociado explícito, habrá 16 diferentes traducciones válidas. En los trabajos sobre los que basamos nuestro proyecto este problema no está mencionado y en los ejemplos presentados no es visible. Lo que hicimos en este caso es aplicar dos conceptos de preferencia. La segunda regla prefiere, entre los atributos implícitos posibles, aquellos cuya relación está mencionada en la pregunta (si hubiera alguna). La tercer regla señala un orden de preferencia entre los atributos mismos, una vez especificada la relación. El atributo implicito preferido está marcado en negrita en la tabla \ref{table:atributos-qwords}. Si tras aplicar estar reglas siguen existiendo más de una traducción válida, entonces damos al usuario el control, pidiendo por una desambiguación.
+Además de este filtro, aplicamos tres reglas más, de creación propia. En primer lugar, eliminamos ``semi duplicados'', que consisten en atributos similares en la base de datos, en concreto, para esta base de datos, consideramos semi-duplicada a una query que consulta por Country.Name y por Country.LocalName solamente. Veremos más sobre los motivos de esto al presentar las corridas sobre las preguntas de test. La segunda y la tercera regla están basadas en la siguiente idea: en el caso en que exista más de una traducción válida en la cual la qword esté asociada con un atributo \textit{implícito}, por como está el sistema definido, también estará asociado con todos los atributos que pueda estarlo (ver tabla \allref{table:atributos-qwords} para las compatibilidades definidas). Esto implica que, por ejemplo, para cualquier pregunta cuya qword sea 'what' y no tenga su atributo asociado explícito, habrá 16 diferentes traducciones válidas. En los trabajos sobre los que basamos nuestro proyecto este problema no está mencionado y en los ejemplos presentados no es visible. Lo que hicimos en este caso es aplicar dos conceptos de preferencia. La segunda regla prefiere, entre los atributos implícitos posibles, aquellos cuya relación está mencionada en la pregunta (si hubiera alguna). La tercer regla señala un orden de preferencia entre los atributos mismos, una vez especificada la relación. El atributo implicito preferido está marcado en negrita en la tabla \ref{table:atributos-qwords}. Si tras aplicar estar reglas siguen existiendo más de una traducción válida, entonces damos al usuario el control, pidiendo por una desambiguación.
 
 
 \subsubsection*{QueryGenerator}
@@ -711,6 +711,102 @@ Esta única traducción pasa al $QueryGenerator$ que la traduce univocamente en 
  \item Virgin Islands, British
  \item Virgin Islands, U.S.
 \end{itemize}
+
+\subsection{Corridas}
+\label{subsec:popescu-corridas}
+
+Si bien dada la especificidad del dominio y la especificidad del sistema es imposible comparar resultados con otros sistemas, escribimos a mano un set de preguntas de prueba de 200 preguntas que ejecutamos sobre nuestro sistema para observar resultados.
+
+
+Los resultados de la primera corrida pueden observarse en la tabla \ref{table:popescu-results-1}. 129 dieron resultados correctos: 91 dieron una única query, 27 una selección entre queries posibles (es decir, eran ambiguas) siendo esta ambiguedad razonable, 11 no generaron ninguna query, siendo esto también razonable. Respecto a las restantes 71, debemos distinguir casos. 
+
+En primer lugar, el sistema falló en obtener respuestas de 32 preguntas por razones técnicas triviales que se corrigieron de una manera simple. La primer de estas razones es que no se pudo generar una tokenización completa por faltar alguno de los términos de la pregunta en el lexicón y en el diccionario de stopwords. Para solucionar esto agregamos algunas palabras al diccionario de stopwords a mano, aunque, claro, este procedimiento no escala. Es interesante notar en este punto que, en los trabajos sobre los que nos basamos, no están definidas las reglas para generar sinónimos a partir de Wordnet (simplemente se menciona que se usa Wordnet, pero Wordnet tiene diferentes maneras de generar sinónimos a partir de una palabra) y tampoco está definido ningún mecanismo para generar el diccionario de stopwords (solo se menciona que es independiente de la DB y que está hecho a mano). Así, una formalización teórica y una evaluación de diferentes mecanismos de generación de sinónimos y de stopwords quedará como trabajo futuro. Ambos, junto con la definición de reglas de análisis sintáctico serían las tres áreas más abiertas y disponibles para formalizar en este modelo teórico. Volviendo a los resultados: resolvimos este primer caso agregando al diccionario de stopwords algunas palabras. En segundo lugar, tenemos que la qword What no estaba relacionada con algunos atributos (como Language e IndepenceYear). Habíamos restringido la compatibilidad de What con algunos atributos para intentar minimizar el hecho de que What parece ser compatible con todos los atributos, dependiendo el fraseo de la pregunta. En una segunda corrida, agregamos las relaciones de compatibilidad de What con estos atributos. Con estos dos cambios, las 32 preguntas que estamos considerando en este párrafo dieron como resultados 23 respuestas correctas extactas y las 9 restantes son 6 inherentemente ambiguas, 3 ambiguas por un problema del modelo que mencionaremos en el próximo párrafo.
+
+%1 ambigua por EC
+%6 ambigua OK
+%2 ambigua por Country == CountryLocalName
+
+
+
+\begin{center}
+\begin{table}[h]
+\centering
+\begin{tabular}{| r |  p{12cm}}
+\hline
+Total & Categoría \\ \hline
+91 & Respuesta exacta \\ \hline
+27 & Ambiguas inherentemente + pedido de reformulación \\ \hline
+11 & Sin respuesta (razonable, fuera de scope) \\ \hline
+32 & Fallas simples en stopwords o en lexicón \\ \hline
+10 & Ambiguas por problemas de sinonímia en el modelo \\ \hline
+4 & Ambiguas. Problemas del lexicón. \\ \hline
+6 & El analizador sintáctico no encontró asociación. \\ \hline
+19 & Problemáticas. Análisis más detallado en texto. \\ \hline
+200 & Total \\ \hline
+
+\end{tabular}
+\caption{Resultados de la primera corrida sobre las preguntas de test}
+\label{table:popescu-results-1}
+\end{table}
+\end{center}
+
+
+Las 10 notadas en la tabla como \sq{Ambiguas por modelo} son problemas de ambiguedad que refieren a cierta redundancia entre el modelo de la DB y los sinónimos. Consideremos la pregunta \sq{When did Yugoslavia become independent?}, que el sistema reconoce como ambigua y ofrece las dos siguientes opciones:
+\begin{itemize}
+  \item SELECT DISTINCT Country.IndependenceYear FROM Country WHERE Country.LocalName = 'Jugoslavija'
+  \item SELECT DISTINCT Country.IndependenceYear FROM Country WHERE Country.Name = 'Yugoslavia'
+\end{itemize}
+
+El problema aquí es que el lexicón generó el token Yugoslavia como correspondiente tanto al valor 'Yugoslavia' para Country.Name y para el valor 'Jugoslavija' para Country.LocalName. Este problema ocurre también con Country.Code (por ejemplo, United States es un token para USA y para United States). No vemos una solución general, más allá de establecer que, en caso de ser las diferentes opciones una variación de la misma query sobre Country.LocalName, Country.Name y Country.Code, entonces el $MappingFilter$ se queda solo con aquella que menciona Country.Name (esta modificación ya fue presentada en la sección \allref{subsec:popescu-codigo}). Con estos cambios, todas las preguntas en esta categoría se convierten en exactas (10 de la primer corrida y 3 que en la primera corrida tenían un problema con el tokenizer que al ser corregido generó este problema).
+
+
+Con estas dos correcciones, realizamos la segunda corrida, cuyos resultados pueden observarse en la tabla \ref{table:popescu-results-2}
+
+
+\begin{center}
+\begin{table}[h]
+\centering
+\begin{tabular}{| r |  p{12cm} |}
+\hline
+Total & Categoría \\ \hline
+126 & Respuesta exacta \\ \hline
+34 & Ambiguas inherentemente + pedido de reformulación \\ \hline
+11 & Sin respuesta (razonable, fuera de scope) \\ \hline
+4 & Ambiguas. Problemas del lexicón. \\ \hline
+6 & El analizador sintáctico no encontró asociación. \\ \hline
+19 & Problemáticas. Análisis más detallado en texto. \\ \hline
+200 & Total \\ \hline
+
+\end{tabular}
+\caption{Resultados de la segunda corrida sobre las preguntas de test}
+\label{table:popescu-results-2}
+\end{table}
+\end{center}
+
+Las 4 distinguidas en ambas tablas como \dq{Ambiguas. Problemas del lexicón.} refieren a sinónimos demasiado amplios dados a ciertos elementos. En concreto, estas 4 son ambiguas porque el lexicón tiene una correspondencia entre el token \sq{republic} y el valor \sq{Commonwealth of the US}. Esto se solucionaría con la supervisión del lexicón o, más en general, mejorando el módulo.
+
+Las 6 que fallaron por el análisis sintáctico refieren, en efecto, a problemas de analizador sintáctico, que, como ya mencionamos, tiene enormes limitaciones ya que no fue definido por un experto sino a prueba y error. Desactivando el análisis sintáctico, estas 6 preguntas se convierten en exactas. 
+
+Sobre las 20 problemáticas pasaremos revista a continuación.
+
+Hay seis preguntas con sentido semántico dentro del espacio de sentido del sistema, pero cuya forma no tiene ningún flujo para especificarse. Por ejemplo, es el caso de \sq{Who is Islam Karimov?}, que como respuesta debería tener "ser el lider de X país", es decir, devolver el nombre del atributo tal que existe un valor para una fila, flujo que no existe en este modelo. Otra pregunta así es \sq{What countries of the British Islands are independent?} (curiosamente escrita poco tiempo antes del brexit), que no logra encontrar una respuesta porque no sabe decidir que \sq{Tener un valor no nulo en Independece Year} implica \sq{ser independiente}. \sq{What is the population of the capital of Germany?} también falla, debido a que no soportamos más de un join y eliminamos la navegabilidad entre capital de un país y su fila en la tabla ciudades. 
+
+\sq{How many people live in Kabul?} genera, para \sq{live} diferentes tokens relacionados con LifeExpectancy (getTokens('live') stem=live--> ['live anticipation', 'live expectancy', 'living expect', 'living anticipation', 'live expect', 'live expectant', 'living expectant', 'living expectancy']) pero luego la otra palabra no aparece (con razón). Lo razonable aquí sería que live sea a la vez una palabra de un token y una stopword. El modelo no soporta esto, por lo que no encuentra tokenización ni respuesta para esta pregunta.
+
+Para \sq{What is the surface of Afghanistan?} no encuentra ningún token para surface, cuando debería encontrar \sq{surface area}. Esto podría resolverse agregando a mano al TokenAugmenter el término surface para surface area.
+
+Para \sq{What languages do the frenchs speak?}, el término french se asoció al lenguaje y no a \sq{los habitantes del país France} sin poder generar una respuesta.
+
+Dos se corrigieron con las correcciones técnicas.
+
+
+\sq{What is the population of the district named Qandahar?} es interesante porque \sq{name} funciona como token y hace que el sistema no logre econtrar un máximo flujo 
+
+Para \sq{In which region is Rome?}, \sq{Who is the head of state of Bielorussia?}, \sq{What is the population of the country lead by Hugo Chavez?} el lexicón no disponía de tokens para Rome ni para Bielorussia ni para Hugo Chavez (pero si para Roma, Belarus y Hugo Chávez Frías)
+
+Por otro lado, el sistema no soporta diferentes preguntas, por ejemplo: no soporta ORS y una pregunta era \sq{What cities are located in Italy or in Germany?}, no soporta manejo de números y una pregunta era \sq{Which countries have a surface area bigger than 65610.00?}.
+
+Como conclusión tras analizar estas 20 preguntas problemáticas podemos decir que el modelo tiene limitaciones importantes tanto a nivel estructural como en el nivel de la definición concreta del lexicón, el diccionario de stopwords y el analizador sintáctico. Sin embargo, esto no debe quitar el foco de atención de la cantidad de respuestas dadas correctamente, las inherentemente ambiguas interpretadas como tales, las imposibles de procesar que son correctamente rechazadas y, finalmente, aquellas que mostraron límites técnicos triviales y de fácil solución, que sugieren que un trabajo más exhaustivo y puntilloso en la definición y supervisión de los diferentes conjuntos de palabras disponibles pueden redundar en un incremente sustancial sencillo de la performance del sistema.
 
 
 \subsection{Conclusiones, limitaciones y trabajo futuro}
