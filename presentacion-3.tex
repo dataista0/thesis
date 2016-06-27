@@ -9,7 +9,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Introducción}
 
-\begin{frame}
+\begin{frame}[<+->]
 \frametitle{Introducción}
   \begin{itemize}
     \item Sistema QA de dominio abierto con soporte multilingüe
@@ -35,7 +35,7 @@
 \subsection{Marco teórico}
 
 
-\begin{frame}
+\begin{frame}[<+->]
 \frametitle{Marco teórico}
   Consenso general sobre la arquitectura: pipeline de al menos 3 componentes:
   \begin{itemize}
@@ -117,7 +117,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection*{Ejercicios}
 
-\begin{frame}
+\begin{frame}[<+->]
 \frametitle{Ejercicios}
   \textit{Cross-Language Evaluation Forum}
   \begin{itemize}
@@ -185,7 +185,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection*{Sistema}
 
-\begin{frame}
+\begin{frame}[<+->]
 \frametitle{Qanus}
   \textit{Question-Answering @ National University of Singapore}
   \begin{itemize}
@@ -207,7 +207,7 @@
 \end{frame}
 
 
-\begin{frame}
+\begin{frame}[<+->]
 \frametitle{QA-Sys - Qanus @ Trec 07}
 \begin{columns}[T] % align columns
 \begin{column}{.48\textwidth}
@@ -1098,8 +1098,6 @@ Quando foi fundado o Nacional da Madeira? & 8 de Dezembro de 1910\\
 \end{frame}
 
 
-
-
 \subsubsection*{Limitaciones, trabajo futuro, conclusiones}
 
 \begin{frame}
@@ -1118,19 +1116,16 @@ Quando foi fundado o Nacional da Madeira? & 8 de Dezembro de 1910\\
 \begin{frame}
 \frametitle{Conclusiones: Dominio abierto}
   \begin{itemize}
-    \item Sistema de question answering de dominio abierto con soporte para diferentes idiomas
     \item Qanus, Qa-sys monolingüe + Freeling + Lasso + Scorers
     \item CLEF'07 español y portugués + solo wikipedia + solo factoid + diferentes configuraciones
-    \item CLEF'07: la mejor precisión general bajó del 49\% al 41.75\% para tareas multi-lingües, mientras que, más significativamente, bajó de 68\% a 54\% en tareas monolingües
-    \item nos restringimos a una subsección sencilla (eliminando preguntas de tipo DEFINITION y LIST), por lo que no es del todo válido comparar esta performance con la nuestra.
     \item Qasys, el sistema baseline que adaptamos para soportar diferentes idiomas, sabemos que en la TREC 07 (en inglés), competencia en la que Qasys participó, el mejor sistema, LumbaPA07, obtuvo una exactitud de 70,06\%, mientas que el décimo (Quanta) obtuvo 20,6\% y Qasys logró un 11,9\%.
-\item Nuestro sistema adaptado al español, con todas las mejoras en su óptimo, logra un nada despreciable 10,08 para $MRR_1$ y un 12,00 para $MRR_5$.
+\item Nuestro sistema adaptado al español, con todas las mejoras en su óptimo, logra un 10,08 para Exacto y un 12,00 para $MRR_5$.
   \end{itemize}
 
 \end{frame}
 
 \begin{frame}
-\frametitle{Conclusiones 2}
+\frametitle{Conclusiones: Dominio abierto}
 
 Sobre modelo de dominio abierto:
   \begin{itemize}
@@ -1139,7 +1134,7 @@ Sobre modelo de dominio abierto:
 \begin{itemize}
     \item  mejoras mínimas en la performance, de 7.75 a 7.81 en $MRR_1$ exacto (+0.26), de 8.94 a 9.27 en $MRR_5$ exacto (+0.31). 
   \end{itemize}
-  \item Falta de "doctrina" en la generación de respuestas. Oportunidad! Linea muerta? 
+  \item Falta de \dq{doctrina} en la generación de respuestas. Oportunidad? Linea muerta? 
 \item Módulo de \textit{focus} open source en inglés. Problema acotado, bien definido. Herramienta útil
   \end{itemize}
 \end{frame}

@@ -1,19 +1,8 @@
 \fontsize{9.5pt}{8.2}\selectfont
 \section{Dominio cerrado (Popescu/World)}
 \subsection{Introducción}
-\begin{frame}
+
 \frametitle{Introducción}
-\begin{itemize}
-  \item Basado en [Popescu et al. 2003a] y  [Popescu et al. 2003b].
-  \item Define \textbf{tratabilidad semántica}
-  \item Traduce preguntas semánticamente tratables a \textbf{consultas SQL}
-  \item Base de datos relacional de juguete de MySQL, World, con \textbf{información geográfica básica de países, ciudades e idiomas}.
-  \item Funcionalidad acotada  $\rightarrow$ soporte solo para el inglés.
-\end{itemize}
-\end{frame}
-
-\subsection{Modelo teórico}
-
 \begin{frame}[<+->]
   \frametitle{Dominio de problemas / Modelo teórico}
    \begin{block}{Dominio cerrado: acotado y específico}
@@ -23,13 +12,13 @@
       \end{itemize}
     \end{block}
 
-  \begin{block}{Modelo teórico}
+  \begin{block}{Modelo teórico: tratabilidad semántica}
     \begin{itemize}
           \item Popescu et al. $\rightarrow$ QADB, Precise
           \item QADB: Question answering como interfaz para una base de datos
           \item \textbf{Tratabilidad semántica de una pregunta $q$ en el contexto de una DB $d$}.
-          \item Las preguntas no tratables se rechazan, las tratables se traducen a SQL.
-          \item Motivación: no se puede fallar activamente (mal interpretar)
+          \item Base de datos relacional de juguete de MySQL, World, con \textbf{información geográfica básica de países, ciudades e idiomas}.
+          \item Funcionalidad acotada  $\rightarrow$ soporte solo para el inglés.
     \end{itemize}
   \end{block}
 \end{frame}
@@ -38,7 +27,7 @@
 \begin{frame}
   \frametitle{Ejemplo}
   \begin{block}{Pregunta}<2->
-      \textbf{When did Albert Einstein die?}
+      \textbf{When was Albert Einstein born?}
   \end{block}
   \begin{columns}<3->
       \begin{column}{.5\textwidth}
@@ -57,7 +46,7 @@
   \end{columns}
 
   \begin{exampleblock}{Consulta SQL}<3->
-\textbf{{\color{purple}SELECT} death\_date \newline
+\textbf{{\color{purple}SELECT} birth\_date \newline
       {\color{purple}FROM} scientists\newline
       {\color{purple}WHERE} name $=$ {\color{green}`Albert Einstein'}
       }
@@ -79,10 +68,14 @@
   \end{columns}
 
   \begin{alertblock}{Respuesta}<4->
-      \textbf{April 18th, 1955}
+      \textbf{March 14th, 1879}
   \end{alertblock}
 
 \end{frame}
+
+
+
+\subsection{Modelo teórico}
 
 
 \begin{frame}[<+->]
@@ -112,7 +105,7 @@
           \item Por ejemplo:
             \begin{itemize}
               \item ¿{\color{green}Qué} {\color{orange}bancos} de la {\color{red}empresa Credicoop} están localizados en el {\color{blue}barrio} de {\color{blue}Coghlan}?
-              \item ¿{\color{green}Quién} era el {\color{red}presidente} de {\color{red}México} en {\color{purple}1993}?
+              \item ¿{\color{green}Qué} {\color{orange}países} de {\color{purple}Asia} se {\color{blue}independizaron} en {\color{blue}1948}?
             \end{itemize}
       \end{itemize}
     \end{block}
@@ -839,7 +832,7 @@ Se obtienen todos los elementos que \textit{corresponden} a cada token:
 \end{figure}
 \end{frame}
 
-\begin{frame}
+\begin{frame}[<+->]
 \frametitle{Ejemplo 2: Notas y query}
 Notar en el grafo:
   \begin{itemize}
@@ -854,10 +847,91 @@ Query final:\newline
 
 
 
-\subsubsection*{Conclusiones y limitaciones}
 \begin{frame}
-\frametitle{Conclusiones y limitaciones}
-  \begin{itemize}
-    \item {\color{red} FILL ME}
-  \end{itemize}
+\frametitle{Corridas}
+Corridas sobre 200 preguntas escritas a mano para testing
+\begin{center}
+\begin{table}[h]
+\centering
+\begin{tabular}{| r |  p{12cm} | }
+
+Total & Categoría \\ 
+91 & Respuesta exacta \\ 
+27 & Ambiguas inherentemente + pedido de reformulación \\ 
+11 & Sin respuesta (razonable, fuera de scope) \\
+32 & Fallas simples en stopwords o en lexicón \\
+10 & Ambiguas por problemas de sinonimia en el modelo \\
+4 & Ambiguas. Problemas del lexicón. \\
+6 & El analizador sintáctico no encontró asociación. \\
+19 & Problemáticas. Análisis más detallado en texto. \\
+200 & Total \\
+\end{tabular}
+\caption{Resultados de la primera corrida sobre las preguntas de test}
+\label{table:popescu-results-1}
+\end{table}
+\end{center}
 \end{frame}
+
+\begin{frame}
+\frametitle{Corridas}
+Corridas sobre 200 preguntas escritas a mano para testing
+\begin{center}
+\begin{table}[h]
+\centering
+\begin{tabular}{| r |  p{12cm} |}
+Total & Categoría \\ 
+126 & Respuesta exacta \\ 
+38 & Ambiguas \\ 
+36 & Sin respuesta\\ 
+200 & Total \\ 
+
+\end{tabular}
+\caption{Resultados sobre las preguntas de test (con correcciones)}
+\label{table:popescu-results-3}
+\end{table}
+\end{center}
+\end{frame}
+
+
+\subsubsection*{Conclusiones y limitaciones}
+
+\begin{frame}[<+->]
+\frametitle{Conclusiones y limitaciones: dominio cerrado}
+Algunas mejoras
+\begin{itemize}
+\item Propuestas y experimentación para diferentes configuraciones en la generación del lexicón
+\item Propuestas y experimentación para diferentes configuraciones en la generación de stopwords
+\item En el Lexicón, agregar un desambiguador de sentidos para los sinónimos de los tokens
+\item Soportar diferentes paths para aparear (\textit{joinear}) tablas.
+%\item Soportar tokens multi tipados en el Matcher.
+%\item Soportar desambiguación de relaciones en el Matcher.
+\item Interfaz con el usuario: SQL $\rightarrow$ respuesta
+\item CharniakParseTree: evaluar con un lingüista profesional las reglas
+
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[<+->]
+\frametitle{Conclusiones y limitaciones: dominio cerrado}
+
+\begin{itemize}
+  \item Hipótesis fecunda: subset de preguntas. Tratabilidad semántica.
+  \begin{itemize}
+    \item \textit{zonas} computables del lenguaje
+    \item \dq{explicar con palabras de este mundo que partió de mí un barco llevándome} $\rightarrow$ {\color{red}No}
+    \item \dq{¿En qué año murió Alejandra Pizarnik?} $\rightarrow$ {\color{green}Sí}
+  \end{itemize}
+  \item La implementación requiere desarrollo humano específico
+  \begin{itemize}
+    \item Mundo más cercano a sistemas usuales que a sistemas de machine learning
+    \item De todos modos, los tiempos no son tan prohibitivos como podría parecer
+  \end{itemize}
+  \item Util para interfaces de voz
+  \end{itemize}
+
+\end{frame}
+
+
+
+
