@@ -144,7 +144,7 @@ Incorporando estos datos al modelo teórico, hasta aquí tenemos definidos: la b
 
 Estructuramos esta sección como sigue. Primero (\ref{subsec:popescu-codigo}), discutimos la implementación en sí misma, analizando los módulos más importantes del sistema, luego (\ref{subsec:popescu-ejemplos}) mostramos y comentamos algunos ejemplos de ejecuciones y, finalmente (\ref{subsec:popescu-cierre}), analizamos alcances, límites y trabajo futuro.
 
-Este apartado es probablemente el más áspero y técnico de la tesis. Si la cantidad de conceptos presentada se vuelve demasiado difícil de retener al lector, recomendamos saltear la sección de \allref{subsec:popescu-codigo} y comenzar por \allref{subsec:popescu-ejemplos}, o bien darle una primera lectura aproximativa a \ref{subsec:popescu-codigo}, pasar a los ejemplos un principio más por arriba y luego sí leer en detalle \ref{subsec:popescu-codigo}.
+Este apartado es probablemente el más áspero y técnico de la tesis. Si la cantidad de conceptos presentada se vuelve demasiado difícil de retener al lector, recomendamos saltear la sección de \allref{subsec:popescu-codigo} y comenzar por \allref{subsec:popescu-ejemplos}, o bien darle una primera lectura aproximativa a \ref{subsec:popescu-codigo}, pasar a los ejemplos y luego sí leer en detalle \ref{subsec:popescu-codigo}.
 
 \subsection{Código}
 \label{subsec:popescu-codigo}
@@ -720,7 +720,11 @@ Si bien dada la especificidad del dominio y la especificidad del sistema es impo
 
 Los resultados de la primera corrida pueden observarse en la tabla \ref{table:popescu-results-1}. 129 dieron resultados correctos: 91 dieron una única query, 27 una selección entre queries posibles (es decir, eran ambiguas) siendo esta ambigüedad razonable, 11 no generaron ninguna query, siendo esto también razonable. Respecto a las restantes 71, debemos distinguir casos. 
 
-En primer lugar, el sistema falló en obtener respuestas de 32 preguntas por razones técnicas triviales que se corrigieron de una manera simple. La primer de estas razones es que no se pudo generar una tokenización completa por faltar alguno de los términos de la pregunta en el lexicón y en el diccionario de stopwords. Para solucionar esto agregamos algunas palabras al diccionario de stopwords a mano, aunque, claro, este procedimiento no escala. Es interesante notar en este punto que, en los trabajos sobre los que nos basamos, no están definidas las reglas para generar sinónimos a partir de Wordnet (simplemente se menciona que se usa Wordnet, pero Wordnet tiene diferentes maneras de generar sinónimos a partir de una palabra) y tampoco está definido ningún mecanismo para generar el diccionario de stopwords (solo se menciona que es independiente de la DB y que está hecho a mano). Así, una formalización teórica y una evaluación de diferentes mecanismos de generación de sinónimos y de stopwords quedará como trabajo futuro. Ambos, junto con la definición de reglas de análisis sintáctico serían las tres áreas más abiertas y disponibles para formalizar en este modelo teórico. Volviendo a los resultados: resolvimos este primer caso agregando al diccionario de stopwords algunas palabras. En segundo lugar, tenemos que la qword What no estaba relacionada con algunos atributos (como Language e IndependenceYear). Habíamos restringido la compatibilidad de What con algunos atributos para intentar minimizar el hecho de que What parece ser compatible con todos los atributos, dependiendo el fraseo de la pregunta. En una segunda corrida, agregamos las relaciones de compatibilidad de What con estos atributos. Con estos dos cambios, las 32 preguntas que estamos considerando en este párrafo dieron como resultados 23 respuestas correctas exactas y las 9 restantes son 6 inherentemente ambiguas, 3 ambiguas por un problema del modelo que mencionaremos en el próximo párrafo.
+En primer lugar, el sistema falló en obtener respuestas de 32 preguntas por razones técnicas triviales que se corrigieron de una manera simple. La primer de estas razones es que no se pudo generar una tokenización completa por faltar alguno de los términos de la pregunta en el lexicón y en el diccionario de stopwords. Para solucionar esto agregamos algunas palabras al diccionario de stopwords a mano, aunque, claro, este procedimiento no escala. Es interesante notar en este punto que, en los trabajos sobre los que nos basamos, no están definidas las reglas para generar sinónimos a partir de Wordnet (simplemente se menciona que se usa Wordnet, pero Wordnet tiene diferentes maneras de generar sinónimos a partir de una palabra) y tampoco está definido ningún mecanismo para generar el diccionario de stopwords (solo se menciona que es independiente de la DB y que está hecho a mano). Así, una formalización teórica y una evaluación de diferentes mecanismos de generación de sinónimos y de stopwords quedará como trabajo futuro. Ambos, junto con la definición de reglas de análisis sintáctico serían las tres áreas más abiertas y disponibles para formalizar en este modelo teórico. Volviendo a los resultados: resolvimos este primer caso agregando al diccionario de stopwords algunas palabras. 
+
+En segundo lugar, tenemos que la qword What no estaba relacionada con algunos atributos (como Language e IndependenceYear). Habíamos restringido la compatibilidad de What con algunos atributos para intentar minimizar el hecho de que What parece ser compatible con todos los atributos, dependiendo el fraseo de la pregunta. 
+
+En una segunda corrida, agregamos las relaciones de compatibilidad de What con estos atributos. Con estos dos cambios, las 32 preguntas que estamos considerando en este párrafo dieron como resultados 23 respuestas correctas exactas y las 9 restantes son 6 inherentemente ambiguas, 3 ambiguas por un problema del modelo que mencionaremos en el próximo párrafo.
 
 %1 ambigua por EC
 %6 ambigua OK
@@ -731,7 +735,7 @@ En primer lugar, el sistema falló en obtener respuestas de 32 preguntas por raz
 \begin{center}
 \begin{table}[h]
 \centering
-\begin{tabular}{| r |  p{12cm}}
+\begin{tabular}{| r |  p{12cm} | }
 \hline
 Total & Categoría \\ \hline
 91 & Respuesta exacta \\ \hline
@@ -804,9 +808,26 @@ Dos se corrigieron con las correcciones técnicas.
 
 Para \sq{In which region is Rome?}, \sq{Who is the head of state of Bielorussia?}, \sq{What is the population of the country lead by Hugo Chavez?} el lexicón no disponía de tokens para Rome ni para Bielorussia ni para Hugo Chavez (pero si para Roma, Belarus y Hugo Chávez Frías)
 
-Por otro lado, el sistema no soporta diferentes preguntas, por ejemplo: no soporta ORS y una pregunta era \sq{What cities are located in Italy or in Germany?}, no soporta manejo de números y una pregunta era \sq{Which countries have a surface area bigger than 65610.00?}.
+Por otro lado, el sistema no soporta diferentes preguntas, por ejemplo: no soporta ORS y una pregunta era \sq{What cities are located in Italy or in Germany?}, no soporta manejo de números (operadores mayor y menor, por ejemplo) y una pregunta era \sq{Which countries have a surface area bigger than 65610.00?}.
 
-Como conclusión tras analizar estas 20 preguntas problemáticas podemos decir que el modelo tiene limitaciones importantes tanto a nivel estructural como en el nivel de la definición concreta del lexicón, el diccionario de stopwords y el analizador sintáctico. Sin embargo, esto no debe quitar el foco de atención de la cantidad de respuestas dadas correctamente, las inherentemente ambiguas interpretadas como tales, las imposibles de procesar que son correctamente rechazadas y, finalmente, aquellas que mostraron límites técnicos triviales y de fácil solución, que sugieren que un trabajo más exhaustivo y puntilloso en la definición y supervisión de los diferentes conjuntos de palabras disponibles pueden redundar en un incremente sustancial sencillo de la performance del sistema.
+Como conclusión tras analizar estas 20 preguntas problemáticas podemos decir que el modelo tiene limitaciones importantes en el nivel de la definición concreta del lexicón, el diccionario de stopwords y el analizador sintáctico. Sin embargo, esto no debe quitar el foco de atención de la cantidad de respuestas dadas correctamente, las inherentemente ambiguas interpretadas como tales, las imposibles de procesar que son correctamente rechazadas y, finalmente, aquellas que mostraron límites técnicos triviales y de fácil solución, que sugieren que un trabajo más exhaustivo y puntilloso en la definición y supervisión de los diferentes conjuntos de palabras disponibles pueden redundar en un incremente sustancial sencillo de la performance del sistema.
+
+\begin{center}
+\begin{table}[h]
+\centering
+\begin{tabular}{| r |  p{12cm} |}
+\hline
+Total & Categoría \\ \hline
+126 & Respuesta exacta \\ \hline
+38 & Ambiguas \\ \hline
+36 & Sin respuesta\\ \hline
+200 & Total \\ \hline
+
+\end{tabular}
+\caption{Resultados sobre las preguntas de test (con correcciones)}
+\label{table:popescu-results-3}
+\end{table}
+\end{center}
 
 
 \subsection{Conclusiones, limitaciones y trabajo futuro}
