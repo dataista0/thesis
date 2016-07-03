@@ -95,19 +95,20 @@
 %\beamerdefaultoverlayspecification{<+->}
 
 
-\AtBeginSubsection[]
-{
-   \begin{frame}<beamer>
-   \frametitle{index.tex}
-   \tableofcontents[currentsection,currentsubsection]
-   \end{frame}
-}
+
+% \AtBeginSubsection[]
+% {
+%    \begin{frame}<beamer>
+%    \frametitle{index.tex}
+%    \tableofcontents[currentsection,currentsubsection]
+%    \end{frame}
+% }
 
 \AtBeginSection[]
 {
    \begin{frame}<beamer>
    \frametitle{index.tex}
-   \tableofcontents[currentsection]
+   \tableofcontents
    \end{frame}
 }
 
@@ -119,7 +120,7 @@
 
 \begin{frame}
   \frametitle{index.tex}
-  \tableofcontents[pausesections]
+  \tableofcontents
 \end{frame}
 
 % Introducción: qué es question answering, qué es esta tesis

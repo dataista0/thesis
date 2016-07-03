@@ -14,7 +14,6 @@
 
   \begin{block}{Modelo teórico: tratabilidad semántica}
     \begin{itemize}
-          \item Popescu et al. $\rightarrow$ QADB, Precise
           \item QADB: Question answering como interfaz para una base de datos
           \item \textbf{Tratabilidad semántica de una pregunta $q$ en el contexto de una DB $d$}.
           \item Base de datos relacional de juguete de MySQL, World, con \textbf{información geográfica básica de países, ciudades e idiomas}.
@@ -104,7 +103,7 @@
           \item Términos no significativos y {\color{orange}menciones a relaciones}
           \item Por ejemplo:
             \begin{itemize}
-              \item ¿{\color{green}Qué} {\color{orange}bancos} de la {\color{red}empresa Credicoop} están localizados en el {\color{blue}barrio} de {\color{blue}Coghlan}?
+              \item ¿{\color{green}Qué} {\color{orange}bancos} de la {\color{blue}empresa Credicoop} están localizados en el {\color{blue}barrio} de {\color{blue}Coghlan}?
               \item ¿{\color{green}Qué} {\color{orange}países} de {\color{purple}Asia} se {\color{blue}independizaron} en {\color{blue}1948}?
             \end{itemize}
       \end{itemize}
@@ -113,136 +112,73 @@
 
 \fontsize{9.5pt}{7.2}\selectfont
 \begin{frame}[<+->]
-  \frametitle{Elemento, qword, compatibilidad}
+  \frametitle{Elemento, qword, compatibilidad, stopword}
    \begin{itemize}
       \item \textbf{Elementos} de una DB: Relaciones, Atributos y Valores
       \item \textbf{Qwords} - pronombres interrogativos
       \begin{itemize}
-          \item \{What, where, which, when, who\}
-          \item \{Qué, dónde, cuál, cuándo, quién\}
+        \item \{What, where, which, when, who\}, \{Qué, dónde, cuál, cuándo, quién\}
+        \item Funcionan como valores especiales (el valor preguntado)
       \end{itemize}
       \item \textbf{Compatibilidad}
       \begin{itemize}
           \item Valor $\rightarrow$ Atributo (Macri $\rightarrow$ HeadOfState)
           \item Atributo  $\rightarrow$  Relación (HeadOfState $\rightarrow$ Country)
           \item Valor $\rightarrow$ Relaciones de sus atributos (Macri $\rightarrow$ Country)
-          \item {\color{blue}Q-words $\rightarrow$ Atributos}
+          \item {\color{blue}Q-words $\rightarrow$ Atributos} (A manos)
           \begin{itemize}
-            \item Definición a mano especifica por DB
-            \item Who $\rightarrow$ HeadOfState
-            \item When $\rightarrow$ IndependenceYear 
-            \item What $\rightarrow$ Varios atributos.
+            \item Who $\rightarrow$ HeadOfState, When $\rightarrow$ IndependenceYear , What $\rightarrow$ Varios atributos.
           \end{itemize}
       \end{itemize}
+        \item \textbf{Marcador sintáctico} (stopword):
+      \begin{itemize}
+        \item Palabras que no aportan y se tiran (v.gr: y, el, la, etc.) (a mano)
+      \end{itemize}
     \end{itemize}
 \end{frame}
 
-
 \begin{frame}[<+->]
-  \frametitle{Marcador sintáctico, token}
-   \begin{itemize}
-      \item \textbf{Marcador sintáctico} (stopword):
-      \begin{itemize}
-        \item Palabras que no aportan y se tiran (v.gr: y, el, la, etc.)
-        \item Definidas a mano. Problemático.
-      \end{itemize}
-
-          \item \textbf{Token}: un conjunto de (lemas de) palabras que corresponden a un elemento de la base de datos.
-      \begin{itemize}
-            \item Por ejemplo, \{experiencia, requerir\} y \{experiencia, necesario\} son dos tokens para ``Experiencia Requerida''
-            \item El {\color{red}\textbf{lexicón}} genera todos los tokens válidos a partir de los elementos de la DB usando Wordnet
-      \end{itemize}
-
+ \frametitle{Lexicón}
+  \begin{block}{Lexicón: Espacio semántico a partir de la DB}
+    \begin{itemize}
+      \item Elementos de la DB $\rightarrow$ Wordnet $\rightarrow$ Lexicón
+      \item Cada item del lexicón se llama \textbf{token}
+      \item Es un sinónimo para uno o más elementos de la base de datos (\textbf{\dq{se corresponde con}})
+      %\item \fontsize{7.5pt}{7.2}\selectfont Notas: TokenAugmenter. Polisemia. Problemas.
     \end{itemize}
-\end{frame}
-
-
-\fontsize{9.5pt}{7.2}\selectfont
-\begin{frame}[<+->]
-  \frametitle{Lexicón: definición del espacio semántico a partir de la DB}
-  Correspondencia entre tokens y elementos
+  \end{block}  
   \begin{itemize}
-    \item Separa cada elemento en palabras individuales:
-    \begin{itemize}\fontsize{9.5pt}{7.2}\selectfont
-      \item “ExperienciaRequerida” $\rightarrow$ \{Experiencia, Requerida\}
-    \end{itemize}
-    \item Sinónimos para cada palabra usando Wordnet:
-    \begin{itemize}\fontsize{9.5pt}{7.2}\selectfont
-      \item experiencia $\rightarrow$ \{experiencia, conocimiento, habilidad,...\}
-      \item requerida $\rightarrow$ \{requerida, necesaria, indispensable,...\}
-    \end{itemize}
-    \item Lematizar:
-      \begin{itemize}\fontsize{9.5pt}{7.2}\selectfont
+      \item Se generan sinónimos lematizados para cada palabra usando Wordnet y se combinan:
+      \begin{itemize}
+        \item ExperienciaRequerida $\rightarrow$ \{Experiencia, Requerida\}
         \item experiencia $\rightarrow$ \{experiencia, conocimiento, habilidad,...\}
         \item requerida $\rightarrow$ \{requerir, necesario, indispensable,...\}
-    \end{itemize}
-    \item Combinar:
-    \begin{itemize}\fontsize{9.5pt}{7.2}\selectfont
-        \item tokens = \{(experiencia, requerir), (conocimiento, requerir), (habilidad, requerir),(experiencia, necesario), (conocimiento, necesario), (habilidad, necesario),(experiencia, indispensable), (conocimiento, indispensable), (habilidad, indispensable)\}
-    \end{itemize}
-    \item Un token \textit{\textbf{corresponde}} a un elemento
-    \begin{itemize}\fontsize{9.5pt}{7.2}\selectfont
-    \item (habilidad, indispensable) corresponde a ExperienciaRequerida
-    \end{itemize}
+        \item \{habilidad, indispensable\} corresponde a ExperienciaRequerida
+      \end{itemize}
   \end{itemize}
 \end{frame}
 
 
 
-
 \begin{frame}[<+->]
-\frametitle{Tokenización completa, asociación sintáctica}
+\frametitle{Tokenización completa}
 
+\begin{block}{\textbf{Tokenización completa de una pregunta \textit{q}}}
   \begin{itemize}
-    \item \textbf{Tokenización completa de una pregunta \textit{q}}:  cualquier conjunto de tokens en los que cada término que no es un marcador sintáctico de $q$ aparece en exactamente un token del conjunto.
-    \begin{itemize}
-      \item Una partición de tokens de la pregunta $q$
-      \item Para ser tratable, $q$ tiene que tener \textit{solo} stopwords y tokens del lexicón.
-    \end{itemize} 
-    \item \textbf{Asociación sintáctica}: dos tokens están sintácticamente asociados en $q$ si cumplen ciertas restricciones sintácticas.
-    \begin{itemize}
-      \item Modelado con una función $attachment($ t1, t2, q $) \rightarrow booleano$
-    \end{itemize} 
+    \item Una partición de tokens de la pregunta $q$
+    \item Pregunta tratable $\Leftrightarrow$ Marcadores sintácticos + tokens del lexicón
    \end{itemize}
+\end{block}
+
+\begin{block}{Tokenizer}<1->
+      \begin{itemize}
+          \item Rompe la pregunta y consulta al lexicón
+          \item Genera tokenizaciones completas que alimentan al Matcher
+          \item Propone todos los mapeos entre palabras y elementos de la DB (tokenizaciones completas)
+      \end{itemize}
+    \end{block}
 \end{frame}
 
-\fontsize{9.5pt}{7.2}\selectfont
-\begin{frame}[<+->]
-\frametitle{Traducción válida}
- Una \textbf{traducción válida} es un mapeo de una tokenización completa de $q$ en elementos de $E$ que cumple 3 condiciones:
-\begin{enumerate}
-  \item Cada token se corresponde con un único elemento de $E$.
-  \item Cada token de atributo se relaciona con un único token de valor, cumpliendo que:
-  \begin{itemize}
-    \fontsize{9.5pt}{7.2}\selectfont
-    \item el atributo de la base de datos que corresponde al token de atributo y el valor de la base de datos que corresponde al token de valor son compatibles
-    \item ambos tokens están sintácticamente asociados \footnotemark 
-   \end{itemize}
-\end{enumerate}
-\footnotetext[1]{\tiny{Falta una condición sobre tokens de relación que no usamos en la tesis}}
-\end{frame}
-
-\fontsize{10pt}{11.2}\selectfont
-\begin{frame}[<+->]
-\frametitle{Tratabilidad semántica - formalización}
-Una pregunta es \textbf{semánticamente tratable} si:
-\begin{itemize}
-  \item Tiene una y solo una q-word 
-  \item Tiene al menos una traducción válida
-\end{itemize}
-
-\bigskip
-\bigskip
-
-Una traducción válida de $q$ se traduce trivialmente a una query SQL:
-\bigskip
-\centering
-\begin{tabular}{ r | l }
-SELECT &  Elementos apareados con qwords \\
-WHERE & Pares de atributos y valores apareados\\
-FROM & Todas las relaciones mencionadas \\
-\end{tabular}
-\end{frame}
 
 \fontsize{11pt}{7.2}\selectfont
 \begin{frame}
@@ -255,61 +191,132 @@ FROM & Todas las relaciones mencionadas \\
 \end{figure}
 \end{frame}
 
-
-\fontsize{9.5pt}{7.2}\selectfont
-\begin{frame}
-\frametitle{Módulos de Precise}
-   \begin{block}{Lexicon}<1->
+\begin{frame}[<+->]
+\frametitle{Matcher}
+   
+   \begin{block}{Matcher}
+     \begin{itemize}
+      \item Input
       \begin{itemize}
-          \item Sinónimos lematizados de todas las relaciones, atributos y valores
-          \begin{itemize}
-            \item Wordnet
-          \end{itemize}
-          \item Determina qué términos son comprensibles de una pregunta
-          \item Las preguntas tratables tienen solamente marcadores sintácticos + palabras del lexicon.
+        \item El tokenizer generó una más particiones de $q$ en items del lexicón (tokenizaciones)
+        \item Cada item mapea a uno o más elementos de la DB.
+      \end{itemize}
+      \item El matcher filtra mapeos válidos (\dq{traducciones válidas})
+        \begin{itemize}
+          \item  Relaciona cada \textbf{valor} con un único \textbf{atributo}, implícito o explícito usando un algoritmo de max flow.
+           \item Cada {\color{blue}atributo} del mapeo tiene un {\color{blue}valor} o {\color{green}qword} compatible y sintácticamente asociado.
         \end{itemize}
-    \end{block}
-    \begin{block}{Tokenizer}<1->
-      \begin{itemize}
-          \item Rompe la pregunta y consulta al lexicón
-          \item Genera tokenizaciones completas que alimentan al Matcher
-          \item Propone mapeos entre palabras y elementos de la DB (tokenizaciones completas)
-      \end{itemize}
-    \end{block}
+    \end{itemize} 
+  \end{block}
   
+  \begin{itemize}
+    \item Las aristas implicadas en el flujo máximo asocian 
+    \begin{enumerate}
+      \item los tokens de valor y de atributo y los correspondientes elementos (valores y atributos, respectivamente) de la DB y 
+      \item pares de valores y atributos entre sí.
+    \end{enumerate}
+    \end{itemize}
+          
 \end{frame}
 
 \begin{frame}
-\frametitle{Módulos de Precise (2)}
+  \frametitle{Ejemplo}
 
-    \begin{block}{Matcher}<1->
-      \begin{itemize}
-          \item La pieza clave.
-          \item Relaciona cada valor con un único atributo, implícito o explícito usando un algoritmo de max flow.
-          \item Selecciona mapeos válidos (traducciones válidas)
-      \end{itemize}
-    \end{block}
-    \begin{block}{Otros}<1->
-      \begin{itemize}
-        \item Parser plug-in: computa la función de asociación sintáctica, basándose en el parse tree de Charniak.
-        \item Query generator: dado el conjunto de elementos de la base de datos traducido de la pregunta, genera una query SQL.
-        \item Equivalence Checker: verifica si diferentes queries son la misma formulada de diferentes maneras.
-      \end{itemize}
-    \end{block}
+  \begin{figure}
+    \centering
+      \includegraphics[scale=0.3]{graficos/popescu-example-2}
+    \caption{El grafo de atributos y valores del Matcher para la pregunta ``What are the HP jobs on a Unix system?''}
+    \label{fig:popescu-example-2}
+  \end{figure}
+
 \end{frame}
 
+\begin{frame}[<+->]
+    \frametitle{Traducción válida / Tratabilidad semántica}    
+     Una \textbf{traducción válida} es un mapeo de una tokenización completa de $q$ en elementos de $E$ que cumple 3 condiciones:
+    \begin{enumerate}
+      \item Cada token se corresponde con un único elemento de $E$.
+      \item Cada token de atributo se relaciona con un único token de valor, cumpliendo que:
+      \begin{itemize}
+        \fontsize{9.5pt}{7.2}\selectfont
+        \item el atributo de la base de datos que corresponde al token de atributo y el valor de la base de datos que corresponde al token de valor son compatibles
+        \item ambos tokens están sintácticamente asociados \footnotemark 
+       \end{itemize}
+    \end{enumerate}
+
+    \bigskip
+    Una pregunta es \textbf{semánticamente tratable} si:
+    \begin{itemize}
+      \item Tiene una y solo una q-word 
+      \item Tiene al menos una traducción válida
+    \end{itemize}
+
+
+    \footnotetext[1]{\tiny{Falta una condición sobre tokens de relación que no es esencial mencionar}}
+
+\end{frame}
 
 \begin{frame}
-
-\frametitle{Ejemplo}
-
-\begin{figure}
-  \centering
-    \includegraphics[scale=0.3]{graficos/popescu-example-2}
-  \caption{El grafo de atributos y valores del Matcher para la pregunta ``What are the HP jobs on a Unix system?''}
-  \label{fig:popescu-example-2}
-\end{figure}
+\frametitle{Query}    
+Una traducción válida de $q$ se traduce trivialmente a una query SQL:
+\bigskip
+\centering
+\begin{tabular}{ r | l }
+SELECT &  Elementos apareados con qwords \\
+WHERE & Pares de atributos y valores apareados\\
+FROM & Todas las relaciones mencionadas \\
+\end{tabular}
 \end{frame}
+
+\begin{frame}[t]
+\frametitle{Ejemplo 1: Generador de Queries}
+\Large{{\color{blue}Who} \st{is} \st{the} {\color{blue}head} \st{of} {\color{blue}state} \st{of} {\color{purple}Zimbabwe}? 
+\bigskip
+\newline
+{\color{white}\textbf{{\color{white}SELECT}} HeadOfState \newline
+{\color{white}\textbf{FROM}} Country \newline
+{\color{white}\textbf{WHERE}} Country.Name$=$ {\color{white}`Zimbabwe'}
+}}
+
+\bigskip
+
+{\color{white}\textbf{``Robert G. Mugabe''}}
+
+\end{frame}
+
+\begin{frame}[t]
+\frametitle{Ejemplo 1: Generador de Queries}
+\Large{{\color{blue}Who} \st{is} \st{the} {\color{blue}head} \st{of} {\color{blue}state} \st{of} {\color{purple}Zimbabwe}? 
+\bigskip
+\newline
+\textbf{{\color{blue}Who}} $\rightarrow$ Valor de Country.HeadOfState \newline
+\textbf{{\color{blue}head state}} $\rightarrow$ Atributo Country.HeadOfState \newline
+\textbf{{\color{purple}Zimbabwe}} $\rightarrow$ Valor implícito de Country.Name \newline
+}
+
+\bigskip
+
+{\color{white}\textbf{``Robert G. Mugabe''}}
+
+\end{frame}
+
+\begin{frame}[t]
+\frametitle{Ejemplo 1: Generador de Queries}
+\Large{{\color{blue}Who} \st{is} \st{the} {\color{blue}head} \st{of} {\color{blue}state} \st{of} {\color{purple}Zimbabwe}? 
+\bigskip
+\newline
+\textbf{{\color{purple}SELECT}} HeadOfState \newline
+{\color{purple}\textbf{FROM}} Country \newline
+{\color{purple}\textbf{WHERE}} Country.Name$=$ {\color{green}`Zimbabwe'}
+}
+
+\bigskip
+
+\textbf{``Robert G. Mugabe''}
+
+\end{frame}
+
+
 
 \subsection{Implementación}
 
@@ -323,69 +330,6 @@ FROM & Todas las relaciones mencionadas \\
 
 
 \subsubsection*{Implementación}
-
-
-\fontsize{9.5pt}{7.2}\selectfont
-\begin{frame}[<+->]
-\frametitle{Implementación: Lexicón, Tokenize}
-  Seguimos las indicaciones dadas sobre Precise
-
-  \begin{block}{Lexicón: genera el espacio semántico.}
-    \begin{itemize}
-      \item \fontsize{7.5pt}{7.2}\selectfont Elemento DB (Relación, Atributo, Valor) $\rightarrow$ Wordnet $\rightarrow$ Lexicón
-      \item \fontsize{7.5pt}{7.2}\selectfont Notas: TokenAugmenter. Polisemia. Problemas.
-    \end{itemize}
-  \end{block}
-  \begin{block}{Tokenizer: particiona la pregunta en tokens del lexicón}
-      \begin{enumerate}
-        \item \fontsize{7.5pt}{7.2}\selectfont Separar la pregunta en palabras, eliminar puntuaciones y pasar a lower case
-        \item \fontsize{7.5pt}{7.2}\selectfont Lematizar las palabras
-        \item \fontsize{7.5pt}{7.2}\selectfont Eliminar marcadores sintácticos
-        \item \fontsize{7.5pt}{7.2}\selectfont Para cada lema, obtener todos los tokens que lo contienen del Lexicon
-        \item \fontsize{7.5pt}{7.2}\selectfont Para cada token potencial, verificar que todos sus lemas estén presentes en la pregunta original.
-        \item \fontsize{7.5pt}{7.2}\selectfont Generar el conjunto de partes de todos los tokens filtrados
-        \item \fontsize{7.5pt}{7.2}\selectfont Para cada uno de estos subconjuntos, verificar 1) que sus tokens cubran completamente los lemas significativos de la pregunta original y 2) que no haya lemas repetidos entre los tokens.
-        \end{enumerate}
-  \end{block}
-\end{frame}
-
-\begin{frame}[<+->]
-\frametitle{Implementación: Matcher}
-  
-  \begin{itemize}
-    \item Input = tokenizaciones completas generadas por el Tokenizer,
-    \item Construye el grafo atributo valor
-    \item Algoritmo de max flow.
-    \item Las aristas implicadas en el flujo máximo posible asocian 
-    \begin{enumerate}
-      \item los tokens de valor y de atributo y los correspondientes elementos (valores y atributos, respectivamente) de la DB y 
-      \item pares de valores y atributos entre sí.
-    \end{enumerate}
-    \item Más de una solución posible: todos los flujos máximos son en principio traducciones válidas.
-\end{itemize}
-
-\end{frame}
-
-        % \begin{frame}
-        % \frametitle{Implementación - Condiciones semánticas y sintácticas de la traducción}
-
-        % Finalmente, verificamos cuales de las soluciones con máximo flujo cumplen las condiciones requeridas para ser una traducción válida según enu
-
-        % \begin{enumerate}
-        % \item Todos  los tokens de la tokenización tienen un único elemento de la base de datos asociado y no hay elementos de la base de datos repetidos. (Mapping.meetsConditionOne())
-        % \item Cada token de atributo se relaciona con un único token de valor respetando que: (Mapping.meetsConditionTwo())
-        % \begin{enumerate}
-        % \item el atributo relacionado con el token de atributo y el valor relacionado con el token de valor son compatibles (esta condición está garantizada por el max-flow mismo)
-        % \item ambos tokens están sintácticamente asociados
-        % \end{enumerate}
-        % \item Cada token de relación está relacionado a un token de atributo o bien a un token de valor, cumpliendo las siguientes condiciones:
-        % \begin{enumerate}
-        % \item la relación de la base de datos que corresponde al token de relación y el elemento de la base de datos que corresponde al token de atributo o token de valor son compatibles
-        % \item ambos tokens (token de relación - token de atributo o bien token de relación - token de valor) están sintácticamente asociados
-        % \end{enumerate}
-        % \item La pregunta tiene una qword
-        % \end{enumerate}
-        % \end{frame}
 
 
 \begin{frame}
@@ -419,54 +363,6 @@ FROM & Todas las relaciones mencionadas \\
 
 \end{frame}
 
-\begin{frame}
-\frametitle{Charniak parse tree}
-\Tree [.S1 [.WHNP [.WP What ] ] [.SQ [.{\color{purple}VP} [.AUX are ] [.{\color{purple}NP} [.DT the ] [.NNP HP ] [.{\color{purple}NNS} {\color{purple}jobs} ] ] [.{\color{purple}PP} [.IN on ] [.{\color{purple}NP} [.DT a ] [.{\color{purple}NNP} {\color{purple}Unix} ] [.{\color{purple}NN} {\color{purple}system} ] ] ] ] ] [.. ? ] ] \\
-{\color{purple}Regla 3: sintagma nominal a sintagma preposicional (otra)}
-
-\end{frame}
-
-
-              % \begin{frame}
-              % \frametitle{Algunas notas}
-              %  No usar charniak. Mejora la performance. Empeora filtro. Mas desambiguaciones mas tontas.
-
-              % Finalmente, todos los resultados de max-flow que cumplen con las condiciones de 1 a  4 son traducciones válidas, que pasan al MappingFilter, que realiza ciertos filtrados que describiremos, de nuevo, en un título aparte.
-
-              % Resultado e Mappings (una estructura que contiene 1) una tokenización completa de la pregunta original y 2) un mapeo válido entre cada token de la misma en un elemento de la base de datos). 
-              % Cada mapeo es una traducción válida de la pregunta. Si existe solo uno, entonces este mapeo se traducirá en una query que generará el resultado. Si no, corresponde al MappingFilter realizar filtrados inteligentes de las múltiples soluciones y, en caso de que continuen existiendo múltiples soluciones, entonces se consultará al usuario qué quiso preguntar. Por otro lado, si no fue posible generar ninguna traducción válida, se retornará al usuario sin respuesta, pidiéndole que vuelva a escribir su pregunta de otro modo.
-
-
-              % \end{frame}
-
-
-              % \begin{frame}
-              % \frametitle{Filtros, Generación de queries}
-
-              % \textbf{MappingFilter}
-              % \begin{itemize}
-              % \item Elimina repetidas (según su query SQL).
-              % \item Regla 1 - ``semi duplicados'': atributos similares de la DB\footnotemark 
-              % \item Regla 2 y 3 - Fundamento. si una traducción válida tiene su qword asociado a un atributo \textit{implícito}, también estará asociado con todos los atributos que pueda estarlo (ver tabla table:atributos-qwords para las compatibilidades definidas).\footnotemark 
-              % \item Regla 2 - Preferir, entre los atributos implícitos, aquellos cuya relación está mencionada en la pregunta (si hubiera alguna). 
-              % \item Regla 3 - Una vez especificada la relación, priorizar el atributo implicito preferido en negrita en la tabla table:atributos-qwords. 
-              % \item Si después de MappingFilter hay más de una traducción, vuelve al usuario a desambiguar
-              % \end{itemize}
-              % \textbf{QueryGenerator}
-
-              % \centering
-              % \begin{tabular}{ r | l }
-              % SELECT &  Elementos apareados con qwords \\
-              % WHERE & Pares de atributos y valores generados por el Matcher\\
-              % FROM & Todas las relaciones mencionadas \\
-              % \end{tabular}
-
-
-
-              % \footnotetext[1]{ en concreto, una query que consulta por Country.Name Country.LocalName}
-              % \footnotetext[2]{Esto implica que, por ejemplo, para cualquier pregunta cuya qword sea 'what' y no tenga su atributo asociado explícito, habrá 16 diferentes traducciones válidas.}
-
-              % \end{frame}
 
 \subsubsection*{Ejemplos}
 \begin{frame}
@@ -899,8 +795,8 @@ Total & Categoría \\
 \frametitle{Conclusiones y limitaciones: dominio cerrado}
 Algunas mejoras
 \begin{itemize}
-\item Propuestas y experimentación para diferentes configuraciones en la generación del lexicón
-\item Propuestas y experimentación para diferentes configuraciones en la generación de stopwords
+\item Generación del lexicón
+\item Generación de stopwords
 \item En el Lexicón, agregar un desambiguador de sentidos para los sinónimos de los tokens
 \item Soportar diferentes paths para aparear (\textit{joinear}) tablas.
 %\item Soportar tokens multi tipados en el Matcher.
