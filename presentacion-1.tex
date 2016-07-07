@@ -1,27 +1,5 @@
-\section{Introducción}
 
 \subsection{Qué es question answering}
-
-\begin{frame}
-\frametitle{Ejemplo IR}
-\begin{figure}
-  \centering
-    \includegraphics[scale=.35]{graficos/i-r-example}
-  \caption{Google como sistema de Information Retrieval}
-  \label{fig:qa-example}
-\end{figure}
-\end{frame}
-
-
-\begin{frame}
-\frametitle{Ejemplo QA}
-\begin{figure}
-  \centering
-    \includegraphics[scale=.5]{graficos/q-a-example}
-  \caption{Google como sistema de Question Answering}
-  \label{fig:qa-example}
-\end{figure}
-\end{frame}
 
 
 \begin{frame}
@@ -58,11 +36,46 @@
 
 
 \begin{frame}
-  \frametitle{Clasificación}
-  \begin{block}{Clasificación}<2->
+\frametitle{Ejemplo IR: esto no es QA}
+\begin{figure}
+  \centering
+    \includegraphics[scale=.4]{graficos/i-r-example}
+  \caption{Google como sistema de Information Retrieval \newline \tiny{IR es: \dq{retornar \textit{información relevante} para una \textit{consulta} (\textit{information need}) a partir de una \textit{base de conocimiento}}}}
+  \label{fig:qa-example}
+\end{figure}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Ejemplo QA: esto es QA}
+\begin{figure}
+  \centering
+    \includegraphics[scale=.5]{graficos/q-a-example}
+  \caption{Google como sistema de Question Answering \newline \tiny{QA es IR, pero más específico en qué significa \textit{consulta} y qué significa \textit{información relevante}}}
+  \label{fig:qa-example}
+\end{figure}
+  
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Ejes de clasificación}
+  \begin{block}{Generalidad del dominio}
+    Dominio abierto o dominio cerrado
+    \begin{itemize} 
+      \item Restaurants, clima, transportes.
+      \item Enciclopedias, Internet
+    \end{itemize}
+  \end{block}
+
+
+  \begin{block}{Otros ejes}
     \begin{itemize}
-      \item Generalidad del dominio: dominio abierto o dominio cerrado
       \item Tipo de datos: estructurado, no estructurado, híbrido
+      \begin{itemize}
+          \item Bases de datos, texto plano, texto formateado.
+      \end{itemize}
       \item Soporte de preguntas: Fácticas, listas, definiciones, modo, razón
       \begin{itemize}
           \item Cláusulas de tiempo, sin respuesta, etc.
@@ -74,21 +87,21 @@
 
 \subsection{Qué es esta tesis}
 
-\begin{frame}
+\begin{frame}[<+->]\fontsize{11pt}{11}\selectfont
   \frametitle{Qué es esta tesis}
-    \begin{block}{Brevemente}<2->
-      Implementamos dos sistemas de question answering.
+    \begin{block}{Brevemente}
+      Implementamos dos sistemas de question answering\newline(no, no hay hipótesis; es práctica)
     \end{block}
-    \begin{exampleblock}{Dominio cerrado con soporte para inglés / Popescu World}<3->
+    \begin{exampleblock}{Dominio cerrado con soporte para inglés / Popescu World}
       \begin{itemize}
-          \item Base de datos relacional de juguete
+          \item Base de datos relacional: countries, cities, languages - (estructurado)
           \item Modelo teórico de \textit{tratabilidad semántica}
           \item Traduce preguntas a consultas SQL
       \end{itemize}
     \end{exampleblock}
-    \begin{alertblock}{Dominio abierto con soporte multilingüe / Multilingual Qanus}<4->
+    \begin{alertblock}{Dominio abierto con soporte multilingüe / Multilingual Qanus}
       \begin{itemize}
-          \item Wikipedia(s) como base de conocimientos
+          \item Wikipedia(s) como base de conocimientos (no estructurado)
           \item Framework Qanus y librería Freeling
           \item Basado en IR + NLP + heurísticas
       \end{itemize}
