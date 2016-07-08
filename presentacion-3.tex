@@ -14,9 +14,15 @@
   \begin{itemize}
     \item Sistema QA de dominio abierto con soporte multilingüe
     \item Basado en Qanus, adaptado para usar Freeling.
-    \item Ejercicios de CLEF'07 monolingüe para español y portugués
-    \item Wikipedia como base de conocimiento
-    \item IR + NLP + Heurísticas
+    \begin{itemize}
+      \item Pipeline - IR + NLP + Heurísticas
+    \end{itemize}
+    \item Ejercicios de CLEF'07 monolingüe para español (es-es) y portugués (pt-pt)
+    \begin{itemize}
+      \item Wikipedia como base de conocimiento (\st{newsletters})
+      \item Factoids (\st{lists}, \st{definition})
+      \item Respuesta exacta. Nulas. Tópicos por grupo con co-referencia.
+    \end{itemize}
     \item Agregamos: 
     \begin{itemize}
         \item Heurísticas de generación de queries (de Lasso y de \textit{topics})
@@ -25,7 +31,39 @@
     \item Experimentamos y sacamos conclusiones.
   \end{itemize}
 
+
 \end{frame}
+
+
+
+\begin{frame}
+\frametitle{Preguntas}
+  \begin{center}
+  \begin{table}
+  \centering
+  \begin{tabular}{| l | l | l | l | l | l |}
+  
+  Subset & Idioma & Factoid & Definition & List & Total \\ 
+  \multirow{2}{*}{Todo} & es & 158 & 32 & 10 & 200 \\ 
+   & pt & 159 & 31 & 10 & 200 \\ \hline
+   \multirow{2}{*}{Wiki} & es & \textbf{122} & 24 & 9 & 163 \\ 
+   & pt & \textbf{104} & 18 & 8 & 130 \\ 
+  \end{tabular}
+  \caption{Totales por tipo de pregunta}
+  \label{table:totals-type-question}
+  \end{table}
+  \end{center}
+
+  Ejemplo de grupo con tema y correferencia (primer cluster de preguntas para es-es):
+  \begin{itemize}
+  \item ¿En qué colegio estudia Harry Potter?
+  \item ¿Cuál es el lema del colegio?
+  \item ¿En qué casas está dividido?
+  \item ¿Quién es el director del colegio?
+  \end{itemize}
+
+\end{frame}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
@@ -51,7 +89,7 @@
   \begin{block}{Módulo de procesamiento de la pregunta}
     \begin{itemize}
       \item Submódulo principal: Question Classifier. Question Type
-      \item Anotaciones de la pregunta (NER, POS, Otros)
+      \item Anotaciones de la pregunta (NER, POS)
       \item Creación de consulta para IR (Heurística de Lampert, Moldovan)
     \end{itemize}
   \end{block}
@@ -71,10 +109,17 @@
       \item Extracción de respuestas
     \end{itemize}
   \end{exampleblock}
-
 \end{frame}
 
 
+\begin{frame}
+\frametitle{Indice Invertido}
+  \begin{figure}
+      \includegraphics[scale=0.6]{graficos/presentacion/i-i}
+    \caption{Indice invertido}
+    \label{fig:tareas}
+  \end{figure}
+\end{frame}
 
 
 
@@ -118,17 +163,23 @@ Adverbio & despacio, hábilmente, posteriormente\\ \hline
 
 \begin{frame}
   \frametitle{NER - Named entities recognition - Reconocimiento de Entidades Nombradas}
-  Reconoce: personas, organizaciones, lugares. \newline
+  Reconoce: Personas, Organizaciones, Lugares. \newline
 
-  El presidente de los Estados Unidos, Barack Obama, viajó a Argentina en donde se encontró con el presidente de ese país, Mauricio Macri, en la Casa Rosada. Comieron al anochecer en un reconocido restaurant de Puerto Madero junto con sus respectivas esposas Michelle Obama y Juliana Awada donde discutieron sobre la posibilidad de abrir sucursales de Mc Donald's y de Apple en las nuevas condiciones de mercado.
+  Lionel Messi nació el 24 de junio de 1987 en la ciudad de Rosario, en la provincia de Santa Fe. Es hijo de Jorge Horacio Messi, trabajador de una fábrica, y de Celia María Cuccittini, una limpiadora de medio tiempo (...).\newline
+
+  Con apenas cinco años, Messi dio sus primeros pasos en Grandoli, un club de barrio al sur de Rosario, a pocas cuadras de su casa. El club estaba dirigido por su padre. Posteriormente jugó algunos partidos con el Central Córdoba. En 1995, comenzó a entrenarse en las divisiones inferiores de Newell's Old Boys.
 \end{frame}
 
 
 \begin{frame}
   \frametitle{NER - Named entities recognition - Reconocimiento de Entidades Nombradas}
-  Reconoce: {\color{red}personas}, {\color{blue}organizaciones}, {\color{green}lugares}. \newline
+  Reconoce: {\color{red}Personas}, {\color{blue}Organizaciones}, {\color{green}Lugares}. \newline
 
-  El presidente de los {\color{green}Estados Unidos}, {\color{red}Barack Obama}, viajó a {\color{green}Argentina} en donde se encontró con el presidente de ese país, {\color{red}Mauricio Macri}, en la {\color{blue}Casa Rosada}. Comieron al anochecer en un reconocido restaurant de {\color{green}Puerto Madero} junto con sus respectivas esposas {\color{red}Michelle Obama} y {\color{red}Juliana Awada} donde discutieron sobre la posibilidad de abrir sucursales de {\color{blue}Mc Donald's} y de {\color{blue}Apple} en las nuevas condiciones de mercado.
+  {\color{red}Lionel Messi} nació el 24 de junio de 1987 en la ciudad de {\color{green}Rosario}, en la provincia de {\color{green}Santa Fe}. Es hijo de {\color{red}Jorge Horacio Messi}, trabajador de una fábrica, y de {\color{red}Celia María Cuccittini}, una limpiadora de medio tiempo (...).\newline
+
+  Con apenas cinco años, {\color{red}Messi} dio sus primeros pasos en {\color{blue}Grandoli}, un club de barrio al sur de {\color{green}Rosario}, a pocas cuadras de su casa. El club estaba dirigido por su padre. Posteriormente jugó algunos partidos con el {\color{blue}Central Córdoba}. En 1995, comenzó a entrenarse en las divisiones inferiores de {\color{blue}Newell's Old Boys}.
+
+
 \end{frame}
 
 \begin{frame}
@@ -170,34 +221,6 @@ Adverbio & despacio, hábilmente, posteriormente\\ \hline
 %%      Ejercicio de Clef
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection*{Ejercicios}
-
-\fontsize{9.5pt}{8.2}\selectfont
-\begin{frame}[<+->]
-\frametitle{Ejercicios}
-  \textit{Cross-Language Evaluation Forum}
-  \begin{itemize}
-    \item Principal organizador de conferencias de question answering multilingüe para idiomas europeos.
-    \item Vs. TREC (solo para inglés)
-    %\item La tarea principal de '07 presentaba una complejidad adecuada para el scope de esta tesis.
-  \end{itemize}
-  Ejercicios
-  \begin{itemize}
-    %\item Subset de dos ejercicios de la tarea principal de question answering de '07. 
-    %\item Corpora, inputs de prueba y resultados esperados para una experimentación sobre diferentes idiomas disponible.
-    \item Wikipedia + newsletters como corpus
-    \begin{itemize}
-      \item Nosotros trabajamos solo con las wikipedias
-    \end{itemize}
-    \item 200 preguntas (factoids, definition o list) 
-    \begin{itemize}
-      \item Usamos solo factoids
-    \end{itemize}
-    \item Respuesta exacta. Topics + clusters + co-referencia.
-    \item Preguntas sin respuesta
-    \item Tomamos ejercicios monoligüe es-es y pt-pt (español-español y portugués-portugués)
-  \end{itemize}
-\end{frame}
 
 
 % \begin{frame}
@@ -208,34 +231,6 @@ Adverbio & despacio, hábilmente, posteriormente\\ \hline
 %     \label{fig:tareas}
 %   \end{figure}
 % \end{frame}
-
-\begin{frame}
-\frametitle{Preguntas}
-  \begin{center}
-  \begin{table}
-  \centering
-  \begin{tabular}{| l | l | l | l | l | l |}
-  
-  Subset & Idioma & Factoid & Definition & List & Total \\ 
-  \multirow{2}{*}{Todo} & es & 158 & 32 & 10 & 200 \\ 
-   & pt & 159 & 31 & 10 & 200 \\ \hline
-   \multirow{2}{*}{Wiki} & es & \textbf{122} & 24 & 9 & 163 \\ 
-   & pt & \textbf{104} & 18 & 8 & 130 \\ 
-  \end{tabular}
-  \caption{Totales por tipo de pregunta}
-  \label{table:totals-type-question}
-  \end{table}
-  \end{center}
-
-  Ejemplo de grupo con tema y correferencia (primer cluster de preguntas para es-es):
-  \begin{itemize}
-  \item ¿En qué colegio estudia Harry Potter?
-  \item ¿Cuál es el lema del colegio?
-  \item ¿En qué casas está dividido?
-  \item ¿Quién es el director del colegio?
-  \end{itemize}
-
-\end{frame}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -283,9 +278,8 @@ Adverbio & despacio, hábilmente, posteriormente\\ \hline
 
   \begin{block}{TREC 07}
       \begin{itemize}
-          \item Monolingue, Inglés. Competencia importante
-          \item Una respuesta por pregunta
-          \item 200 preguntas en total
+          \item Monolingue, Inglés. %Competencia importante
+          \item 200 preguntas
           \item Evaluada por humanos
           \item \textit{Precisión}: respuestas exactas sobre respuestas totales
           \item LymbaPA $\rightarrow$ {\color{blue}0.706} (70\%)
@@ -340,8 +334,8 @@ Adverbio & despacio, hábilmente, posteriormente\\ \hline
     \begin{center}
     \begin{tabular}{| l | l | l | l | l | l| l|}
     Wikipedia & \# Entradas & Nulas & Redirects & Filtradas & \textbf{Válidas} \\ 
-    simple-06 & 18273 & 22 &  3452 & 5241 & 9558 \\ 
-    simple-13 & 180067 & 8 & 35600 & 41902 & 102557\\
+    %simple-06 & 18273 & 22 &  3452 & 5241 & 9558 \\ 
+    %simple-13 & 180067 & 8 & 35600 & 41902 & 102557\\
     \textbf{es-06} & \textbf{233750} & 52 & 62805 & 34947 & \textbf{{\color{green}135946}} \\ 
     \textbf{pt-07} & \textbf{498039} & 80 & 210983 & 43390 & \textbf{{\color{green}243586}} \\ 
     \end{tabular}
@@ -417,7 +411,6 @@ Adverbio & despacio, hábilmente, posteriormente\\ \hline
 \begin{column}{.58\textwidth}
 El algoritmo tiene los siguientes pasos:
   \begin{enumerate}
-    \item Filtrado de preguntas
     \item Generación de Queries
     \item Information Retrieval (documentos)
     \item Extracción y rankeo de oraciones
@@ -437,26 +430,27 @@ El algoritmo tiene los siguientes pasos:
 \frametitle{3. Generación de Respuestas (2)}
   \begin{block}{Generación de Queries}
   \begin{itemize}
-      \item Descartamos caso (\dq{Who (is|was) (the) NN ... NN?} )
+      %\item Descartamos caso (\dq{Who (is|was) (the) NN ... NN?} )
       \item Caso baseline
       \begin{itemize}
-        \item Espera \sq{target}(TREC) / tópico (CLEF) y pregunta. 
-        \item Genera la consulta tomando:
+        \item Input: pregunta + \sq{target}(TREC) / tópico (CLEF)
         \begin{itemize}
               \item Palabras no stop-words de \textit{target} 
               \item Sustantivos, verbos y adjetivos de la pregunta.
         \end{itemize}
       \end{itemize}
-      \item Usamos 2 métodos más (más adelante)
+      \item Evaluamos 3 métodos para generar queries
+      \item Evaluamos 4 métodos para generar target
     \end{itemize}
   \end{block}
 
     \begin{exampleblock}{Extracción y re rankeo de oraciones post IR}
     \begin{itemize}
-      \item Documentos divididos en oraciones (no heredan rank)
+      \item Documentos divididos en oraciones
       \item Re rankeo de oraciones con \textit{scorers}:
       \item $rank = 0.9\times covr + 0.05\times freq + 0.05\times prox;$ %\footnotemark
-      \item Primeras $K$ oraciones pos-taggeadas, el resto se desecha
+      \item Primeras 40 oraciones pos-taggeadas, el resto se desecha
+      \item Evaluamos 6 métodos para rankear
     \end{itemize}
   \end{exampleblock}
 \end{frame}
@@ -626,14 +620,26 @@ Casos
 \end{frame}
 
 
+\subsubsection*{Experimientación}
 \begin{frame}
-\frametitle{Modificaciones}
-  \begin{itemize}
-    \item Inferencia del tópico del grupo de preguntas
-    \item Generación de queries
-    \item Generación de respuestas
-  \end{itemize}
+\frametitle{Experimentos}
+Corridas
+\begin{itemize}
+  %\item Documentos retornados por Lucene: 50, 100, 200 (3 opciones)
+  %\item Pasajes extraídos de los documentos: 20, 40, 70 (3 opciones)
+  \item Generación de Queries: baseline (1), improved baseline (2), lasso (3) 
+  \item Inferencia de Temas: Test (1), NERs (2), sustantivos (3), híbrido (4)
+  \item Ranking de Pasajes: baseline (1), 2, 3 + nuevos \textit{a posterior}
+  \item Optimos español + portugués (2 opciones)
+\end{itemize}
+\bigskip
+Evaluación de resultados
+\begin{itemize}
+  \item Cantidad de respuestas dadas por el sistema: 1, 5, 10, 25 (4 opciones)
+  \item Forma de evaluación automática: exacto, cubrimiento del 100\%, 75\% y 50\%, 15\%  y 1\% (6 opciones)
+\end{itemize}
 \end{frame}
+
 
 \begin{frame}
 \frametitle{Inferencia del tópico del grupo de preguntas}
@@ -688,18 +694,18 @@ Casos
 %\ChangeItemFont{\scriptsize}{\scriptsize}{\scriptsize}
   \begin{itemize}
     \item Scorers nuevos para rankear los pasajes
-    \item No tocamos las heurísticas
+    %\item No tocamos las heurísticas
     \item Scorers:
     \begin{itemize}
-      \item Length : Prioriza oraciones cortas pero no demasiado cortas.
-      \item QVerb: Presencia de verbos de la pregunta en la oración.
-      \item QNoun: Presencia de sustantivos.
-      \item QNER: Presencia de NERs.
+      \item length : prioriza oraciones cortas pero no demasiado cortas.
+      \item qverb: presencia de verbos de la pregunta en la oración.
+      \item qnoun: presencia de sustantivos.
+      \item qner: presencia de NERs.
       \end{itemize}
       \item Tres métodos de rankeo de pasajes: \newline
-        $pscore_{bl} = 0.9 \times Coverage + 0.05 \times Freq + 0.05 \times Prox;$ \newline
-        $pscore_2 = 0.4 \times pscore_{bl} + 0.2 \times QNER +  0.15 \times QVerb + 0.25 \times QNoun$ \newline
-        $pscore_3 =  0.4 \times pscore_{bl} + 0.15 \times Length + 0.1 \times QNER + 0.1 \times QVerb + 0.1 \times QNoun$
+        \scriptsize{$pscore_{bl} = 0.9 \times cov + 0.05 \times freq + 0.05 \times prox$ \newline
+        $pscore_2 = 0.4 \times pscore_{bl} + 0.2 \times qner +  0.15 \times qverb + 0.25 \times qnoun$ \newline
+        $pscore_3 =  0.4 \times pscore_{bl} + 0.15 \times length + 0.1 \times qner + 0.1 \times qverb + 0.1 \times qnoun$}
   \end{itemize}
 \end{frame}
 
@@ -712,79 +718,60 @@ Casos
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-\subsubsection*{Experimientación}
-\begin{frame}
-\frametitle{Experimentos}
-Corridas
-\begin{itemize}
-  \item Idioma: español, portugués (2 opciones)
-  \item Documentos retornados por Lucene: 50, 100, 200 (3 opciones)
-  \item Pasajes extraídos de los documentos: 20, 40, 70 (3 opciones)
-  \item Generación de Queries: baseline (1), improved baseline (2), lasso (3) (3 opciones)
-  \item Inferencia de Temas: Test (1), NERs (2), sustantivos (3), híbrido (4) (4 opciones)
-  \item Ranking de Pasajes: baseline (1), 2, 3 (3 opciones)
-\end{itemize}
 
-Evaluación de resultados
-\begin{itemize}
-  \item Cantidad de respuestas dadas por el sistema: 1, 5, 10, 25 (4 opciones)
-  \item Forma de evaluación automática: exacto, cubrimiento del 100\%, 75\% y 50\%, 15\%  y 1\% (6 opciones)
-\end{itemize}
-\end{frame}
+% \begin{frame}
+% \frametitle{Corrida 1: instanciación de cantidades}
 
-\begin{frame}
-\frametitle{Corrida 1: instanciación de cantidades}
+% \begin{itemize}
+%   \item Idioma: Español
+%   \item \textbf{{\color{blue}Documentos retornados por Lucene: 50, 100, 200}}
+%   \item \textbf{{\color{blue} Pasajes extraídos de los documentos: 20, 40, 70}}
+%   \item Generación de Queries: Baseline (1)
+%   \item Inferencia de Temas: NERs propio (2)
+%   \item Ranking de Pasajes: Baseline (1)
+% \end{itemize}
 
-\begin{itemize}
-  \item Idioma: Español
-  \item \textbf{{\color{blue}Documentos retornados por Lucene: 50, 100, 200}}
-  \item \textbf{{\color{blue} Pasajes extraídos de los documentos: 20, 40, 70}}
-  \item Generación de Queries: Baseline (1)
-  \item Inferencia de Temas: NERs propio (2)
-  \item Ranking de Pasajes: Baseline (1)
-\end{itemize}
+% \end{frame}
 
-\end{frame}
+% \begin{frame}
+% \frametitle{Corrida 1: resultados}
 
-\begin{frame}
-\frametitle{Corrida 1: resultados}
+% \begin{table}
+% \centering
+% \begin{center}
+% \begin{tabular}{|l | l | l | l | l | l | l |}
 
-\begin{table}
-\centering
-\begin{center}
-\begin{tabular}{|l | l | l | l | l | l | l |}
+% Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ 
+% $Exacto$ & 7.69 & 7.69 & 8.46 & 10.00 & 10.00 & 10.00  \\ 
+% $MRR_{5}$ & 8.87 & 9.18 & 9.95 & \textbf{12.51} & \textbf{13.47} & \textbf{13.54}  \\ 
+% $MRR_{10}$ & \textbf{9.37} & \textbf{9.44} & \textbf{10.21} & \textbf{12.77} & \textbf{14.25} & \textbf{14.31}  \\ 
+% $MRR_{25}$ & \textbf{9.56} & \textbf{9.63} & \textbf{10.40} & \textbf{13.07} & \textbf{14.58} & \textbf{14.65}  \\ 
+% \end{tabular}
 
-Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ 
-$Exacto$ & 7.69 & 7.69 & 8.46 & 10.00 & 10.00 & 10.00  \\ 
-$MRR_{5}$ & 8.87 & 9.18 & 9.95 & \textbf{12.51} & \textbf{13.47} & \textbf{13.54}  \\ 
-$MRR_{10}$ & \textbf{9.37} & \textbf{9.44} & \textbf{10.21} & \textbf{12.77} & \textbf{14.25} & \textbf{14.31}  \\ 
-$MRR_{25}$ & \textbf{9.56} & \textbf{9.63} & \textbf{10.40} & \textbf{13.07} & \textbf{14.58} & \textbf{14.65}  \\ 
-\end{tabular}
+% \medskip
+% \medskip
 
-\medskip
-\medskip
+% \begin{tabular}{|l | l | l | l | l | l | l |}
+% Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ 
+% $Exacto$ & \textbf{7.75} & \textbf{7.75} & \textbf{8.53} & \textbf{10.08} & \textbf{10.08} & \textbf{10.08}  \\ 
+% $MRR_{5}$ & \textbf{8.94} & \textbf{9.25} & \textbf{10.03} & 12.42 & 13.39 & 13.45  \\ 
+% $MRR_{10}$ & 9.31 & 9.38 & 10.16 & 12.55 & 14.03 & 14.10  \\ 
+% $MRR_{25}$ & 9.54 & 9.61 & 10.39 & 12.89 & 14.41 & 14.48  \\ 
+% \end{tabular}
+% \caption{Corrida 1: con 50 documentos de Lucene y 20, 40 pasajes}
+% \end{center}
+% \end{table}
 
-\begin{tabular}{|l | l | l | l | l | l | l |}
-Medida & Exacto & Covr 1 & Covr .75 & Covr .5 & Covr .15 & Covr .01 \\ 
-$Exacto$ & \textbf{7.75} & \textbf{7.75} & \textbf{8.53} & \textbf{10.08} & \textbf{10.08} & \textbf{10.08}  \\ 
-$MRR_{5}$ & \textbf{8.94} & \textbf{9.25} & \textbf{10.03} & 12.42 & 13.39 & 13.45  \\ 
-$MRR_{10}$ & 9.31 & 9.38 & 10.16 & 12.55 & 14.03 & 14.10  \\ 
-$MRR_{25}$ & 9.54 & 9.61 & 10.39 & 12.89 & 14.41 & 14.48  \\ 
-\end{tabular}
-\caption{Corrida 1: con 50 documentos de Lucene y 20, 40 pasajes}
-\end{center}
-\end{table}
+% Observaciones y conclusiones
+% \begin{itemize}
+%   \item 9 ejecuciones en total
+%   \item Más documentos de Lucene, peor en todas las permutaciones
+%   \item Muchos pasajes (70) también es malo en general
+%   \item 20 y 40 se comportan raro. $\rightarrow$ 40 es mejor para evaluaciones más exactas
+%   \item Fijamos 50 y 40 para el resto de las corridas
+% \end{itemize}
 
-Observaciones y conclusiones
-\begin{itemize}
-  \item 9 ejecuciones en total
-  \item Más documentos de Lucene, peor en todas las permutaciones
-  \item Muchos pasajes (70) también es malo en general
-  \item 20 y 40 se comportan raro. $\rightarrow$ 40 es mejor para evaluaciones más exactas
-  \item Fijamos 50 y 40 para el resto de las corridas
-\end{itemize}
-
-\end{frame}
+% \end{frame}
 
 
 \begin{frame}
@@ -792,8 +779,8 @@ Observaciones y conclusiones
 
 \begin{itemize}
   \item Idioma: Español
-  \item Documentos retornados por Lucene: \textbf{50}
-  \item Pasajes extraídos de los documentos: \textbf{40}
+  \item Documentos retornados por Lucene: \textbf{50} (corrida 1 vs 70 y 100)
+  \item Pasajes extraídos de los documentos: \textbf{40} (corrida 1 vs 20 y 60)
   \item \textbf{{\color{blue}Generación de Queries: Baseline, Baseline mejorado, Lasso}}
   \item Inferencia de Temas: NERs propio (2)
   \item Ranking de Pasajes: Baseline (1)
@@ -825,7 +812,7 @@ $MRR_{25}$ & 9.54 & 9.61 &  5.96 & 6.43 & 9.94 & 10.01  \\
 
 Observaciones y Conclusiones
 \begin{itemize}
-  \item Método lasso ligeramente superior a baseline
+  \item Método Lasso ligeramente superior a Baseline
   \item Baseline \dq{mejorado} rezagado siempre
 \end{itemize}
 
@@ -880,7 +867,6 @@ $MRR_{25}$ & 4.47 & 4.58 & 7.64 & 7.71 \\
 Conclusiones:
 \begin{itemize}
  \item El método utilizado (NERs + números de la primer pregunta como target) es el más efectivo en todos los casos.
- \item {\color{red}Esto es raro en relación al método 1}
 \end{itemize}
 
 
@@ -979,34 +965,6 @@ Observaciones y conclusiones
 \begin{frame}
 \frametitle{Corrida 3: Combinación de Óptimos}
 
-\medskip
-
-Datos de la corrida 3.1, para español:
-\begin{itemize}
-  \item Idioma: Español
-  \item Documentos retornados por Lucene: 50
-  \item Pasajes extraídos de los documentos: 40
-  \item Generación de Queries: Lasso
-  \item Inferencia de Temas: NERs (2)
-  \item Ranking de Pasajes: $PassageScore_{bl} \times 0.8 + LengthScore \times 0.2$
-\end{itemize}
-
-\medskip
-Datos de la corrida 3.2, para portugués:
-\begin{itemize}
-  \item Idioma: {\color{blue}Portugués}
-  \item Documentos retornados por Lucene: 50
-  \item Pasajes extraídos de los documentos: 40
-  \item Generación de Queries: Lasso
-  \item Inferencia de Temas: NERs (2)
-  \item Ranking de Pasajes: $PassageScore_{bl} \times 0.8 + LengthScore \times 0.2$
-\end{itemize}
-
-\end{frame}
-
-\begin{frame}
-\frametitle{Corrida 3: Resultados}
-
 
 \begin{table}
 \centering
@@ -1045,7 +1003,7 @@ $MRR_{25}$ & 4.08 & 6.00 & 6.00 & 8.21 & 8.84 & 8.94  \\
 
 
 \begin{frame}
-\frametitle{Resultados de competidores de Clef '07}
+\frametitle{Resultados de competidores de CLEF '07}
 
 \begin{columns}[T] % align columns
 \begin{column}{.48\textwidth}
@@ -1091,13 +1049,13 @@ Q & A\\
 ¿Qué dibujó Leonardo Da Vinci en 1492? & Hombre de Vitruvio\\
 ¿Qué programa de televisión presentó Takeshi Kitano de 1986 a 1989? &   Humor Amarillo\\
 \end{tabular}
-\caption{Respuestas español}
+\caption{Respuestas español - $10.65\% = \frac{13}{122}$}
 \end{center}
 \end{table}
 \end{frame}
 
 \begin{frame}
-\frametitle{Corrida 3: Respuestas PT}
+\frametitle{Corrida 3: Respuestas PT y observaciones}
 
 \begin{table}
 \centering
@@ -1107,52 +1065,34 @@ Q & A\\
 De que estado foi governador Adhemar de Barros? & São Paulo\\
 Quando foi fundado o Nacional da Madeira? & 8 de Dezembro de 1910\\
 \end{tabular}
-\caption{Respuestas portugués}
+\caption{Respuestas portugués - $1.92\% = \frac{2}{104}$}
 \end{center}
 \end{table}
 
-
-\end{frame}
-
-
-\begin{frame}
-\frametitle{Corrida 3: conclusiones}
-
+Observaciones
 \begin{itemize}
-  \item Métodos que mejores resultados dieron para español
-  \item Quizás, mal extrapolados a portugués
   \item Español peor que en 2.3 para muchas métricas
+  \begin{itemize}
+  \scriptsize{
+      \item Español: 10.65\% exacto con una sola respuesta! 
+      \item No es el peor
+    }
+  \end{itemize}
   \item Portugués: baja performance
   \begin{itemize}
+  \scriptsize{
     \item Apenas un 3.16\% considerando la métrica $MRR_5$. 
     \item Las herramientas para portugués no son tan maduras como las herramientas para español; 
-    \item Todo el desarrollo y el análisis estuvo basado en español
-    \item Solo POC de soporte para otros idiomas
+    \item Todo el desarrollo y el análisis estuvo basado en español (POC soporte otro idioma)
+    }
   \end{itemize}
-  \item Español: 10.65\% exacto con una sola respuesta! 
-  \item No es el peor
-\end{itemize}
-\begin{itemize}
-  \item $10.65\% = \frac{13}{122}$
-  \item $1.92\% = \frac{2}{104}$
-\end{itemize}
-\end{frame}
 
+\end{itemize}
+
+\end{frame}
 
 
 \subsubsection*{Limitaciones, trabajo futuro, conclusiones}
-
-\begin{frame}
-\frametitle{Algunas mejoras / Trabajo futuro}
-\begin{itemize}
-  \item Módulo multilingüe de Question Classification.
-  \item Inferencia del tópico a partir del primer par de pregunta-respuesta.
-  \item Generación del \textit{focus}. Tema aparte.
-  \item Preguntas de tipo definition y list, booleanas, cláusulas temporales.
-  \item Mejorar las heurísticas
-\end{itemize}
-
-\end{frame}
 
 
 \begin{frame}
@@ -1165,6 +1105,12 @@ Sobre modelo de dominio abierto:
   \begin{itemize}
     \item  mejoras mínimas en la performance, de 7.75 a 7.81 en $MRR_1$ exacto (+0.26), de 8.94 a 9.27 en $MRR_5$ exacto (+0.31). 
   \end{itemize}
-  \item Módulo de \textit{focus} open source en inglés. Problema acotado, bien definido e inexistente. Herramienta útil.
   \end{itemize}
+Mejoras
+ \begin{itemize}
+  \item Módulo de \textit{focus} open source en inglés. Problema acotado, bien definido e inexistente. Herramienta útil.
+  \item Módulo multilingüe de Question Classification.
+  \item Mejorar las heurísticas
+\end{itemize}
+
 \end{frame}
