@@ -78,9 +78,9 @@
   \frametitle{Tratabilidad semántica / motivación}
       \begin{itemize}
           \item La complejidad de las preguntas en lenguaje natural es arbitraria.
-          \item Distinguir un subconjunto 1) \textit{tratable} y 2) \textit{abarcativo}
+          \item Distinguir un subconjunto 1) \textit{tratable} (simple) y 2) \textit{abarcativo}
           \begin{itemize}
-            \item La {\color{blue}\textbf{tratabilidad semántica}} formaliza ese conjunto simple y abarcativo
+            \item La {\color{blue}\textbf{tratabilidad semántica}} formaliza esta clase
           \end{itemize}
           \item Rechazar y pedir reformulación de las no tratables
           \begin{itemize}
@@ -88,47 +88,75 @@
             \item Conservar la confianza en el sistema.
           \end{itemize}
       \end{itemize}
+
+    \begin{alertblock}{Tratable}
+     La tratabilidad está dada por cualidades estructurales pero también por el contenido
+      \begin{itemize}
+          \item atributo $=$ valor (forma de gobierno = monarquía)
+          \item valor suelto - atributo implícito 
+      \end{itemize}
+
+    \end{alertblock}
 \end{frame}
 
 \begin{frame}[<+->]
   \frametitle{Tratabilidad semántica / ejemplos}
+
     \begin{block}{Ejemplos}
       \begin{enumerate}
           \item ¿Qué países asiáticos son monarquías? $\rightarrow$ {\color{green}Sí}
           \item ¿Qué países de Asia no desarrollaron formas de gobierno basadas en las ideas de la Ilustración? $\rightarrow$ {\color{red}No}
           %\item ¿Qué países del continente de Lenin son monarquías? $\rightarrow$ {\color{red}No}
-          \item ¿Qué países asiáticos tienen como gobierno una monarquía? $\rightarrow$ {\color{green}Sí}
+          %\item ¿Qué países asiáticos tienen como gobierno una monarquía? $\rightarrow$ {\color{green}Sí}
           \item ¿Qué países del continente asiático tienen como forma de gobierno una monarquía? $\rightarrow$ {\color{green}Sí}
           \item ¿Qué países del continente que está al este de Europa y contiene a Rusia tiene esa forma de gobierno en la que manda una sola persona? $\rightarrow$ {\color{red}No}
+          \item ¿Quiénes son los líderes de las monarquías asiáticas? $\rightarrow$ {\color{green}Sí}
       \end{enumerate}
     \end{block}
 \end{frame}
 
-\fontsize{7.0pt}{6.0}\selectfont
+%\fontsize{7.0pt}{6.0}\selectfont
 \begin{frame}[<+->]
   \frametitle{Tratabilidad semántica / intuición}
     \begin{block}{Una pregunta semánticamente tratable tiene:}
       \begin{itemize}
           \item {\color{blue}Atributos} y {\color{blue}Valores} apareados
+           \begin{itemize}
+             \item  ¿Qué países tienen como {\color{blue}forma} de {\color{blue}gobierno} una {\color{blue}monarquía}?
+           \end{itemize}
           \item {\color{red}Valores} sueltos (atributo implícito)
+           \begin{itemize}
+             \item ¿Qué países son {\color{red}monarquías}?
+           \end{itemize}
           \item Una {\color{green}Q-word} (Qué, quién, cuándo) apareada con un atributo o suelta (atributo implícito)
+          \begin{itemize}
+            \item ¿{\color{green}Quiénes} son los {\color{green}líderes} de las monarquías asiáticas?
+            \item ¿{\color{green}Qué} países son monarquías?
+          \end{itemize}
           \item Marcadores sintácticos
-          \item {\color{orange}Menciones sueltas a relaciones}
+          \item Menciones sueltas a {\color{orange}relaciones}
       \end{itemize}
     \end{block}
+\end{frame}
+
+
+
+%\fontsize{7.0pt}{6.0}\selectfont
+\begin{frame}[<+->]
+  \frametitle{Tratabilidad semántica / intuición}
     \begin{exampleblock}{Abarcativo e intuitivamente traducible a una consulta SQL}
       \begin{itemize}
           \item ¿{\color{green}Qué} {\color{orange}países} del {\color{blue}continente} {\color{blue}asiático} tienen como {\color{blue}forma} de {\color{blue}gobierno} una {\color{blue}monarquía}?
             \begin{itemize}
-              \item \fontsize{6pt}{5}\selectfont Debería ser algo como: {\color{purple}SELECT} Country.Name {\color{purple}FROM} Country {\color{purple}WHERE} Continent=\textbf{Asia} {\color{purple}AND} GovernmentForm=\textbf{Monarchy}
+              \item Debería ser algo como: {\color{purple}SELECT} Country.Name {\color{purple}FROM} Country {\color{purple}WHERE} Continent=\textbf{Asia} {\color{purple}AND} GovernmentForm=\textbf{Monarchy}
             \end{itemize}
             \item ¿{\color{green}Qué} {\color{orange}países} {\color{red}asiáticos} son {\color{red}monarquías}?
             \begin{itemize}
-              \item \fontsize{6pt}{5}\selectfont Misma query, pero los atributos implícitos
+              \item Misma query, pero los atributos implícitos y deben \dq{descubrirse}
             \end{itemize}
             \item ¿{\color{green}Quiénes} son los {\color{green}líderes} de las {\color{red}monarquías} {\color{red}asiáticas}?
             \begin{itemize}
-              \item  \fontsize{6pt}{5}\selectfont Q-word apareada explicitamente con atributo: {\color{purple}SELECT} Country.HeadOfState {\color{purple}FROM} Country {\color{purple}WHERE} Continent=\textbf{Asia} {\color{purple}AND} GovernmentForm=\textbf{Monarchy}
+              \item Q-word apareada explicitamente con atributo: {\color{purple}SELECT} Country.HeadOfState {\color{purple}FROM} Country {\color{purple}WHERE} Continent=\textbf{Asia} {\color{purple}AND} GovernmentForm=\textbf{Monarchy}
             \end{itemize}
       \end{itemize}
     \end{exampleblock}
@@ -300,18 +328,10 @@
 % \end{frame}
 
 \begin{frame}[<+->] \fontsize{9.5pt}{8.2}\selectfont
-    \frametitle{Traducción válida / Tratabilidad semántica}    
-     Una \textbf{traducción válida} es un mapeo de una tokenización completa de $q$ en elementos de $E$ que cumple 3 condiciones:
-    \begin{enumerate}
-      \item Cada token se corresponde con un único elemento de $E$.
-      \item Cada token de atributo se relaciona con un único token de valor, cumpliendo que:
-      \begin{itemize}
-        \fontsize{9.5pt}{7.2}\selectfont
-        \item sus contrapartes del mundo DB son compatibles
-        \item los dos tokens están sintácticamente asociados %\footnotemark 
-       \end{itemize}
-      \item Cada relación es compatible con algún atributo o valor
-    \end{enumerate}
+  \frametitle{Traducción válida / Query}    
+    \begin{exampleblock}{Traducción válida}
+     Cada máximo flujo genera pares atributo-valor y un par atributo-qword. Si sus tokens de atributo y de valor explícitos están sintácticamente asociados, entonces decimos que es una \textbf{traducción válida} de $q$
+    \end{exampleblock}
 
   \begin{alertblock}{Semánticamente tratable}
     Una pregunta es \textbf{semánticamente tratable} si tiene una q-word y al menos una traducción válida
@@ -319,9 +339,9 @@
 
     \begin{block}{Una traducción válida de $q$ se traduce trivialmente a una consulta SQL}        
     \begin{tabular}{ r | l }
-    SELECT &  Atributo apareado con la qword \\
-    WHERE & Pares de atributos y valores apareados (implícitos y explícitos)\\
-    FROM & Todas las relaciones mencionadas \\
+    {\color{purple}SELECT} &  Atributo apareado con la qword \\
+    {\color{purple}WHERE} & Pares de atributos y valores apareados (implícitos y explícitos)\\
+    {\color{purple}FROM} & Todas las relaciones mencionadas \\
     \end{tabular}
     \end{block}
 
@@ -330,20 +350,20 @@
 
 \end{frame}
 
-\fontsize{9.5pt}{8.2}\selectfont
-\begin{frame}
-\frametitle{Asociación sintáctica / Charniak parse tree}
-\Tree [.S1 [.WHNP [.WP What ] ] [.SQ [.VP [.AUX are ] [.{\color{red}NP} [.DT the ] [.{\color{red}NNP} {\color{red}HP} ] [.{\color{red}NNS} {\color{red}jobs} ] ] [.PP [.IN on ] [.{\color{red}NP} [.DT a ] [.{\color{red}NNP} {\color{red}Unix} ] [.{\color{red}NN} {\color{red}system} ] ] ] ] ] [.. ? ] ] \\
-{\color{red}Regla 1 - Sustantivos \dq{hermanos}}
+% \fontsize{9.5pt}{8.2}\selectfont
+% \begin{frame}
+% \frametitle{Asociación sintáctica / Charniak parse tree}
+% \Tree [.S1 [.WHNP [.WP What ] ] [.SQ [.VP [.AUX are ] [.{\color{red}NP} [.DT the ] [.{\color{red}NNP} {\color{red}HP} ] [.{\color{red}NNS} {\color{red}jobs} ] ] [.PP [.IN on ] [.{\color{red}NP} [.DT a ] [.{\color{red}NNP} {\color{red}Unix} ] [.{\color{red}NN} {\color{red}system} ] ] ] ] ] [.. ? ] ] \\
+% {\color{red}Regla 1 - Sustantivos \dq{hermanos}}
 
-\end{frame}
+% \end{frame}
 
-\begin{frame}
-\frametitle{Asociación sintáctica / Charniak parse tree}
-\Tree [.{\color{blue}S1} [.{\color{blue}WHNP} [.{\color{blue}WP} {\color{blue}What} ] ] [.{\color{blue}SQ} [.{\color{blue}VP} [.AUX are ] [.{\color{blue}NP} [.DT the ] [.{\color{blue}NNP} {\color{blue}HP} ] [.{\color{blue}NNS} {\color{blue}jobs} ] ] [.PP [.IN on ] [.NP [.DT a ] [.NNP Unix ] [.NN system ] ] ] ] ] [.. ? ] ] \\
-{\color{blue}Regla 2: qwords a sustantivos}
+% \begin{frame}
+% \frametitle{Asociación sintáctica / Charniak parse tree}
+% \Tree [.{\color{blue}S1} [.{\color{blue}WHNP} [.{\color{blue}WP} {\color{blue}What} ] ] [.{\color{blue}SQ} [.{\color{blue}VP} [.AUX are ] [.{\color{blue}NP} [.DT the ] [.{\color{blue}NNP} {\color{blue}HP} ] [.{\color{blue}NNS} {\color{blue}jobs} ] ] [.PP [.IN on ] [.NP [.DT a ] [.NNP Unix ] [.NN system ] ] ] ] ] [.. ? ] ] \\
+% {\color{blue}Regla 2: qwords a sustantivos}
 
-\end{frame}
+% \end{frame}
 
 
 \subsubsection*{Ejemplos}
@@ -528,71 +548,72 @@ Obtener elementos de la DB para cada token\newline
 \Large{``{\color{blue}Who} \st{is} \st{the} {\color{blue}head} \st{of} {\color{blue}state} \st{of} {\color{red}Zimbabwe}?''}
 \normalsize{
 \begin{itemize}
-  \item {\color{blue}head state} es el atributo {\color{blue}Country.HeadOfState}
-  \item {\color{blue}Who} es un valor (especial) de {\color{blue}Country.HeadOfState}
-  \item {\color{red}Zimbabwe} es un valor de Country.Name ({\color{red}implícito})
+  \item {\color{blue}head state} es el Atributo {\color{blue}Country.HeadOfState}
+  \item {\color{blue}Who} es un Valor y está apareado con {\color{blue}Country.HeadOfState} 
+  \item {\color{red}Zimbabwe} es un Valor y está apareado con {\color{red}Country.Name} (implícito)
   \item No desambigua nada (los tokens tiene un solo elemento asociado)
 \end{itemize}
 }
 \bigskip
-Los tokens de atributo y de valor explícitos apareados (`who' y `head state') deben estar sintácticamente asociados
-
-\end{frame}
-\begin{frame}[t]
-\frametitle{Ejemplo 1: Matcher - Asociación sintáctica - Regla 1}
-\Large{Regla 1: who $\rightarrow$ head}
-\begin{center}
-\begin{figure}
-  \centering
-    \includegraphics[scale=.5]{graficos/presentacion/ejemplo-charniak-2}
-\end{figure}
-
-\end{center}
-\end{frame}
-
-\begin{frame}[t]
-\frametitle{Ejemplo 1: Matcher - Asociación sintáctica - Regla 6}
-\Large{Regla 6: head $\rightarrow$ state}
-\begin{center}
-
-\begin{figure}
-  \centering
-    \includegraphics[scale=.5]{graficos/presentacion/ejemplo-charniak-1}
-\end{figure}
-\end{center}
-\end{frame}
-
-\begin{frame}[t]
-\frametitle{Ejemplo 1: Generador de Queries}
-\Large{{\color{blue}Who} \st{is} \st{the} {\color{blue}head} \st{of} {\color{blue}state} \st{of} {\color{red}Zimbabwe}? 
-\bigskip
-\newline
-{\color{white}\textbf{{\color{white}SELECT}} HeadOfState \newline
-{\color{white}\textbf{FROM}} Country \newline
-{\color{white}\textbf{WHERE}} Country.Name$=$ {\color{white}`Zimbabwe'}
-}}
-
-\bigskip
-
-{\color{white}\textbf{``Robert G. Mugabe''}}
+Se chequea que los tokens de atributo y de valor explícitos apareados (`who' y `head state') estén sintácticamente asociados
 
 \end{frame}
 
-\begin{frame}[t]
-\frametitle{Ejemplo 1: Generador de Queries}
-\Large{{\color{blue}Who} \st{is} \st{the} {\color{blue}head} \st{of} {\color{blue}state} \st{of} {\color{red}Zimbabwe}? 
-\bigskip
-\newline
-\textbf{{\color{blue}Who}} $\rightarrow$ Valor de Country.HeadOfState \newline
-\textbf{{\color{blue}head state}} $\rightarrow$ Atributo Country.HeadOfState \newline
-\textbf{{\color{red}Zimbabwe}} $\rightarrow$ Valor implícito de Country.Name \newline
-}
+% \begin{frame}[t]
+% \frametitle{Ejemplo 1: Matcher - Asociación sintáctica - Regla 1}
+% \Large{Regla 1: who $\rightarrow$ head}
+% \begin{center}
+% \begin{figure}
+%   \centering
+%     \includegraphics[scale=.5]{graficos/presentacion/ejemplo-charniak-2}
+% \end{figure}
 
-\bigskip
+% \end{center}
+% \end{frame}
 
-{\color{white}\textbf{``Robert G. Mugabe''}}
+% \begin{frame}[t]
+% \frametitle{Ejemplo 1: Matcher - Asociación sintáctica - Regla 6}
+% \Large{Regla 6: head $\rightarrow$ state}
+% \begin{center}
 
-\end{frame}
+% \begin{figure}
+%   \centering
+%     \includegraphics[scale=.5]{graficos/presentacion/ejemplo-charniak-1}
+% \end{figure}
+% \end{center}
+% \end{frame}
+
+% \begin{frame}[t]
+% \frametitle{Ejemplo 1: Generador de Queries}
+% \Large{{\color{blue}Who} \st{is} \st{the} {\color{blue}head} \st{of} {\color{blue}state} \st{of} {\color{red}Zimbabwe}? 
+% \bigskip
+% \newline
+% {\color{white}\textbf{{\color{white}SELECT}} HeadOfState \newline
+% {\color{white}\textbf{FROM}} Country \newline
+% {\color{white}\textbf{WHERE}} Country.Name$=$ {\color{white}`Zimbabwe'}
+% }}
+
+% \bigskip
+
+% {\color{white}\textbf{``Robert G. Mugabe''}}
+
+% \end{frame}
+
+% \begin{frame}[t]
+% \frametitle{Ejemplo 1: Generador de Queries}
+% \Large{{\color{blue}Who} \st{is} \st{the} {\color{blue}head} \st{of} {\color{blue}state} \st{of} {\color{red}Zimbabwe}? 
+% \bigskip
+% \newline
+% \textbf{{\color{blue}Who}} $\rightarrow$ Valor de Country.HeadOfState \newline
+% \textbf{{\color{blue}head state}} $\rightarrow$ Atributo Country.HeadOfState \newline
+% \textbf{{\color{red}Zimbabwe}} $\rightarrow$ Valor implícito de Country.Name \newline
+% }
+
+% \bigskip
+
+% {\color{white}\textbf{``Robert G. Mugabe''}}
+
+% \end{frame}
 
 \begin{frame}[t]
 \frametitle{Ejemplo 1: Generador de Queries}
@@ -614,39 +635,22 @@ Los tokens de atributo y de valor explícitos apareados (`who' y `head state') d
 
 \begin{frame}[<+->]
 \frametitle{Ejemplo 2: What caribbean countries are also considered north american?}
+  Tokenizacion
   \begin{itemize}
     \item ``What caribbean countries are also considered north american?''
-    \item Separar, puntuacion, lower case, lematizar, tirar stopwords: \newline \{what, caribbean, country, north, american\}
-    \item Obtener tokens para cada lema y preservar solo los presentes en la pregunta:
-      \begin{itemize}
-        \item $getTokens(what)\ \rightarrow \{$'what'$\}$
-        \item $getTokens(caribbean)\ \rightarrow \{$'caribbean'$\}$
-        \item $getTokens(country)\ \rightarrow  \{$'country'$\}$
-        \item $getTokens(north)\ \rightarrow \{$'north american'$\}$
-        \item $getTokens(american)\ \rightarrow \{$'north american', 'american'$\}$
-      \end{itemize}
-  \end{itemize}
-  
-\end{frame}
-\begin{frame}[<+->]
-\frametitle{Ejemplo 2: Tokenizer}
-
-  \begin{itemize}
-  \item Generar tokenizaciones posibles:
-    \begin{itemize}
-      \item    \{ $\emptyset$, \{'north american'\}, \{'what', 'american', 'country'\}, \{'north american', 'what', 'american', 'country'\}, \{'american', 'caribbean'\}, ...\}
-    \end{itemize}
-  \item Quedarse con los no repetidos que cubren la pregunta (tokenizaciones completas): \{'north american', 'what', 'caribbean', 'country'\}
-    \begin{itemize}
-        \item Queda eliminado el token 'american'.
-    \end{itemize}
+    \item Tokenizaciones completas: \{'north american', 'what', 'caribbean', 'country'\}
+    %\item Separar, puntuacion, lower case, lematizar, tirar stopwords: \newline \{what, caribbean, country, north, american\}
+    %\item Obtener tokens para cada lema y preservar solo los presentes en la pregunta:
+  %     \begin{itemize}
+  %       \item $getTokens(what)\ \rightarrow \{$'what'$\}$
+  %       \item $getTokens(caribbean)\ \rightarrow \{$'caribbean'$\}$
+  %       \item $getTokens(country)\ \rightarrow  \{$'country'$\}$
+  %       \item $getTokens(north)\ \rightarrow \{$'north american'$\}$
+  %       \item $getTokens(american)\ \rightarrow \{$'north american', 'american'$\}$
+  %     \end{itemize}
   \end{itemize}
 
-\end{frame}
-
-\begin{frame}[<+->]
-\frametitle{Lexicón: Tokens $\rightarrow$ Elementos DB}
-Se obtienen todos los elementos que \textit{corresponden} a cada token:
+  Se obtienen todos los elementos que \textit{corresponden} a cada token:
    \small{
   \begin{itemize}
 
@@ -657,7 +661,39 @@ Se obtienen todos los elementos que \textit{corresponden} a cada token:
     
   \end{itemize}
   }
+  
 \end{frame}
+
+% \begin{frame}[<+->]
+% \frametitle{Ejemplo 2: Tokenizer}
+
+%   \begin{itemize}
+%   \item Generar tokenizaciones posibles:
+%     \begin{itemize}
+%       \item    \{ $\emptyset$, \{'north american'\}, \{'what', 'american', 'country'\}, \{'north american', 'what', 'american', 'country'\}, \{'american', 'caribbean'\}, ...\}
+%     \end{itemize}
+%   \item Quedarse con los no repetidos que cubren la pregunta (tokenizaciones completas): \{'north american', 'what', 'caribbean', 'country'\}
+%     \begin{itemize}
+%         \item Queda eliminado el token 'american'.
+%     \end{itemize}
+%   \end{itemize}
+
+% \end{frame}
+
+% \begin{frame}[<+->]
+% \frametitle{Lexicón: Tokens $\rightarrow$ Elementos DB}
+% Se obtienen todos los elementos que \textit{corresponden} a cada token:
+%    \small{
+%   \begin{itemize}
+
+%     \item caribbean $\rightarrow$ Caribbean (Valor de Country.Region \textbf{y} Valor de Country.Continent)
+%     \item north america $\rightarrow$ North America (Valor de Country.Continent)
+%     \item country $\rightarrow$ Country (Relación)
+%     \item what $\rightarrow$ What (Q-valor \textit{compatible} con un montón de Atributos)
+    
+%   \end{itemize}
+%   }
+% \end{frame}
 
 \begin{frame}
 \frametitle{Matcher: Grafo atributo-valor}
@@ -669,8 +705,8 @@ Se obtienen todos los elementos que \textit{corresponden} a cada token:
 
 Notar:
   \begin{itemize}
-    \item Caribbean es ambigüo.
-    \item Como north american solo puede ser Continent, caribbean va a ser Region (para maximizar el flujo)
+    \item Caribbean es ambigüo (What también)
+    \item Como \dq{north american} solo puede ser Continent, \dq{caribbean} va a ser Region (para maximizar el flujo)
   \end{itemize}
 \end{frame}
 
@@ -683,74 +719,58 @@ Query final:\newline
 
 
 
-\begin{frame}
-\frametitle{Corridas}
-Corridas sobre 200 preguntas escritas a mano para testing
-\begin{center}
-\begin{table}[h]
-\centering
-\begin{tabular}{| r |  p{12cm} | }
+% \begin{frame}
+% \frametitle{Corridas}
+% Corridas sobre 200 preguntas escritas a mano para testing
+% \begin{center}
+% \begin{table}[h]
+% \centering
+% \begin{tabular}{| r |  p{12cm} | }
 
-Total & Categoría \\ 
-91 & Respuesta exacta \\ 
-27 & Ambiguas inherentemente + pedido de reformulación \\ 
-11 & Sin respuesta (razonable, fuera de scope) \\
-32 & Fallas simples en stopwords o en lexicón \\
-10 & Ambiguas por problemas de sinonimia en el modelo \\
-4 & Ambiguas. Problemas del lexicón. \\
-6 & El analizador sintáctico no encontró asociación. \\
-19 & Problemáticas. Análisis más detallado en texto. \\
-200 & Total \\
-\end{tabular}
-\caption{Resultados de la primera corrida sobre las preguntas de test}
-\label{table:popescu-results-1}
-\end{table}
-\end{center}
-\end{frame}
+% Total & Categoría \\ 
+% 91 & Respuesta exacta \\ 
+% 27 & Ambiguas inherentemente + pedido de reformulación \\ 
+% 11 & Sin respuesta (razonable, fuera de scope) \\
+% 32 & Fallas simples en stopwords o en lexicón \\
+% 10 & Ambiguas por problemas de sinonimia en el modelo \\
+% 4 & Ambiguas. Problemas del lexicón. \\
+% 6 & El analizador sintáctico no encontró asociación. \\
+% 19 & Problemáticas. Análisis más detallado en texto. \\
+% 200 & Total \\
+% \end{tabular}
+% \caption{Resultados de la primera corrida sobre las preguntas de test}
+% \label{table:popescu-results-1}
+% \end{table}
+% \end{center}
+% \end{frame}
 
-\begin{frame}
-\frametitle{Corridas}
-Después de correcciones pavas:
-\begin{center}
-\begin{table}[h]
-\centering
-\begin{tabular}{| r |  p{12cm} |}
-Total & Categoría \\ 
-126 & Respuesta exacta \\ 
-38 & Ambiguas \\ 
-36 & Sin respuesta\\ 
-200 & Total \\ 
+% \begin{frame}
+% \frametitle{Corridas}
+% Después de correcciones pavas:
+% \begin{center}
+% \begin{table}[h]
+% \centering
+% \begin{tabular}{| r |  p{12cm} |}
+% Total & Categoría \\ 
+% 126 & Respuesta exacta \\ 
+% 38 & Ambiguas \\ 
+% 36 & Sin respuesta\\ 
+% 200 & Total \\ 
 
-\end{tabular}
-\caption{Resultados sobre las preguntas de test (con correcciones)}
-\label{table:popescu-results-3}
-\end{table}
-\end{center}
-\end{frame}
+% \end{tabular}
+% \caption{Resultados sobre las preguntas de test (con correcciones)}
+% \label{table:popescu-results-3}
+% \end{table}
+% \end{center}
+% \end{frame}
 
 
 \subsubsection*{Conclusiones y limitaciones}
 
-\begin{frame}
-\frametitle{Conclusiones y limitaciones: dominio cerrado}
-Mejoras / trabajo futuro
-\begin{itemize}
-\item Generación del Lexicón
-\item Desambiguador de sentidos para los sinónimos de los tokens
-\item Generación de Stopwords
-\item Soportar diferentes paths para aparear (\textit{joinear}) tablas.
-%\item Soportar tokens multi tipados en el Matcher.
-%\item Soportar desambiguación de relaciones en el Matcher.
-\item Interfaz con el usuario: SQL $\rightarrow$ respuesta
-\item CharniakParseTree: evaluar con un lingüista profesional las reglas
-
-\end{itemize}
-\end{frame}
-
-
-\begin{frame}
+\begin{frame}\fontsize{9.0pt}{9.0}\selectfont
 \frametitle{Conclusiones y limitaciones: dominio cerrado}
 
+Sobre modelo dominio cerrado:
 \begin{itemize}
   \item Hipótesis fecunda del modelo: subset de preguntas. Tratabilidad semántica.
   \begin{itemize}
@@ -758,11 +778,20 @@ Mejoras / trabajo futuro
   \end{itemize}
   \item Modelo potente pero subespecificado (sinónimos, stopwords, attachment)
   \item La implementación requiere desarrollo humano dedicado y tuneo
-  \item Killer combo con text-to-speech
+  \item Killer combo con speech-to-text
   \end{itemize}
 
+\medskip
+Mejoras / trabajo futuro
+\begin{itemize}
+\item Generación del Lexicón
+\item Desambiguador de sentidos para los sinónimos de los tokens
+\item Generación de Stopwords
+\item CharniakParseTree: evaluar con un lingüista profesional las reglas
+\item Soportar diferentes paths para (\textit{joinear}) tablas (solo soportamos uno canónico)
+\item Interfaz con el usuario: SQL $\rightarrow$ respuesta
+%\item Soportar tokens multi tipados en el Matcher.
+%\item Soportar desambiguación de relaciones en el Matcher.
+
+\end{itemize}
 \end{frame}
-
-
-
-
